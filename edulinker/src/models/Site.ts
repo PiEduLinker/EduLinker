@@ -1,21 +1,32 @@
-import mongoose, { Schema, Document, models } from 'mongoose'
+import { Schema, model, models, Document } from 'mongoose';
+import { ObjectId } from 'mongodb'
+
 
 export interface ISite extends Document {
-  usuario: mongoose.Types.ObjectId
-  template: mongoose.Types.ObjectId
-  nome: string
-  configuracoes: any 
-  publicado: boolean
-  criadoEm: Date
+  usuarioId: ObjectId;
+  siteNome: string;
+  descricao: string;
+  url: string;
+  tema: string;
+  logo: string;
+  status: string;
+  dataCriacao: Date;
+  configuracoes: any;
+  templateOriginalId?: ObjectId;
 }
 
 const SiteSchema = new Schema<ISite>({
-  usuario: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  template: { type: Schema.Types.ObjectId, ref: 'Template', required: true },
-  nome: { type: String, required: true },
-  configuracoes: { type: Schema.Types.Mixed }, 
-  publicado: { type: Boolean, default: false },
-  criadoEm: { type: Date, default: Date.now }
-})
+  usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
+  siteNome: { type: String, required: true },
+  descricao: { type: String },
+  url: { type: String, required: true },
+  tema: { type: String },
+  logo: { type: String },
+  status: { type: String, default: 'ativo' },
+  dataCriacao: { type: Date, default: Date.now },
+  configuracoes: { type: Schema.Types.Mixed, required: true },
+  templateOriginalId: { type: Schema.Types.ObjectId, ref: 'Template' }
+});
 
-export default models.Site || mongoose.model<ISite>('Site', SiteSchema)
+const Site = models.Site || model<ISite>('Site', SiteSchema);
+export default Site;

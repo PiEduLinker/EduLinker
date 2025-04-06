@@ -1,21 +1,20 @@
-import mongoose, { Schema, Document, models } from 'mongoose'
+import { Schema, model, models, Document } from 'mongoose'
 
 export interface ITemplate extends Document {
   nome: string
   descricao: string
-  categorias: string[]
-  configuracoesPadrao: any
-  ativo: boolean
-  exemploUrl: string 
+  exemploUrl: string
+  configPadrao: string
+  disponívelPara: string[] 
 }
 
 const TemplateSchema = new Schema<ITemplate>({
   nome: { type: String, required: true },
   descricao: { type: String },
-  categorias: [String],
-  configuracoesPadrao: { type: Schema.Types.Mixed },
-  ativo: { type: Boolean, default: true },
-  exemploUrl: { type: String, required: false } 
+  exemploUrl: { type: String, required: true },
+  configPadrao: { type: String },
+  disponívelPara: [{ type: String }]
 })
 
-export default models.Template || mongoose.model<ITemplate>('Template', TemplateSchema)
+const Template = models.Template || model<ITemplate>('Template', TemplateSchema)
+export default Template

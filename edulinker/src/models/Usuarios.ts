@@ -1,19 +1,20 @@
-import mongoose, { Schema, Document, models } from 'mongoose'
+import { Schema, model, models, Document } from 'mongoose'
 
-export interface IUsuarios extends Document {
+export interface IUsuario extends Document {
   nome: string
   email: string
   senha: string
-  tipoDeConta: 'gratuita' | 'premium'
-  criadoEm: Date
+  tipoPlano: string
+  dataCriacao: Date
 }
 
-const UssuariosSchema = new Schema<IUsuarios>({
+const UsuarioSchema = new Schema<IUsuario>({
   nome: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   senha: { type: String, required: true },
-  tipoDeConta: { type: String, enum: ['gratuita', 'premium'], default: 'gratuita' },
-  criadoEm: { type: Date, default: Date.now }
+  tipoPlano: { type: String, default: 'gratuito' },
+  dataCriacao: { type: Date, default: Date.now }
 })
 
-export default models.User || mongoose.model<IUsuarios>('User', UssuariosSchema)
+const Usuario = models.Usuario || model<IUsuario>('Usuario', UsuarioSchema)
+export default Usuario
