@@ -4,7 +4,6 @@ export interface IUsuario extends Document {
   nome: string
   email: string
   senha: string
-  tipoPlano: string
   dataCriacao: Date
 }
 
@@ -12,7 +11,6 @@ const UsuarioSchema = new Schema<IUsuario>({
   nome: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   senha: { type: String, required: true },
-  tipoPlano: { type: String, default: 'gratuito' },
   dataCriacao: { type: Date, default: Date.now }
 })
 
