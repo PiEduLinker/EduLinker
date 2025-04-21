@@ -4,32 +4,32 @@ import Link from "next/link"
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      {/* Seção de Login */}
-      <div className="w-full md:w-1/2 p-8 relative">
+      {/* Seção de Login - Ajustada para centralização vertical */}
+      <div className="w-full md:w-1/2 p-4 md:p-8 relative flex min-h-[calc(100vh-1rem)] md:min-h-screen">
         {/* Logo */}
-        <div className="absolute top-8 left-8">
+        <div className="absolute top-4 md:top-8 left-4 md:left-8">
           <Image
             src="/images/Logo/EduLinker.png"
             alt="Logo"
-            width={150}  // Reduzi o tamanho para ficar melhor no canto
-            height={150}
+            width={120}
+            height={120}
             className="object-contain"
           />
         </div>
 
-        {/* Formulário centralizado */}
-        <div className="h-full flex items-center justify-center">
+        {/* Container centralizador */}
+        <div className="w-full flex items-center justify-center">
           <div className="w-full max-w-md">
-            <div className="p-8 rounded-xl">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2 text-center">FAÇA SEU LOGIN</h1>
+            <div className="p-6 md:p-8 rounded-xl">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-5 text-center">FAÇA SEU LOGIN</h1>
 
-              <form className="space-y-6">
+              <form className="space-y-4 md:space-y-5">
                 <div>
                   <input
                     type="email"
                     id="email"
                     placeholder="Email"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+                    className="w-full px-4 py-2 md:py-3 border-2 md:border-3 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none transition"
                     required
                   />
                 </div>
@@ -39,12 +39,12 @@ export default function Home() {
                     type="password"
                     id="password"
                     placeholder="Senha"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+                    className="w-full px-4 py-2 md:py-3 border-2 md:border-3 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none transition"
                     required
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
                   <div className="flex items-center">
                     <input
                       id="remember-me"
@@ -52,7 +52,7 @@ export default function Home() {
                       type="checkbox"
                       className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                     />
-                    <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                    <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-800">
                       Lembrar de mim
                     </label>
                   </div>
@@ -66,13 +66,13 @@ export default function Home() {
 
                 <button
                   type="submit"
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-full transition duration-200"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 md:py-3 px-4 rounded-full transition duration-200 cursor-pointer" 
                 >
                   Entrar
                 </button>
               </form>
 
-              <div className="mt-6 text-center text-sm text-gray-600">
+              <div className="mt-4 md:mt-6 text-center text-sm text-gray-800">
                 <p>
                   Ainda não tem uma conta?{' '}
                   <Link href={"./register/"} className="font-semibold text-purple-600 hover:text-purple-500">
