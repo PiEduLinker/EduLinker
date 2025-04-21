@@ -6,7 +6,7 @@ export default function Home() {
     <main className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Seção de Login */}
       <div className="w-full md:w-1/2 p-8 relative">
-        {/* Logo no canto superior esquerdo */}
+        {/* Logo */}
         <div className="absolute top-8 left-8">
           <Image
             src="/images/Logo/EduLinker.png"
@@ -75,7 +75,7 @@ export default function Home() {
               <div className="mt-6 text-center text-sm text-gray-600">
                 <p>
                   Ainda não tem uma conta?{' '}
-                  <Link href={"./auth/register"} className="font-semibold text-purple-600 hover:text-purple-500">
+                  <Link href={"./register/"} className="font-semibold text-purple-600 hover:text-purple-500">
                     Cadastre-se aqui!
                   </Link>
                 </p>
@@ -88,7 +88,7 @@ export default function Home() {
       {/* Seção da Imagem */}
       <div className="hidden md:block md:w-1/2 relative">
         <Image
-          src="/images/Backgrounds/happyBusinessWoman2.jpg"
+          src="/images/Backgrounds/happyBusinessWoman.jpg"
           alt="Side Image"
           fill
           className="object-cover"
