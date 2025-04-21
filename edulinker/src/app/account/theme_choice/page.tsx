@@ -65,7 +65,7 @@ export default function ThemeChoicePage() {
                 </div>
 
                 {/* Botão continuar */}
-                <button className="w-full max-w-md bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 transition">
+                <button className="w-full max-w-md bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 cursor-pointer transition">
                     Continuar
                 </button>
             </div>
