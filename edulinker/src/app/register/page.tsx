@@ -6,7 +6,7 @@ export default function RegisterPage() {
             {/* Logo */}
             <div className="absolute top-8 left-8">
                 <Image
-                    src="/images/Logo/EduLinker.png"
+                    src="/images/logo/EduLinker.png"
                     alt="Logo"
                     width={120}
                     height={120}
@@ -21,7 +21,7 @@ export default function RegisterPage() {
                 </div>
             </div>
 
-            {/* Container do formulário centralizado */}
+            {/* Container do formulário */}
             <div className="w-full max-w-lg flex flex-col items-center justify-center flex-1 pb-12">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-5 text-center">
                     PREENCHA SEUS DADOS

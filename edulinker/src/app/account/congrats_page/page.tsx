@@ -6,7 +6,7 @@ export default function CongratsPage() {
             {/* Logo */}
             <div className="absolute top-8 left-8">
                 <Image
-                    src="/images/Logo/EduLinker.png"
+                    src="/images/logo/EduLinker.png"
                     alt="Logo"
                     width={120}
                     height={120}
@@ -21,19 +21,21 @@ export default function CongratsPage() {
                 </div>
             </div>
 
-            {/* Container principal - conteúdo centralizado */}
+            {/* Container principal */}
             <div className="flex flex-col items-center justify-center gap-6 text-center w-full max-w-md">
                 <h1 className="text-3xl font-bold text-gray-800">PARABÉNS!!!</h1>
                 <p className="text-gray-600 text-lg">
                     O link do site da sua escola já está disponível!
                 </p>
 
-                {/* Imagem do celular animado */}
-                <div className="w-64 h-auto">
-                    <img
-                        src="/images/Backgrounds/happySmartPhone.png"
+                <div className="w-64 aspect-[4/5] relative">
+                    <Image
+                        src="/images/backgrounds/happySmartPhone.png"
                         alt="Celular comemorando"
-                        className="w-full h-full object-contain"
+                        fill
+                        className="object-contain"
+                        priority
+                        sizes="(max-width: 768px) 50vw, 256px"
                     />
                 </div>
 

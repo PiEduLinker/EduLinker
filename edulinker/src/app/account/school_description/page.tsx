@@ -7,7 +7,7 @@ export default function SchoolInfoPage() {
             {/* Logo */}
             <div className="absolute top-8 left-8">
                 <Image
-                    src="/images/Logo/EduLinker.png"
+                    src="/images/logo/EduLinker.png"
                     alt="Logo"
                     width={120}
                     height={120}

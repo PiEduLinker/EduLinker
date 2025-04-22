@@ -4,12 +4,12 @@ import Link from "next/link"
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      {/* Seção de Login - Ajustada para centralização vertical */}
+      {/* Seção de Login */}
       <div className="w-full md:w-1/2 p-4 md:p-8 relative flex min-h-[calc(100vh-1rem)] md:min-h-screen">
         {/* Logo */}
         <div className="absolute top-4 md:top-8 left-4 md:left-8">
           <Image
-            src="/images/Logo/EduLinker.png"
+            src="/images/logo/EduLinker.png"
             alt="Logo"
             width={120}
             height={120}
@@ -88,7 +88,7 @@ export default function Home() {
       {/* Seção da Imagem */}
       <div className="hidden md:block md:w-1/2 relative">
         <Image
-          src="/images/Backgrounds/happyBusinessWoman.jpg"
+          src="/images/backgrounds/happyBusinessWoman.jpg"
           alt="Side Image"
           fill
           className="object-cover"

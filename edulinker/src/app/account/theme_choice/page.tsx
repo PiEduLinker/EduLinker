@@ -6,7 +6,7 @@ export default function ThemeChoicePage() {
             {/* Logo */}
             <div className="absolute top-8 left-8">
                 <Image
-                    src="/images/Logo/EduLinker.png"
+                    src="/images/logo/EduLinker.png"
                     alt="Logo"
                     width={120}
                     height={120}
@@ -27,13 +27,13 @@ export default function ThemeChoicePage() {
                     ESCOLHA O SEU TEMA
                 </h1>
 
-                {/* Grid de templates centralizado */}
+                {/* Grid de templates */}
                 <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                     {/* Modelo Express */}
                     <div className="flex flex-col items-center">
                         <div className="w-full aspect-[4/3] rounded-xl overflow-hidden shadow-lg border-2 border-gray-300 hover:border-purple-500 transition cursor-pointer relative">
                             <Image
-                                src="/images/ThemeImages/Facilita Sites.jpg"
+                                src="/images/themeImages/Facilita Sites.jpg"
                                 alt="Modelo Express"
                                 fill
                                 className="object-cover"
@@ -48,14 +48,14 @@ export default function ThemeChoicePage() {
                     <div className="flex flex-col items-center">
                         <div className="w-full aspect-[4/3] rounded-xl overflow-hidden shadow-lg border-2 border-gray-300 hover:border-purple-500 transition cursor-pointer relative">
                             <Image
-                                src="/images/ThemeImages/Advocacia.jpg"
+                                src="/images/themeImages/Advocacia.jpg"
                                 alt="Modelo Impacto"
                                 fill
                                 className="object-cover"
                                 sizes="(max-width: 768px) 100vw, 50vw"
                                 quality={85}
                             />
-                            {/* Ícone PRO responsivo */}
+                            {/* Ícone PRO */}
                             <span className="absolute top-2 right-2 md:top-3 md:right-3 bg-pink-500 text-white text-xs md:text-sm font-bold px-2 md:px-3 py-1 rounded-full z-10">
                                 PRO
                             </span>
