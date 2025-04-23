@@ -22,7 +22,7 @@ export default function AdminLayout({ children }: Props) {
         </aside>
 
         {/* Conteúdo da Página */}
-        <main className="flex justify-center flex-1 p-6">
+        <main className="w-full flex justify-center flex-1 p-6">
           {children}
         </main>
       </div>

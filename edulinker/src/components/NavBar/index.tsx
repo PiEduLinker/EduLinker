@@ -23,7 +23,7 @@ export default function NavBar() {
 
         <a
           href="#"
-          className="flex items-center gap-2 bg-[#9FFF64] px-4 py-2 rounded-lg hover:bg-[#74EB2A] transition"
+          className="flex items-center gap-2 bg-[#9FFF64] px-6 py-2 rounded-lg hover:bg-[#74EB2A] transition"
         >
           <Star className="w-5 h-5 mb-1 fill-black" />
           <span className="font-bold">Upgrade!</span>

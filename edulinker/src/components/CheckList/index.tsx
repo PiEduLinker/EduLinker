@@ -41,7 +41,7 @@ export default function CheckList() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
   return (
-    <div className="bg-white rounded-xl p-4 w-full max-w-xl space-y-2">
+    <div className="bg-white rounded-xl p-4 space-y-2">
       {checklist.map((item, index) => {
         const isExpanded = expandedIndex === index;
 
