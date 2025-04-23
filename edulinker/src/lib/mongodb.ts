@@ -4,7 +4,7 @@ const MONGODB_URI = process.env.MONGODB_URI!
 
 if (!MONGODB_URI) {
   throw new Error('Variável de ambiente MONGODB_URI não está definida.')
-}
+} 
 
 let cached = (global as any).mongoose || { conn: null, promise: null }
 

@@ -13,14 +13,11 @@ export default function AdminPanelPage() {
           </p>
         </div>
 
-        <div  className="mt-5 mb-5 ps-5">
+        <div className="mt-5 mb-5 ps-5">
           <h2 className="font-bold">Confira os passos para deixar sua escola do seu jeito!</h2>
         </div>
 
-
-        <div>
-          <CheckList/>
-        </div>
+        <CheckList />
 
       </div>
     </AdminLayout>
