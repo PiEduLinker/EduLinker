@@ -17,7 +17,9 @@ export default function AdminPanelPage() {
           <h2 className="font-bold">Confira os passos para deixar sua escola do seu jeito!</h2>
         </div>
 
-        <CheckList />
+        <div className="w-5/6">
+          <CheckList />
+        </div>
 
       </div>
     </AdminLayout>
