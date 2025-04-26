@@ -33,7 +33,7 @@ export default function SideBarMenu({ onClose }: Props) {
         <h2 className="text-2xl font-bold text-gray-800">Escola Konosuba</h2>
         <button
           onClick={onClose}
-          className="xl:hidden p-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="xl:hidden p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
           aria-label="Fechar menu"
         >
           <X className="w-8 h-8 text-gray-600 mb-1" />

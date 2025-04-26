@@ -40,7 +40,7 @@ export default function NavBar({ onMenuClick, isMenuOpen }: Props) {
 
           {/* Menu hambúrguer */}
           <button
-            className="xl:hidden text-white"
+            className="xl:hidden text-white cursor-pointer"
             onClick={onMenuClick}
             aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
           >
