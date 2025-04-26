@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDB } from '@/lib/mongodb';
 import Usuarios from '@/models/Usuarios';
 import { hashPassword } from '@/lib/auth';
+import Assinatura from '@/models/Assinatura';
 
 export async function POST(req: Request) {
     try {
@@ -33,7 +34,6 @@ export async function POST(req: Request) {
         nome,
         email: emailNormalizado,
         senha: senhaCriptografada,
-        tipoPlano: 'gratuito',
         dataCriacao: new Date()
       })
   
@@ -50,7 +50,20 @@ export async function POST(req: Request) {
     try {
       await connectToDB()
       const usuarios = await Usuarios.find().select('-senha')
-      return NextResponse.json(usuarios)
+  
+      const usuariosComPlano = await Promise.all(
+        usuarios.map(async (usuario) => {
+          const assinatura = await Assinatura.findOne({ usuarioId: usuario._id })
+            .sort({ dataInicio: -1 })
+
+          return {
+            ...usuario.toObject(),
+            planoAtual: assinatura?.plano || 'gratuito'
+          }
+        })
+      )
+  
+      return NextResponse.json(usuariosComPlano)
     } catch (error) {
       return NextResponse.json(
         { erro: 'Erro ao buscar usuários' },
