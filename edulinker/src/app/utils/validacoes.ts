@@ -1,26 +1,24 @@
-import Assinatura from '@/models/Assinatura';
-import Template from '@/models/Template';
+import Assinatura from '@/models/Assinatura'
+import Template, { ITemplate } from '@/models/Template'
 
-export function validarTemplateNome(template: any): void {
+export function validarTemplateNome(template: ITemplate | null): void {
   if (!template) {
-    throw new Error('Template não encontrado.');
+    throw new Error('Template não encontrado.')
   }
 }
 
-
-export function validarTemplateDisponibilidade(template: any, tipoConta: string): void {
+export function validarTemplateDisponibilidade(template: ITemplate, tipoConta: string): void {
   if (!template.disponívelPara.includes(tipoConta)) {
-    throw new Error(`O template "${template.nome}" não está disponível para sua conta (${tipoConta}).`);
+    throw new Error(`O template "${template.nome}" não está disponível para sua conta (${tipoConta}).`)
   }
 }
-
 
 export async function buscarPlanoUsuario(usuarioId: string): Promise<string> {
-  const assinaturaAtiva = await Assinatura.findOne({
+  const assinatura = await Assinatura.findOne({
     usuarioId,
     status: 'ativa',
-    dataExpiracao: { $gte: new Date() } // Verifica se a assinatura ainda está válida
-  });
+    dataExpiracao: { $gte: new Date() }
+  })
 
-  return assinaturaAtiva ? assinaturaAtiva.plano : 'gratuito';
+  return assinatura?.plano ?? 'gratuito'
 }

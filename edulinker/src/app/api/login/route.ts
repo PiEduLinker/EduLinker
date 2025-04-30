@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { connectToDB } from '@/lib/mongodb'
-import User from '@/models/Usuarios'
+import Usuario from '@/models/Usuario'
 import { comparePassword, generateToken } from '@/lib/auth'
+import { buscarPlanoUsuario } from '@/app/utils/validacoes'
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { email, senha } = body
+    const { email, senha } = await req.json()
 
     if (!email || !senha) {
       return NextResponse.json(
@@ -18,8 +18,7 @@ export async function POST(req: Request) {
     await connectToDB()
 
     const emailNormalizado = email.trim().toLowerCase()
-
-    const user = await User.findOne({ email: emailNormalizado })
+    const user = await Usuario.findOne({ email: emailNormalizado })
 
     if (!user) {
       return NextResponse.json(
@@ -37,6 +36,7 @@ export async function POST(req: Request) {
     }
 
     const token = generateToken({ id: user._id, email: user.email })
+    const planoAtual = await buscarPlanoUsuario(user._id.toString())
 
     return NextResponse.json({
       token,
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
         _id: user._id,
         nome: user.nome,
         email: user.email,
-        tipoPlano: user.tipoPlano
+        planoAtual
       }
     })
   } catch (error) {
