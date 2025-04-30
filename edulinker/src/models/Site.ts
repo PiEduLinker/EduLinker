@@ -3,10 +3,8 @@ import { ObjectId } from 'mongodb';
 
 export interface ISite extends Document {
   usuarioId: ObjectId;
-  siteNome: string;
+  slug: string; 
   descricao: string;
-  url: string;               
-  deploymentId: string;     
   tema: string;
   logo: string;
   status: string;
@@ -17,10 +15,8 @@ export interface ISite extends Document {
 
 const SiteSchema = new Schema<ISite>({
   usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
-  siteNome: { type: String, required: true },
+  slug: { type: String, required: true, unique: true }, 
   descricao: { type: String },
-  url: { type: String, required: true },                   
-  deploymentId: { type: String, required: true },          
   tema: { type: String },
   logo: { type: String },
   status: { type: String, default: 'ativo' },
@@ -28,6 +24,7 @@ const SiteSchema = new Schema<ISite>({
   configuracoes: { type: Schema.Types.Mixed, required: true },
   templateOriginalId: { type: Schema.Types.ObjectId, ref: 'Template' }
 });
+
 
 const Site = models.Site || model<ISite>('Site', SiteSchema);
 export default Site;
