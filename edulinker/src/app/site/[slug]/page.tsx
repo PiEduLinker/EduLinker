@@ -1,10 +1,14 @@
 import { notFound } from 'next/navigation'
 
-export default async function SiteSlugPage({ params }: { params: { slug: string } }) {
+export default async function SiteSlugPage({
+  params,
+}: {
+  params: { slug: string }
+}) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
   const res = await fetch(`${baseUrl}/api/site/slug/${params.slug}`, {
-    cache: 'no-store'
+    cache: 'no-store',
   })
 
   if (!res.ok) {
@@ -13,7 +17,5 @@ export default async function SiteSlugPage({ params }: { params: { slug: string 
 
   const data = await res.json()
 
-  return (
-    <div dangerouslySetInnerHTML={{ __html: data.html }} />
-  )
+  return <div dangerouslySetInnerHTML={{ __html: data.html }} />
 }
