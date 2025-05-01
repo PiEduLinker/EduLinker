@@ -1,60 +1,55 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { connectToDB } from '@/lib/mongodb';
-import Usuarios from '@/models/Usuarios';
+import Usuario from '@/models/Usuario';
 import { hashPassword } from '@/lib/auth';
+import Assinatura from '@/models/Assinatura';
+import { buscarPlanoUsuario } from '@/app/utils/validacoes'
 
-export async function POST(req: Request) {
-    try {
-      const body = await req.json()
-      const { nome, email, senha } = body
+
+export async function POST(req: NextRequest) {
+  try {
+    const { nome, email, senha } = await req.json()
+    if (!nome || !email || !senha) {
+      return NextResponse.json({ erro: 'Campos obrigatórios faltando.' }, { status: 400 })
+    }
+
+    await connectToDB()
+    const emailNorm = email.trim().toLowerCase()
+    if (await Usuario.findOne({ email: emailNorm })) {
+      return NextResponse.json({ erro: 'Usuário já cadastrado.' }, { status: 400 })
+    }
+
+    const senhaHash = await hashPassword(senha)
+    const novoUsuario = await Usuario.create({ nome, email: emailNorm, senha: senhaHash })
+
+    // Cria assinatura gratuita automática
+    await Assinatura.create({
+      usuarioId: novoUsuario._id,
+      plano: 'gratuito',
+      valor: 0,
+      dataExpiracao: new Date(Date.now() + 365*24*60*60*1000)
+    })
+
+    const { senha: _, ...usuarioSemSenha } = novoUsuario.toObject()
+    return NextResponse.json(usuarioSemSenha, { status: 201 })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ erro: 'Erro interno do servidor.' }, { status: 500 })
+  }
+}
   
-      if (!nome || !email || !senha) {
-        return NextResponse.json(
-          { erro: 'Preencha todos os campos obrigatórios.' },
-          { status: 400 }
-        )
-      }
-  
-      await connectToDB()
-  
-      const emailNormalizado = email.trim().toLowerCase()
-  
-      const existe = await Usuarios.findOne({ email: emailNormalizado })
-      if (existe) {
-        return NextResponse.json(
-          { erro: 'Usuário já cadastrado.' },
-          { status: 400 }
-        )
-      }
-  
-      const senhaCriptografada = await hashPassword(senha)
-  
-      const novoUsuario = await Usuarios.create({
-        nome,
-        email: emailNormalizado,
-        senha: senhaCriptografada,
-        tipoPlano: 'gratuito',
-        dataCriacao: new Date()
+export async function GET() {
+  try {
+    await connectToDB()
+    const usuarios = await Usuario.find().select('-senha')
+    const usuariosComPlano = await Promise.all(
+      usuarios.map(async user => {
+        const planoAtual = await buscarPlanoUsuario(user._id.toString())
+        return { ...user.toObject(), planoAtual }
       })
-  
-      const { senha: _, ...usuarioSemSenha } = novoUsuario.toObject()
-  
-      return NextResponse.json(usuarioSemSenha, { status: 201 })
-    } catch (error) {
-      console.error('Erro ao criar usuário:', error)
-      return NextResponse.json({ erro: 'Erro interno' }, { status: 500 })
-    }
+    )
+    return NextResponse.json(usuariosComPlano)
+  } catch {
+    return NextResponse.json({ erro: 'Erro ao buscar usuários.' }, { status: 500 })
   }
-  
-  export async function GET() {
-    try {
-      await connectToDB()
-      const usuarios = await Usuarios.find().select('-senha')
-      return NextResponse.json(usuarios)
-    } catch (error) {
-      return NextResponse.json(
-        { erro: 'Erro ao buscar usuários' },
-        { status: 500 }
-      )
-    }
-  }
+}
