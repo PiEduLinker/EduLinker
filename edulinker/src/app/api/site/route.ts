@@ -115,7 +115,10 @@ export async function PUT(req: NextRequest) {
     }
 
     const novasConfiguracoes = { ...site.configuracoes, ...configuracoes }
-    const htmlContent = gerarHtml(novasConfiguracoes, template.nome)
+
+    const htmlContent = gerarHtml(novasConfiguracoes, template!.nome)
+
+    novasConfiguracoes.html = htmlContent
 
     site.configuracoes = novasConfiguracoes
     site.url = `/site/${site.slug}`
