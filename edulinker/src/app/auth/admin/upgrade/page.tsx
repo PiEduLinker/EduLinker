@@ -1,6 +1,4 @@
 import AdminLayout from '@/components/Layout';
-import CheckList from '@/components/CheckList';
-
 
 export default function UpgradePage() {
     return (
