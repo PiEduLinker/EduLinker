@@ -1,6 +1,6 @@
 'use client';
 
-import AdminLayout from '@/components/Layout';
+import AdminLayout from '@/components/Layouts/AdminLayout';
 import {
     BookOpen,
     Brain,

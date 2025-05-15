@@ -1,28 +1,10 @@
 import Image from "next/image";
+import CreateAccountLayout from "@/components/Layouts/CreateAccountLayout";
 
 export default function ThemeChoicePage() {
     return (
-        <main className="min-h-screen bg-white flex flex-col items-center px-4 relative">
-            {/* Logo */}
-            <div className="absolute top-8 left-8">
-                <Image
-                    src="/images/logo/EduLinker.png"
-                    alt="Logo"
-                    width={120}
-                    height={120}
-                    className="object-contain"
-                />
-            </div>
-
-            {/* Barra de progresso */}
-            <div className="w-full max-w-4xl pt-24 pb-8">
-                <div className="w-40 h-2 bg-gray-300 rounded-full mx-auto">
-                    <div className="h-2 bg-pink-500 rounded-full w-3/4"></div>
-                </div>
-            </div>
-
-            {/* Container principal */}
-            <div className="w-full max-w-4xl flex flex-col items-center justify-center flex-1 pb-12">
+        <CreateAccountLayout>
+                      <div className="w-full max-w-4xl flex flex-col items-center justify-center flex-1 pb-12">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8 text-center">
                     ESCOLHA O SEU TEMA
                 </h1>
@@ -69,6 +51,6 @@ export default function ThemeChoicePage() {
                     Continuar
                 </button>
             </div>
-        </main>
+        </CreateAccountLayout>
     );
 }

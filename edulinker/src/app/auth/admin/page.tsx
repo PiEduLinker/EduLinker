@@ -1,4 +1,4 @@
-import AdminLayout from '@/components/Layout';
+import AdminLayout from '@/components/Layouts/AdminLayout';
 import CheckList from '@/components/CheckList';
 
 

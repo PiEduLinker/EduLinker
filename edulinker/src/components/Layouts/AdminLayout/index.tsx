@@ -1,8 +1,8 @@
 'use client';
 
 //Imports
-import NavBar from '../NavBar';
-import SideBarMenu from '../SideBarMenu';
+import NavBar from '../../NavBar';
+import SideBarMenu from '../../SideBarMenu';
 import { ReactNode, useState } from 'react';
 
 //Define os tipos dos parâmetros passados no componente

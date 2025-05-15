@@ -3,99 +3,115 @@ import { connectToDB } from '@/lib/mongodb'
 import Site from '@/models/Site'
 import Template from '@/models/Template'
 import { ObjectId } from 'mongodb'
-import { gerarHtml } from '@/app/utils/gerarHtml'
-
+import { buscarPlanoUsuario, validarTemplateNome, validarTemplateDisponibilidade } from '@/app/utils/validacoes'
 
 export async function POST(req: NextRequest) {
   try {
     await connectToDB()
-    const body = await req.json()
-    const { usuarioId, siteNome, descricao, tema, logo, templateId } = body
+    const { usuarioId, siteNome, descricao, logo, templateId, configuracoes } = await req.json()
 
     if (!usuarioId || !siteNome || !templateId) {
       return NextResponse.json({ erro: 'Campos obrigatórios faltando.' }, { status: 400 })
     }
 
+    const slug = siteNome
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+
+    const existente = await Site.findOne({ slug })
+    if (existente) {
+      return NextResponse.json({ erro: 'Esse nome de site já está em uso. Escolha outro.' }, { status: 409 })
+    }
+
     const template = await Template.findById(templateId)
-    if (!template) {
-      return NextResponse.json({ erro: 'Template não encontrado.' }, { status: 404 })
+    try {
+      validarTemplateNome(template)
+      const plano = await buscarPlanoUsuario(usuarioId)
+      validarTemplateDisponibilidade(template, plano)
+    } catch (err: any) {
+      return NextResponse.json({ erro: err.message }, { status: 400 })
     }
 
-    const configPadrao = JSON.parse(template.configPadrao || '{}')
-    const configPersonalizada = body.configuracoes || {}
+    const padrao = JSON.parse(template!.configPadrao || '{}')
+    const finalConfig = { ...padrao, ...configuracoes }
 
-    const configuracoes = {
-      ...configPadrao,
-      ...configPersonalizada, 
-    }
-
-
-    const htmlContent = gerarHtml(configuracoes)
-    const slug = `${siteNome.toLowerCase().replace(/\s+/g, '-')}-${Math.floor(Math.random() * 9999)}`
-    const vercelToken = process.env.VERCEL_TOKEN
-
-    const response = await fetch('https://api.vercel.com/v13/deployments', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${vercelToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: slug,
-        files: [
-          {
-            file: 'index.html',
-            data: htmlContent,
-          },
-        ],
-        projectSettings: {
-          framework: null,
-        },
-      }),
-    })
-
-    const resultado = await response.json()
-
-    if (!response.ok) {
-      console.error('Erro na publicação:', resultado)
-      return NextResponse.json({ erro: 'Erro ao publicar no Vercel', detalhes: resultado }, { status: 500 })
-    }
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || req.headers.get('origin') || 'http://localhost:3000'
 
     const novoSite = await Site.create({
       usuarioId: new ObjectId(usuarioId),
       siteNome,
+      slug,
       descricao,
-      url: resultado.url,
-      tema: template.nome,
+      url: `/site/${slug}`,
+      deploymentId: '',
+      tema: template!.nome,
       logo,
-      configuracoes,
-      templateOriginalId: template._id
+      configuracoes: finalConfig,
+      templateOriginalId: template!._id,
     })
 
-    return NextResponse.json(novoSite, { status: 201 })
-
-  } catch (error) {
+    return NextResponse.json({
+      ...novoSite.toObject(),
+      linkPublico: `${baseUrl}/site/${slug}`.replace(/([^:]\/)\/+/, '$1'),
+    }, { status: 201 })
+  } catch (error: any) {
     console.error('Erro ao criar site:', error)
-    return NextResponse.json({ erro: 'Erro ao criar site' }, { status: 500 })
+    return NextResponse.json({ erro: 'Erro ao criar site', detalhes: error?.message || error }, { status: 500 })
   }
 }
 
 export async function GET(req: NextRequest) {
   try {
     await connectToDB()
-
     const usuarioId = req.nextUrl.searchParams.get('usuarioId')
-
     if (!usuarioId) {
       return NextResponse.json({ erro: 'Usuário não informado.' }, { status: 400 })
     }
-
     const sites = await Site.find({ usuarioId: new ObjectId(usuarioId) }).sort({ dataCriacao: -1 })
-
     return NextResponse.json(sites, { status: 200 })
-
   } catch (error) {
-    console.error('Erro ao buscar sites do usuário:', error)
-    return NextResponse.json({ erro: 'Erro ao buscar sites do usuário.' }, { status: 500 })
+    console.error('Erro ao buscar sites:', error)
+    return NextResponse.json({ erro: 'Erro interno ao buscar sites.' }, { status: 500 })
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    await connectToDB()
+    const { usuarioId, siteId, configuracoes } = await req.json()
+
+    if (!usuarioId || !siteId || !configuracoes) {
+      return NextResponse.json({ erro: 'Campos obrigatórios faltando.' }, { status: 400 })
+    }
+
+    const site = await Site.findById(siteId)
+    if (!site) {
+      return NextResponse.json({ erro: 'Site não encontrado.' }, { status: 404 })
+    }
+    if (String(site.usuarioId) !== String(usuarioId)) {
+      return NextResponse.json({ erro: 'Usuário não autorizado.' }, { status: 403 })
+    }
+
+    const template = await Template.findById(site.templateOriginalId)
+    try {
+      validarTemplateNome(template)
+      const plano = await buscarPlanoUsuario(usuarioId)
+      validarTemplateDisponibilidade(template, plano)
+    } catch (err: any) {
+      return NextResponse.json({ erro: err.message }, { status: 400 })
+    }
+
+    const finalConfig = { ...site.configuracoes, ...configuracoes }
+    site.configuracoes = finalConfig
+    site.url = `/site/${site.slug}`
+    site.deploymentId = ''
+    await site.save()
+
+    return NextResponse.json(site, { status: 200 })
+  } catch (error) {
+    console.error('Erro ao atualizar site:', error)
+    return NextResponse.json({ erro: 'Erro interno ao atualizar site.' }, { status: 500 })
   }
 }
