@@ -1,7 +1,51 @@
-import Image from "next/image"
-import Link from "next/link"
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
+  const router = useRouter();
+
+  // Estado para os campos do formulário
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+
+  // Estado para mensagens de erro
+  const [erro, setErro] = useState("");
+
+  // Função que trata o envio do formulário
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErro("");
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, senha }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErro(data.erro || "Erro ao fazer login.");
+        return;
+      }
+
+      // Se desejar armazenar o token JWT
+      localStorage.setItem("token", data.token);
+
+      // Redireciona para o painel ou dashboard após login
+      router.push("/auth/admin");
+    } catch (err) {
+      setErro("Erro ao conectar com o servidor.");
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Seção de Login */}
@@ -21,15 +65,27 @@ export default function Home() {
         <div className="w-full flex items-center justify-center">
           <div className="w-full max-w-md">
             <div className="p-6 md:p-8 rounded-xl">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-5 text-center">FAÇA SEU LOGIN</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-5 text-center">
+                FAÇA SEU LOGIN
+              </h1>
 
-              <form className="space-y-4 md:space-y-5">
+              {/* Mensagem de erro, se houver */}
+              {erro && (
+                <p className="text-red-600 font-medium text-sm text-center mb-4">
+                  {erro}
+                </p>
+              )}
+
+              {/* Formulário */}
+              <form className="space-y-4 md:space-y-5" onSubmit={handleSubmit}>
                 <div>
                   <input
                     type="email"
                     id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email"
-                    className="w-full px-4 py-2 md:py-3 border-2 md:border-3 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+                    className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none transition"
                     required
                   />
                 </div>
@@ -38,8 +94,10 @@ export default function Home() {
                   <input
                     type="password"
                     id="password"
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
                     placeholder="Senha"
-                    className="w-full px-4 py-2 md:py-3 border-2 md:border-3 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+                    className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none transition"
                     required
                   />
                 </div>
@@ -66,7 +124,7 @@ export default function Home() {
 
                 <button
                   type="submit"
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 md:py-3 px-4 rounded-full transition duration-200 cursor-pointer" 
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 md:py-3 px-4 rounded-full transition duration-200 cursor-pointer"
                 >
                   Entrar
                 </button>
@@ -74,7 +132,7 @@ export default function Home() {
 
               <div className="mt-4 md:mt-6 text-center text-sm text-gray-800">
                 <p>
-                  Ainda não tem uma conta?{' '}
+                  Ainda não tem uma conta?{" "}
                   <Link href={"./register/"} className="font-semibold text-purple-600 hover:text-purple-500">
                     Cadastre-se aqui!
                   </Link>
@@ -96,5 +154,5 @@ export default function Home() {
         />
       </div>
     </main>
-  )
+  );
 }

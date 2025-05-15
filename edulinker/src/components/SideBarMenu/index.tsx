@@ -4,6 +4,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 //Definição de tipos
 type Props = {
@@ -11,6 +12,15 @@ type Props = {
 };
 
 export default function SideBarMenu({ onClose }: Props) {
+
+  // Remove o Token de sessão do LocalStorage
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    router.push('/'); // Redireciona para a tela de login
+  };
+
   //Pega o caminho da URL sem o domínio
   const pathname = usePathname();
 
@@ -50,8 +60,8 @@ export default function SideBarMenu({ onClose }: Props) {
                 <Link
                   href={item.path}
                   className={`block px-4 py-3 rounded-lg transition-colors ${isActive
-                      ? 'bg-blue-50 text-green-600 font-medium border-l-4 border-green-600'
-                      : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-50 text-green-600 font-medium border-l-4 border-green-600'
+                    : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   onClick={onClose}
                 >
@@ -60,6 +70,13 @@ export default function SideBarMenu({ onClose }: Props) {
               </li>
             );
           })}
+          <li className="px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
+              onClick={() => {
+                handleLogout(); // Elimina a chave de sessão
+                onClose?.(); // Fecha o menu se estiver em modo mobile
+              }}>
+            Sair
+            </li>
         </ul>
       </nav>
 
