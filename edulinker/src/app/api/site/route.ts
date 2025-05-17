@@ -3,6 +3,7 @@ import { connectToDB } from '@/lib/mongodb'
 import Site from '@/models/Site'
 import Template from '@/models/Template'
 import { ObjectId } from 'mongodb'
+import Usuario from '@/models/Usuario'  
 import { buscarPlanoUsuario, validarTemplateNome, validarTemplateDisponibilidade } from '@/app/utils/validacoes'
 
 export async function POST(req: NextRequest) {
@@ -12,6 +13,14 @@ export async function POST(req: NextRequest) {
 
     if (!usuarioId || !siteNome || !templateId) {
       return NextResponse.json({ erro: 'Campos obrigatórios faltando.' }, { status: 400 })
+    }
+
+    const usuario = await Usuario.findById(usuarioId)
+    if (!usuario) {
+      return NextResponse.json(
+        { erro: 'Usuário não existente.' },
+        { status: 404 }
+      )
     }
 
     const slug = siteNome
