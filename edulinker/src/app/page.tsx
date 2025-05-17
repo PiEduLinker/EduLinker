@@ -8,8 +8,7 @@ import Link from 'next/link'
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-
-  const from = searchParams.get('from') || '/auth/admin'
+  const fromParam = searchParams.get('from') || ''
 
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
@@ -19,24 +18,46 @@ export default function LoginPage() {
     e.preventDefault()
     setErro('')
 
-    try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, senha }),
-      })
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, senha }),
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      setErro(data.erro || 'Usuário ou senha inválidos.')
+      return
+    }
 
-      const data = await res.json()
+    if (fromParam) {
+      router.push(fromParam)
+      return
+    }
 
-      if (!res.ok) {
-        setErro(data.erro || 'Erro ao fazer login.')
-        return
-      }
+    const statusRes = await fetch('/api/onboarding/status', {
+      method: 'GET',
+      credentials: 'include',
+    })
+    if (!statusRes.ok) {
+      router.push('/auth/admin')
+      return
+    }
+    const { etapa, siteId } = await statusRes.json()
 
-      router.push(from)
-    } catch (err) {
-      setErro('Erro ao conectar com o servidor.')
+    switch (etapa) {
+      case 'BASIC_INFO':
+        router.push(`/account/school_description?siteId=${siteId}`)
+        break
+      case 'PLAN_SELECTION':
+        router.push(`/account/plan_selection?siteId=${siteId}`)
+        break
+      case 'TEMPLATE_SELECTION':
+        router.push(`/account/theme_choice?siteId=${siteId}`)
+        break
+      case 'COMPLETED':
+      default:
+        router.push('/auth/admin')
     }
   }
 

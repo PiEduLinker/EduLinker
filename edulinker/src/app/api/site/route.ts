@@ -6,70 +6,71 @@ import { ObjectId } from 'mongodb'
 import Usuario from '@/models/Usuario'  
 import { buscarPlanoUsuario, validarTemplateNome, validarTemplateDisponibilidade } from '@/app/utils/validacoes'
 
-export async function POST(req: NextRequest) {
-  try {
-    await connectToDB()
-    const { usuarioId, siteNome, descricao, logo, templateId, configuracoes } = await req.json()
+//somente para testes
+// export async function POST(req: NextRequest) {
+//   try {
+//     await connectToDB()
+//     const { usuarioId, siteNome, descricao, logo, templateId, configuracoes } = await req.json()
 
-    if (!usuarioId || !siteNome || !templateId) {
-      return NextResponse.json({ erro: 'Campos obrigatórios faltando.' }, { status: 400 })
-    }
+//     if (!usuarioId || !siteNome || !templateId) {
+//       return NextResponse.json({ erro: 'Campos obrigatórios faltando.' }, { status: 400 })
+//     }
 
-    const usuario = await Usuario.findById(usuarioId)
-    if (!usuario) {
-      return NextResponse.json(
-        { erro: 'Usuário não existente.' },
-        { status: 404 }
-      )
-    }
+//     const usuario = await Usuario.findById(usuarioId)
+//     if (!usuario) {
+//       return NextResponse.json(
+//         { erro: 'Usuário não existente.' },
+//         { status: 404 }
+//       )
+//     }
 
-    const slug = siteNome
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '')
+//     const slug = siteNome
+//       .toLowerCase()
+//       .normalize('NFD')
+//       .replace(/\s+/g, '-')
+//       .replace(/[^a-z0-9-]/g, '')
 
-    const existente = await Site.findOne({ slug })
-    if (existente) {
-      return NextResponse.json({ erro: 'Esse nome de site já está em uso. Escolha outro.' }, { status: 409 })
-    }
+//     const existente = await Site.findOne({ slug })
+//     if (existente) {
+//       return NextResponse.json({ erro: 'Esse nome de site já está em uso. Escolha outro.' }, { status: 409 })
+//     }
 
-    const template = await Template.findById(templateId)
-    try {
-      validarTemplateNome(template)
-      const plano = await buscarPlanoUsuario(usuarioId)
-      validarTemplateDisponibilidade(template, plano)
-    } catch (err: any) {
-      return NextResponse.json({ erro: err.message }, { status: 400 })
-    }
+//     const template = await Template.findById(templateId)
+//     try {
+//       validarTemplateNome(template)
+//       const plano = await buscarPlanoUsuario(usuarioId)
+//       validarTemplateDisponibilidade(template, plano)
+//     } catch (err: any) {
+//       return NextResponse.json({ erro: err.message }, { status: 400 })
+//     }
 
-    const padrao = JSON.parse(template!.configPadrao || '{}')
-    const finalConfig = { ...padrao, ...configuracoes }
+//     const padrao = JSON.parse(template!.configPadrao || '{}')
+//     const finalConfig = { ...padrao, ...configuracoes }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || req.headers.get('origin') || 'http://localhost:3000'
+//     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || req.headers.get('origin') || 'http://localhost:3000'
 
-    const novoSite = await Site.create({
-      usuarioId: new ObjectId(usuarioId),
-      siteNome,
-      slug,
-      descricao,
-      url: `/site/${slug}`,
-      deploymentId: '',
-      tema: template!.nome,
-      logo,
-      configuracoes: finalConfig,
-      templateOriginalId: template!._id,
-    })
+//     const novoSite = await Site.create({
+//       usuarioId: new ObjectId(usuarioId),
+//       siteNome,
+//       slug,
+//       descricao,
+//       url: `/site/${slug}`,
+//       deploymentId: '',
+//       tema: template!.nome,
+//       logo,
+//       configuracoes: finalConfig,
+//       templateOriginalId: template!._id,
+//     })
 
-    return NextResponse.json({
-      ...novoSite.toObject(),
-      linkPublico: `${baseUrl}/site/${slug}`.replace(/([^:]\/)\/+/, '$1'),
-    }, { status: 201 })
-  } catch (error: any) {
-    console.error('Erro ao criar site:', error)
-    return NextResponse.json({ erro: 'Erro ao criar site', detalhes: error?.message || error }, { status: 500 })
-  }
-}
+//     return NextResponse.json({
+//       ...novoSite.toObject(),
+//       linkPublico: `${baseUrl}/site/${slug}`.replace(/([^:]\/)\/+/, '$1'),
+//     }, { status: 201 })
+//   } catch (error: any) {
+//     console.error('Erro ao criar site:', error)
+//     return NextResponse.json({ erro: 'Erro ao criar site', detalhes: error?.message || error }, { status: 500 })
+//   }
+// }
 
 export async function GET(req: NextRequest) {
   try {

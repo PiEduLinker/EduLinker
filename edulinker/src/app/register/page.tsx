@@ -1,70 +1,62 @@
-"use client"; // Necessário para usar hooks como useState e useRouter em apps Next.js 13+
+'use client'
 
-import { useState } from "react";
-import CreateAccountLayout from "@/components/Layouts/CreateAccountLayout";
-import { useRouter } from "next/navigation";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import CreateAccountLayout from '@/components/Layouts/CreateAccountLayout'
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const router = useRouter()
 
-  // Estado que armazena os dados digitados no formulário
   const [formData, setFormData] = useState({
-    nome: "",
-    email: "",
-    senha: "",
-    confirmarSenha: "",
-  });
+    nome: '',
+    email: '',
+    senha: '',
+    confirmarSenha: '',
+  })
+  const [erro, setErro] = useState('')
 
-  // Estado para armazenar e exibir mensagens de erro
-  const [erro, setErro] = useState("");
-
-  // Atualiza o estado do formulário conforme o usuário digita
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
 
-  // Função que trata o envio do formulário
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Evita o comportamento padrão de recarregar a página
-    setErro(""); // Limpa erros anteriores
+    e.preventDefault()
+    setErro('')
 
-    // Verifica se as senhas digitadas são iguais
     if (formData.senha !== formData.confirmarSenha) {
-      setErro("As senhas não coincidem.");
-      return;
+      setErro('As senhas não coincidem.')
+      return
     }
 
     try {
-      // Envia os dados do formulário como JSON para a API
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',           
         body: JSON.stringify({
           nome: formData.nome,
           email: formData.email,
           senha: formData.senha,
         }),
-      });
+      })
 
-      // Converte a resposta da API em JSON
-      const data = await res.json();
-
-      // Se houve erro na resposta, mostra a mensagem
+      const data = await res.json()
       if (!res.ok) {
-        setErro(data.erro || "Erro ao cadastrar.");
-        return;
+        setErro(data.erro || 'Erro ao cadastrar.')
+        return
       }
 
-      // Se deu tudo certo, redireciona o usuário para a página de login
-      router.push("/account/school_description");
+      const siteId = data.onboarding?.siteId
+      if (!siteId) {
+        setErro('Não foi possível iniciar o onboarding.')
+        return
+      }
 
+      router.push(`/account/school_description?siteId=${siteId}`)
     } catch (err) {
-      // Captura erros de rede ou exceções e exibe mensagem
-      setErro("Erro de conexão com o servidor.");
+      setErro('Erro de conexão com o servidor.')
     }
-  };
+  }
 
   return (
     <CreateAccountLayout>
