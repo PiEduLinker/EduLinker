@@ -13,17 +13,42 @@ export default function SchoolInfoPage() {
   const [schoolName, setSchoolName] = useState('')
   const [description, setDescription] = useState('')
   const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string>('')
   const [error, setError] = useState('')
 
   if (!siteId) {
     return <p className="text-center text-red-500">Site ID não encontrado.</p>
   }
 
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = (err) => reject(err)
+    })
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] ?? null
+    setLogoFile(f)
+    if (f) {
+      const preview = URL.createObjectURL(f)
+      setLogoPreview(preview)
+    } else {
+      setLogoPreview('')
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
     try {
-      const logoUrl = '' 
+      let logoBase64 = ''
+      if (logoFile) {
+        logoBase64 = await fileToBase64(logoFile)
+      }
 
       const res = await fetch('/api/onboarding/basic', {
         method: 'POST',
@@ -33,7 +58,7 @@ export default function SchoolInfoPage() {
           siteId,
           siteNome: schoolName,
           descricao: description,
-          logo: logoUrl,
+          logo: logoBase64,    // envia a string base64
         }),
       })
 
@@ -66,46 +91,55 @@ export default function SchoolInfoPage() {
         )}
 
         <div className="w-full space-y-4">
+          {/* Nome e descrição… */}
           <input
             type="text"
             placeholder="Nome da escola"
             value={schoolName}
             onChange={(e) => setSchoolName(e.target.value)}
-            className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none transition"
             required
+            className="w-full px-4 py-2 border rounded"
           />
-
           <textarea
             placeholder="Breve descrição"
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none transition resize-none"
             required
+            className="w-full px-4 py-2 border rounded resize-none"
           />
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-3 pt-2">
-            <label className="w-14 h-14 border-2 border-gray-300 rounded-full flex items-center justify-center cursor-pointer hover:border-purple-500 transition mx-auto sm:mx-0">
-              <Plus className="text-gray-500" />
+          {/* Upload de logo */}
+          <div className="flex items-center gap-4">
+            <label className="w-14 h-14 border rounded-full flex items-center justify-center cursor-pointer hover:border-purple-500 transition">
+              <Plus size={24} />
               <input
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={(e) =>
-                  setLogoFile(e.target.files?.[0] ?? null)
-                }
+                onChange={handleFileChange}
               />
             </label>
-            <p className="text-sm text-gray-700 text-center sm:text-left">
-              Adicione uma imagem <br className="hidden sm:block" /> para o logo
-              (opcional)
+            {logoPreview && (
+              <img
+                src={logoPreview}
+                alt="Preview do logo"
+                className="w-14 h-14 rounded-full object-cover"
+              />
+            )}
+            <p className="text-sm text-gray-700">
+              Adicione um logo (opcional)
             </p>
           </div>
         </div>
 
         <button
           type="submit"
+<<<<<<< HEAD
           className="w-full mt-6 bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 transition cursor-pointer"
+=======
+          className="w-full mt-6 bg-purple-700 text-white py-3 rounded-full hover:bg-purple-800 transition"
+>>>>>>> ebff1a0afc5b3a86e6123bb591cfd9525223f375
         >
           Continuar
         </button>
