@@ -1,50 +1,44 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
+import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 
-export default function Home() {
-  const router = useRouter();
+export default function LoginPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
-  // Estado para os campos do formulário
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const from = searchParams.get('from') || '/auth/admin'
 
-  // Estado para mensagens de erro
-  const [erro, setErro] = useState("");
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [erro, setErro] = useState('')
 
-  // Função que trata o envio do formulário
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErro("");
+    e.preventDefault()
+    setErro('')
 
     try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, senha }),
-      });
+      })
 
-      const data = await res.json();
+      const data = await res.json()
 
       if (!res.ok) {
-        setErro(data.erro || "Erro ao fazer login.");
-        return;
+        setErro(data.erro || 'Erro ao fazer login.')
+        return
       }
 
-      // Se desejar armazenar o token JWT
-      localStorage.setItem("token", data.token);
-
-      // Redireciona para o painel ou dashboard após login
-      router.push("/auth/admin");
+      router.push(from)
     } catch (err) {
-      setErro("Erro ao conectar com o servidor.");
+      setErro('Erro ao conectar com o servidor.')
     }
-  };
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col md:flex-row">

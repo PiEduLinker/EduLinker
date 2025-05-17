@@ -20,7 +20,6 @@ export default function AdminPanelPage() {
         <div className="w-full">
           <CheckList />
         </div>
-
       </div>
     </AdminLayout>
   );

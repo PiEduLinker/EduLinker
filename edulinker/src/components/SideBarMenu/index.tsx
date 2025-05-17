@@ -16,10 +16,13 @@ export default function SideBarMenu({ onClose }: Props) {
   // Remove o Token de sessão do LocalStorage
   const router = useRouter();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    router.push('/'); // Redireciona para a tela de login
-  };
+  async function handleLogout() {
+    await fetch('/api/logout', {
+      method: 'POST',
+      credentials: 'include'
+    })
+    router.push('/')
+  }
 
   //Pega o caminho da URL sem o domínio
   const pathname = usePathname();
