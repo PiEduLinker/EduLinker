@@ -1,4 +1,3 @@
-// src/app/api/register/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { ObjectId } from 'mongodb'
 import { connectToDB } from '@/lib/mongodb'
@@ -16,7 +15,6 @@ export async function POST(req: NextRequest) {
   await connectToDB()
   const emailNorm = email.trim().toLowerCase()
 
-  // 1) Idempotente: cria usuário se não existir
   let user = await Usuario.findOne({ email: emailNorm })
   if (!user) {
     const senhaHash = await hashPassword(senha)
@@ -29,7 +27,6 @@ export async function POST(req: NextRequest) {
     })
   }
 
-  // 2) Garante um Site “vazio” para esse usuário
   let site = await Site.findOne({ usuarioId: user._id })
   if (!site) {
     site = await Site.create({
@@ -39,7 +36,6 @@ export async function POST(req: NextRequest) {
     })
   }
 
-  // 3) Gera token e prepara payload
   const token = generateToken({ id: user._id, email: user.email })
   const payload = {
     usuario: { _id: user._id, nome: user.nome, email: user.email },
@@ -50,7 +46,6 @@ export async function POST(req: NextRequest) {
     },
   }
 
-  // 4) Retorna JSON + cookie de sessão
   const res = NextResponse.json(payload, { status: 200 })
   res.cookies.set('token', token, {
     httpOnly: true,
