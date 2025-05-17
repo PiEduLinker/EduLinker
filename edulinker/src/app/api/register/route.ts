@@ -5,7 +5,7 @@ import { hashPassword } from '@/lib/auth';
 import Assinatura from '@/models/Assinatura';
 import { buscarPlanoUsuario } from '@/app/utils/validacoes'
 
-
+// Cria conta de usuário
 export async function POST(req: NextRequest) {
   try {
     const { nome, email, senha } = await req.json()
@@ -38,18 +38,18 @@ export async function POST(req: NextRequest) {
   }
 }
   
-export async function GET() {
-  try {
-    await connectToDB()
-    const usuarios = await Usuario.find().select('-senha')
-    const usuariosComPlano = await Promise.all(
-      usuarios.map(async user => {
-        const planoAtual = await buscarPlanoUsuario(user._id.toString())
-        return { ...user.toObject(), planoAtual }
-      })
-    )
-    return NextResponse.json(usuariosComPlano)
-  } catch {
-    return NextResponse.json({ erro: 'Erro ao buscar usuários.' }, { status: 500 })
-  }
-}
+// export async function GET() {
+//   try {
+//     await connectToDB()
+//     const usuarios = await Usuario.find().select('-senha')
+//     const usuariosComPlano = await Promise.all(
+//       usuarios.map(async user => {
+//         const planoAtual = await buscarPlanoUsuario(user._id.toString())
+//         return { ...user.toObject(), planoAtual }
+//       })
+//     )
+//     return NextResponse.json(usuariosComPlano)
+//   } catch {
+//     return NextResponse.json({ erro: 'Erro ao buscar usuários.' }, { status: 500 })
+//   }
+// }

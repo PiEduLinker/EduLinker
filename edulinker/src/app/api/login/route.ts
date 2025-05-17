@@ -20,17 +20,11 @@ export async function POST(req: NextRequest) {
     const emailNormalizado = email.trim().toLowerCase()
     const user = await Usuario.findOne({ email: emailNormalizado })
 
-    if (!user) {
+    // Verifica se o usuário existe e se a senha está correta
+    const senhaCorreta = user && await comparePassword(senha, user.senha)
+    if (!user || !senhaCorreta) {
       return NextResponse.json(
-        { erro: 'Usuário não encontrado.' },
-        { status: 404 }
-      )
-    }
-
-    const senhaCorreta = await comparePassword(senha, user.senha)
-    if (!senhaCorreta) {
-      return NextResponse.json(
-        { erro: 'Senha incorreta.' },
+        { erro: 'Usuário ou senha inválidos.' },
         { status: 401 }
       )
     }
