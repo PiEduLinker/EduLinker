@@ -23,14 +23,14 @@ export default function ThemeChoicePage() {
 
   const templates = [
     {
-      id: '682539f0aee5ffb1774ea93c', 
-      name: 'gratuito',
+      id: '682539f0aee5ffb1774ea93c',
+      name: 'Template Gratuito',
       img: '/images/themeImages/Facilita Sites.jpg',
       pro: false,
     },
     {
-      id: '682539f0aee5ffb1774ea93c', 
-      name: 'gratuito',
+      id: 'template-2',
+      name: 'Template Gratuito',
       img: '/images/themeImages/Advocacia.jpg',
       pro: true,
     },
@@ -52,14 +52,17 @@ export default function ThemeChoicePage() {
         body: JSON.stringify({
           siteId,
           templateId: selectedTemplate,
-          configuracoes: {}, 
+          configuracoes: {},
         }),
       })
+
       const data = await res.json()
+
       if (!res.ok) {
         setError(data.erro || 'Falha ao salvar template.')
         return
       }
+
       router.push('/auth/admin')
     } catch {
       setError('Erro de conexão. Tente novamente.')
@@ -68,8 +71,11 @@ export default function ThemeChoicePage() {
 
   return (
     <CreateAccountLayout>
-      <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto space-y-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-5xl mx-auto flex flex-col items-center px-4 space-y-8 pb-12"
+      >
+        <h1 className="text-3xl font-bold text-gray-800 text-center">
           ESCOLHA O SEU TEMA
         </h1>
 
@@ -77,14 +83,14 @@ export default function ThemeChoicePage() {
           <p className="text-red-600 font-medium text-sm text-center">{error}</p>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full">
           {templates.map((tpl) => (
             <label
               key={tpl.id}
-              className={`relative block border rounded-xl overflow-hidden cursor-pointer transition ${
+              className={`relative flex flex-col items-center rounded-xl overflow-hidden cursor-pointer transition-shadow duration-300 shadow-md hover:shadow-xl border-2 ${
                 selectedTemplate === tpl.id
                   ? 'border-purple-600 ring-4 ring-purple-200'
-                  : 'border-gray-300 hover:border-purple-500'
+                  : 'border-transparent'
               }`}
             >
               <input
@@ -95,31 +101,33 @@ export default function ThemeChoicePage() {
                 onChange={() => setSelectedTemplate(tpl.id)}
                 className="hidden"
               />
-              {tpl.pro && (
-                <span className="absolute top-2 right-2 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
-                  PRO
-                </span>
-              )}
-              <div className="aspect-[4/3] relative">
+
+              <div className="w-full text-center bg-gray-100 py-3 px-2 font-semibold text-lg text-gray-800 relative">
+                {tpl.name}
+                {tpl.pro && (
+                  <span className="absolute top-1 right-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                    PRO
+                  </span>
+                )}
+              </div>
+
+              <div className="aspect-[4/3] w-full relative">
                 <Image
                   src={tpl.img}
                   alt={tpl.name}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  quality={85}
+                  quality={90}
                 />
               </div>
-              <p className="mt-3 text-lg font-semibold text-center">
-                {tpl.name}
-              </p>
             </label>
           ))}
         </div>
 
         <button
           type="submit"
-          className="w-full max-w-md mx-auto bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 transition"
+          className="w-full max-w-md bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 transition cursor-pointer"
         >
           Finalizar e Ir para Painel
         </button>

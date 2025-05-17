@@ -1,4 +1,3 @@
-// src/app/auth/admin/layout.tsx
 import { ReactNode } from 'react'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'

@@ -12,4 +12,3 @@ export interface SiteConfig {
     depoimentos?: Array<{ foto: string; nome: string; texto: string }>
     contato?:     { texto: string; imagem: string }
   }
-  

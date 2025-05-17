@@ -22,7 +22,7 @@ export default function CreateAccountLayout({ children }: CreateAccountLayoutPro
       {/* Barra de progresso */}
       <div className="w-full max-w-4xl pt-24 pb-8">
         <div className="w-40 h-2 bg-gray-300 rounded-full mx-auto">
-          <div className="h-2 bg-pink-500 rounded-full w-1/4"></div>
+          <div className="h-2 bg-pink-500 rounded-full w-1/5"></div>
         </div>
       </div>
 
