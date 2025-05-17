@@ -15,9 +15,10 @@ export async function POST(req: NextRequest) {
       { erro: 'Campos siteId e templateId são obrigatórios.' },
       { status: 400 }
     )
-  }
-
+  }  
+  
   await connectToDB()
+
   const site = await Site.findById(siteId)
   if (!site) {
     return NextResponse.json({ erro: 'Site não encontrado.' }, { status: 404 })
@@ -29,7 +30,12 @@ export async function POST(req: NextRequest) {
   validarTemplateDisponibilidade(template, plano)
 
   const defaultConfig = JSON.parse(template!.configPadrao || '{}')
-  const finalConfig = { ...defaultConfig, ...(userConfigs || {}) }
+  const existingConfig = site.configuracoes || {}
+  const finalConfig = {
+    ...defaultConfig,
+    ...existingConfig,
+    ...(userConfigs || {}),
+  }
 
   site.templateOriginalId = template!._id
   site.configuracoes = finalConfig

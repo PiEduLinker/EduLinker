@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ObjectId } from 'mongodb'
 import { connectToDB } from '@/lib/mongodb'
 import Site from '@/models/Site'
 
@@ -37,7 +36,11 @@ export async function POST(req: NextRequest) {
 
   site.slug     = slug
   site.descricao= descricao 
-  site.logo     = logo
+   site.configuracoes = {
+    ...site.configuracoes,
+    descricao,
+    logo,           // Base64 data URL ou URL da imagem
+  }
   site.status   = 'PLAN_SELECTION'
   await site.save()
 
