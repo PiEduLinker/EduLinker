@@ -135,11 +135,7 @@ export default function SchoolInfoPage() {
 
         <button
           type="submit"
-<<<<<<< HEAD
           className="w-full mt-6 bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 transition cursor-pointer"
-=======
-          className="w-full mt-6 bg-purple-700 text-white py-3 rounded-full hover:bg-purple-800 transition"
->>>>>>> ebff1a0afc5b3a86e6123bb591cfd9525223f375
         >
           Continuar
         </button>
