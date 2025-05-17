@@ -1,10 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { connectToDB } from '@/lib/mongodb'
 import Site from '@/models/Site'
-import Template from '@/models/Template'
+//import Template from '@/models/Template'
 import { ObjectId } from 'mongodb'
-import Usuario from '@/models/Usuario'  
-import { buscarPlanoUsuario, validarTemplateNome, validarTemplateDisponibilidade } from '@/app/utils/validacoes'
+// import Usuario from '@/models/Usuario'  
+// import { buscarPlanoUsuario, validarTemplateNome, validarTemplateDisponibilidade } from '@/app/utils/validacoes'
+
+
+export async function GET(req: NextRequest) {
+  try {
+    await connectToDB()
+    const usuarioId = req.nextUrl.searchParams.get('usuarioId')
+    if (!usuarioId) {
+      return NextResponse.json({ erro: 'Usuário não informado.' }, { status: 400 })
+    }
+    const sites = await Site.find({ usuarioId: new ObjectId(usuarioId) }).sort({ dataCriacao: -1 })
+    return NextResponse.json(sites, { status: 200 })
+  } catch (error) {
+    console.error('Erro ao buscar sites:', error)
+    return NextResponse.json({ erro: 'Erro interno ao buscar sites.' }, { status: 500 })
+  }
+}
 
 //somente para testes
 // export async function POST(req: NextRequest) {
@@ -72,56 +88,43 @@ import { buscarPlanoUsuario, validarTemplateNome, validarTemplateDisponibilidade
 //   }
 // }
 
-export async function GET(req: NextRequest) {
-  try {
-    await connectToDB()
-    const usuarioId = req.nextUrl.searchParams.get('usuarioId')
-    if (!usuarioId) {
-      return NextResponse.json({ erro: 'Usuário não informado.' }, { status: 400 })
-    }
-    const sites = await Site.find({ usuarioId: new ObjectId(usuarioId) }).sort({ dataCriacao: -1 })
-    return NextResponse.json(sites, { status: 200 })
-  } catch (error) {
-    console.error('Erro ao buscar sites:', error)
-    return NextResponse.json({ erro: 'Erro interno ao buscar sites.' }, { status: 500 })
-  }
-}
 
-export async function PUT(req: NextRequest) {
-  try {
-    await connectToDB()
-    const { usuarioId, siteId, configuracoes } = await req.json()
+//rota de testes via insomnia
+// export async function PUT(req: NextRequest) {
+//   try {
+//     await connectToDB()
+//     const { usuarioId, siteId, configuracoes } = await req.json()
 
-    if (!usuarioId || !siteId || !configuracoes) {
-      return NextResponse.json({ erro: 'Campos obrigatórios faltando.' }, { status: 400 })
-    }
+//     if (!usuarioId || !siteId || !configuracoes) {
+//       return NextResponse.json({ erro: 'Campos obrigatórios faltando.' }, { status: 400 })
+//     }
 
-    const site = await Site.findById(siteId)
-    if (!site) {
-      return NextResponse.json({ erro: 'Site não encontrado.' }, { status: 404 })
-    }
-    if (String(site.usuarioId) !== String(usuarioId)) {
-      return NextResponse.json({ erro: 'Usuário não autorizado.' }, { status: 403 })
-    }
+//     const site = await Site.findById(siteId)
+//     if (!site) {
+//       return NextResponse.json({ erro: 'Site não encontrado.' }, { status: 404 })
+//     }
+//     if (String(site.usuarioId) !== String(usuarioId)) {
+//       return NextResponse.json({ erro: 'Usuário não autorizado.' }, { status: 403 })
+//     }
 
-    const template = await Template.findById(site.templateOriginalId)
-    try {
-      validarTemplateNome(template)
-      const plano = await buscarPlanoUsuario(usuarioId)
-      validarTemplateDisponibilidade(template, plano)
-    } catch (err: any) {
-      return NextResponse.json({ erro: err.message }, { status: 400 })
-    }
+//     const template = await Template.findById(site.templateOriginalId)
+//     try {
+//       validarTemplateNome(template)
+//       const plano = await buscarPlanoUsuario(usuarioId)
+//       validarTemplateDisponibilidade(template, plano)
+//     } catch (err: any) {
+//       return NextResponse.json({ erro: err.message }, { status: 400 })
+//     }
 
-    const finalConfig = { ...site.configuracoes, ...configuracoes }
-    site.configuracoes = finalConfig
-    site.url = `/site/${site.slug}`
-    site.deploymentId = ''
-    await site.save()
+//     const finalConfig = { ...site.configuracoes, ...configuracoes }
+//     site.configuracoes = finalConfig
+//     site.url = `/site/${site.slug}`
+//     site.deploymentId = ''
+//     await site.save()
 
-    return NextResponse.json(site, { status: 200 })
-  } catch (error) {
-    console.error('Erro ao atualizar site:', error)
-    return NextResponse.json({ erro: 'Erro interno ao atualizar site.' }, { status: 500 })
-  }
-}
+//     return NextResponse.json(site, { status: 200 })
+//   } catch (error) {
+//     console.error('Erro ao atualizar site:', error)
+//     return NextResponse.json({ erro: 'Erro interno ao atualizar site.' }, { status: 500 })
+//   }
+// }

@@ -3,37 +3,89 @@
 import { useState, useEffect } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 
-interface SiteConfig {
-  corFundo: string
-  corTexto: string
+interface Configs {
+  corFundo?: string
+  corTexto?: string
 }
 
-export default function AdminStylePage({ config }: { config: SiteConfig }) {
+export default function AdminStylePage() {
+  const [siteId, setSiteId] = useState<string | null>(null)
   const [bgColor, setBgColor] = useState('#ffffff')
   const [textColor, setTextColor] = useState('#000000')
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    if (config) {
-      setBgColor(config.corFundo || '#ffffff')
-      setTextColor(config.corTexto || '#000000')
+    async function load() {
+      try {
+        // 1) pega o siteId e a etapa do onboarding
+        const st = await fetch('/api/onboarding/status', {
+          credentials: 'include',
+        })
+        const { siteId: id, etapa } = await st.json()
+        if (!id) throw new Error('Nenhum site em andamento')
+        setSiteId(id)
+
+        // 2) busca as configs desse site
+        const res = await fetch(`/api/site/${id}`, {
+          credentials: 'include',
+        })
+        if (!res.ok) throw new Error('Falha ao carregar configs')
+        const { configuracoes } = await res.json() as { configuracoes: Configs }
+        setBgColor(configuracoes.corFundo || '#ffffff')
+        setTextColor(configuracoes.corTexto || '#000000')
+      } catch (err: any) {
+        setError(err.message || 'Erro ao carregar dados.')
+      } finally {
+        setLoading(false)
+      }
     }
-  }, [config])
+    load()
+  }, [])
+
+  const handleSave = async () => {
+    if (!siteId) return
+    setSaving(true)
+    setError('')
+    try {
+      const res = await fetch(`/api/site/${siteId}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          configuracoes: {
+            corFundo: bgColor,
+            corTexto: textColor,
+          },
+        }),
+      })
+      if (!res.ok) throw new Error('Falha ao salvar')
+      // opcional: notificar sucesso
+    } catch {
+      setError('Erro ao salvar configurações.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <p className="p-6 text-center">Carregando configurações…</p>
+      </AdminLayout>
+    )
+  }
 
   return (
     <AdminLayout>
-      <div className="sm:p-6">
-        <h1 className="text-2xl font-bold ms-4 my-4 text-center sm:text-start">
-          Minha escola
-        </h1>
+      <div className="sm:p-6 max-w-3xl mx-auto space-y-6">
+        <h1 className="text-2xl font-bold text-center">Estilize seu site</h1>
 
-        <div className="flex justify-center">
-          <h2 className="text-2xl font-bold px-8 py-4 rounded-full bg-[#9FFF64] shadow-md">
-            Estilize seu site
-          </h2>
-        </div>
+        {error && <p className="text-red-600 text-center">{error}</p>}
 
-        <div className="mt-10 grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-          <div className="bg-white rounded-xl p-6 shadow border flex flex-col gap-4">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-white rounded-xl p-6 shadow border space-y-6">
             <div>
               <label className="block text-sm font-semibold mb-2">
                 Cor de fundo
@@ -45,7 +97,6 @@ export default function AdminStylePage({ config }: { config: SiteConfig }) {
                 className="w-full h-12 rounded-lg cursor-pointer border shadow-inner"
               />
             </div>
-
             <div>
               <label className="block text-sm font-semibold mb-2">
                 Cor do texto
@@ -57,9 +108,16 @@ export default function AdminStylePage({ config }: { config: SiteConfig }) {
                 className="w-full h-12 rounded-lg cursor-pointer border shadow-inner"
               />
             </div>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="w-full bg-purple-700 text-white py-3 rounded-full hover:bg-purple-800 transition"
+            >
+              {saving ? 'Salvando…' : 'Salvar alterações'}
+            </button>
           </div>
 
-          <div
+           <div
             className="flex flex-col items-center justify-center rounded-xl shadow-lg border text-xl font-bold transition-all duration-300 p-6"
             style={{ backgroundColor: bgColor, color: textColor }}
           >

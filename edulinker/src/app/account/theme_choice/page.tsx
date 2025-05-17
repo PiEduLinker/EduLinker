@@ -30,7 +30,7 @@ export default function ThemeChoicePage() {
     },
     {
       id: 'template-2',
-      name: 'Template Gratuito',
+      name: 'Template Premium',
       img: '/images/themeImages/Advocacia.jpg',
       pro: true,
     },
