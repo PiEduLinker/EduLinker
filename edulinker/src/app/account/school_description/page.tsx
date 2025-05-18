@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import CreateAccountLayout from '@/components/Layouts/CreateAccountLayout'
@@ -15,9 +15,50 @@ export default function SchoolInfoPage() {
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [currentStatus, setCurrentStatus] = useState<'BASIC_INFO' | 'PLAN_SELECTION' | 'TEMPLATE_SELECTION' | 'COMPLETED'>('BASIC_INFO')
+
+  useEffect(() => {
+    if (!siteId) return
+
+    async function loadSiteData() {
+      try {
+        // Busca o status atual do site
+        const response = await fetch(`/api/site/${siteId}`, {
+          credentials: 'include',
+        })
+        
+        if (!response.ok) throw new Error('Falha ao carregar dados do site')
+        
+        const siteData = await response.json()
+        
+        // Preenche os campos se já existirem dados
+        if (siteData.descricao) setDescription(siteData.descricao)
+        if (siteData.configuracoes?.nomeEscola) setSchoolName(siteData.configuracoes.nomeEscola)
+        if (siteData.logo) setLogoPreview(siteData.logo)
+        
+        // Atualiza o status
+        setCurrentStatus(siteData.status || 'BASIC_INFO')
+      } catch (err) {
+        setError('Erro ao carregar dados do site')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSiteData()
+  }, [siteId])
 
   if (!siteId) {
     return <p className="text-center text-red-500">Site ID não encontrado.</p>
+  }
+
+  if (loading) {
+    return (
+      <CreateAccountLayout status={currentStatus}>
+        <p className="text-center p-6">Carregando dados da escola...</p>
+      </CreateAccountLayout>
+    )
   }
 
   function fileToBase64(file: File): Promise<string> {
@@ -58,7 +99,8 @@ export default function SchoolInfoPage() {
           siteId,
           siteNome: schoolName,
           descricao: description,
-          logo: logoBase64,    // envia a string base64
+          logo: logoBase64,
+          status: 'PLAN_SELECTION' // Atualiza o status para a próxima etapa
         }),
       })
 
@@ -75,7 +117,7 @@ export default function SchoolInfoPage() {
   }
 
   return (
-    <CreateAccountLayout>
+    <CreateAccountLayout status={currentStatus}>
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-lg flex flex-col items-center justify-center flex-1 pb-12"
@@ -91,7 +133,6 @@ export default function SchoolInfoPage() {
         )}
 
         <div className="w-full space-y-4">
-          {/* Nome e descrição… */}
           <input
             type="text"
             placeholder="Nome da escola"
@@ -109,7 +150,6 @@ export default function SchoolInfoPage() {
             className="w-full px-4 py-2 border rounded resize-none"
           />
 
-          {/* Upload de logo */}
           <div className="flex items-center gap-4">
             <label className="w-14 h-14 border rounded-full flex items-center justify-center cursor-pointer hover:border-purple-500 transition">
               <Plus size={24} />

@@ -25,6 +25,8 @@ export default function ThemeChoicePage() {
   const [selected, setSelected] = useState<string>('')
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
+  const [currentStatus, setCurrentStatus] = useState<'BASIC_INFO' | 'PLAN_SELECTION' | 'TEMPLATE_SELECTION' | 'COMPLETED'>('TEMPLATE_SELECTION')
+
 
   // Mapeamento estático das thumbnails
   const IMAGE_MAP: Record<string,string> = {
@@ -93,7 +95,7 @@ export default function ThemeChoicePage() {
 
   if (!siteId) {
     return (
-      <CreateAccountLayout>
+      <CreateAccountLayout status="BASIC_INFO">
         <p className="text-center text-red-500">Site ID não encontrado.</p>
       </CreateAccountLayout>
     )
@@ -108,7 +110,7 @@ export default function ThemeChoicePage() {
   }
 
   return (
-    <CreateAccountLayout>
+    <CreateAccountLayout status={currentStatus}>
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-5xl mx-auto flex flex-col items-center px-4 space-y-8 pb-12"
