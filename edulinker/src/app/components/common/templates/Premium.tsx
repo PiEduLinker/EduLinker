@@ -37,7 +37,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
       className="min-h-screen flex flex-col"
     >
       {/* Cabeçalho */}
-      <header id='home' className="bg-gradient-to-r from-gray-900 to-black text-white shadow-lg">
+      <header id='home' className={`bg-gradient-to-r from-gray-900 to-black text-white shadow-lg`}>
         <div className="container mx-auto px-4 py-3 flex items-center justify-between relative z-10">
           {/* LOGO */}
           <div className="flex items-center">
@@ -60,7 +60,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
             {/* LINKS INDIVIDUAIS PARA DESKTOP */}
             <a
               href="#home" // Link para a seção HOME
-              className="px-4 py-2 rounded-md font-medium hover:bg-gray-800 hover:text-pink-400 transition-all duration-300 flex items-center"
+              className={`px-4 py-2 rounded-md font-medium hover:bg-gray-800 hover:text-pink-400 transition-all duration-300 flex items-center`}
             >
               HOME
             </a>
@@ -165,7 +165,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
           </nav>
         </div>
       </header>
-
 
       {/* Conteúdo principal */}
       <main className="flex-grow space-y-12">
