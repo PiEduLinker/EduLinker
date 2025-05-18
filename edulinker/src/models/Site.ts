@@ -14,7 +14,7 @@ export interface ISite extends Document {
 }
 
 const SiteSchema = new Schema<ISite>({
-  usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
+  usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true, unique: true },
   slug:    { type: String, unique: true, sparse: true },
   descricao: String,
   tema:      String,
@@ -28,6 +28,9 @@ const SiteSchema = new Schema<ISite>({
   configuracoes:  { type: Schema.Types.Mixed, default: {} },   // default vazio
   templateOriginalId: { type: Schema.Types.ObjectId, ref: 'Template' }
 });
+
+SiteSchema.index({ usuarioId: 1 }, { unique: true })
+
 
 const Site = models.Site || model<ISite>('Site', SiteSchema);
 export default Site;
