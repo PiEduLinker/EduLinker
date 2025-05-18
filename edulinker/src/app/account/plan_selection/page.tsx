@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import CreateAccountLayout from '@/components/Layouts/CreateAccountLayout'
 import { BadgeCheck, ShieldCheck, Star } from 'lucide-react'
@@ -12,11 +12,53 @@ export default function PlanSelectionPage() {
 
   const [selectedPlan, setSelectedPlan] = useState<'gratuito' | 'premium' | ''>('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [currentStatus, setCurrentStatus] = useState<'BASIC_INFO' | 'PLAN_SELECTION' | 'TEMPLATE_SELECTION' | 'COMPLETED'>('PLAN_SELECTION')
+
+  useEffect(() => {
+    if (!siteId) {
+      setLoading(false)
+      return
+    }
+
+    async function loadSiteData() {
+      try {
+        // Busca o status atual do site
+        const response = await fetch(`/api/site/${siteId}`, {
+          credentials: 'include',
+        })
+        
+        if (!response.ok) throw new Error('Falha ao carregar dados do site')
+        
+        const siteData = await response.json()
+        
+        // Preenche o plano selecionado se já existir
+        if (siteData.plano) setSelectedPlan(siteData.plano)
+        
+        // Atualiza o status
+        setCurrentStatus(siteData.status || 'PLAN_SELECTION')
+      } catch (err) {
+        setError('Erro ao carregar dados do site')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSiteData()
+  }, [siteId])
 
   if (!siteId) {
     return (
-      <CreateAccountLayout>
+      <CreateAccountLayout status={currentStatus}>
         <p className="text-center text-red-500">Site ID não encontrado.</p>
+      </CreateAccountLayout>
+    )
+  }
+
+  if (loading) {
+    return (
+      <CreateAccountLayout status={currentStatus}>
+        <p className="text-center p-6">Carregando informações do plano...</p>
       </CreateAccountLayout>
     )
   }
@@ -37,6 +79,7 @@ export default function PlanSelectionPage() {
         body: JSON.stringify({
           siteId,
           plano: selectedPlan,
+          status: 'TEMPLATE_SELECTION' // Atualiza para a próxima etapa
         }),
       })
       const data = await res.json()
@@ -52,7 +95,7 @@ export default function PlanSelectionPage() {
   }
 
   return (
-    <CreateAccountLayout>
+    <CreateAccountLayout status={currentStatus}>
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-5xl flex flex-col items-center justify-center flex-1 pb-12 px-4"

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import CreateAccountLayout from '@/components/Layouts/CreateAccountLayout'
@@ -12,11 +12,56 @@ export default function ThemeChoicePage() {
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [currentStatus, setCurrentStatus] = useState<'BASIC_INFO' | 'PLAN_SELECTION' | 'TEMPLATE_SELECTION' | 'COMPLETED'>('TEMPLATE_SELECTION')
+
+  useEffect(() => {
+    if (!siteId) {
+      setLoading(false)
+      return
+    }
+
+    async function loadSiteData() {
+      try {
+        const response = await fetch(`/api/site/${siteId}`, {
+          credentials: 'include',
+        })
+        
+        if (!response.ok) throw new Error('Falha ao carregar dados do site')
+        
+        const siteData = await response.json()
+        
+        if (siteData.templateOriginalId) {
+          setSelectedTemplate(siteData.templateOriginalId.toString())
+        }
+        
+        // Verifica se o status existe nos dados antes de atualizar
+        if (siteData.status) {
+          setCurrentStatus(siteData.status)
+        }
+      } catch (err) {
+        setError('Erro ao carregar dados do site')
+        console.error('Erro ao carregar dados:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSiteData()
+  }, [siteId])
 
   if (!siteId) {
     return (
-      <CreateAccountLayout>
+      <CreateAccountLayout status="BASIC_INFO">
         <p className="text-center text-red-500">Site ID não encontrado.</p>
+      </CreateAccountLayout>
+    )
+  }
+
+  if (loading) {
+    return (
+      <CreateAccountLayout status={currentStatus}>
+        <p className="text-center p-6">Carregando temas disponíveis...</p>
       </CreateAccountLayout>
     )
   }
@@ -39,6 +84,7 @@ export default function ThemeChoicePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    
     if (!selectedTemplate) {
       setError('Selecione um tema para continuar.')
       return
@@ -53,24 +99,25 @@ export default function ThemeChoicePage() {
           siteId,
           templateId: selectedTemplate,
           configuracoes: {},
+          status: 'COMPLETED'
         }),
       })
 
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.erro || 'Falha ao salvar template.')
-        return
+        throw new Error(data.erro || 'Falha ao salvar template.')
       }
 
-      router.push('/auth/admin')
-    } catch {
-      setError('Erro de conexão. Tente novamente.')
+      router.push('/account/congrats_page')
+    } catch (err: any) {
+      setError(err.message || 'Erro de conexão. Tente novamente.')
+      console.error('Erro ao salvar template:', err)
     }
   }
 
   return (
-    <CreateAccountLayout>
+    <CreateAccountLayout status={currentStatus}>
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-5xl mx-auto flex flex-col items-center px-4 space-y-8 pb-12"
@@ -134,4 +181,4 @@ export default function ThemeChoicePage() {
       </form>
     </CreateAccountLayout>
   )
-}
+} 
