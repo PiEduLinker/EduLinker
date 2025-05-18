@@ -68,7 +68,7 @@ export default function ThemeChoicePage() {
 
   const templates = [
     {
-      id: '682539f0aee5ffb1774ea93c',
+      id: '682953cfeacbea36d53508b9',
       name: 'Template Gratuito',
       img: '/images/themeImages/Facilita Sites.jpg',
       pro: false,

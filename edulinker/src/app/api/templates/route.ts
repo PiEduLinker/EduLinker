@@ -56,4 +56,3 @@ export async function GET() {
       return NextResponse.json({ erro: 'Erro ao buscar templates' }, { status: 500 })
     }
   }
-
