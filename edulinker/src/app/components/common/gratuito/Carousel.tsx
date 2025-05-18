@@ -28,8 +28,11 @@ export default function Carousel({
 
   // Initialize loaded images state
   useEffect(() => {
-    setLoadedImages(items.map(() => false));
-  }, [items]);
+    if (items.length !== loadedImages.length) {
+      setLoadedImages(items.map(() => false));
+    }
+  }, [items, loadedImages.length]);
+
 
   // Handle image loading errors with multiple fallbacks
   const handleImageError = (index: number) => (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -85,8 +88,7 @@ export default function Carousel({
 
   if (!items.length) {
     return (
-      // Modificado: Adicionado min-h-[50vh]
-      <div className="w-full min-h-[60vh] bg-gray-200 flex items-center justify-center rounded-xl">
+      <div className="w-full bg-gray-200 flex items-center justify-center rounded-xl">
         <img
           src={fallbackImages[0]}
           alt="Nenhum slide disponível"
@@ -98,7 +100,7 @@ export default function Carousel({
   }
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg">
+    <div className="relative w-full overflow-hidden">
       {/* Slides container */}
       <div
         className="flex transition-transform duration-500 ease-in-out"
@@ -106,7 +108,7 @@ export default function Carousel({
       >
         {items.map((item, index) => (
           // Modificado: Adicionado min-h-[50vh] para cada slide
-          <div key={index} className="w-full flex-shrink-0 relative min-h-[50vh]">
+          <div key={index} className="w-full flex-shrink-0 relative min-h-[60vh]">
             {/* Main image */}
             <a
               href={item.link || '#'}
