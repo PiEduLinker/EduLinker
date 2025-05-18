@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { connectToDB } from '@/lib/mongodb'
 import Site from '@/models/Site'
+import Assinatura from '@/models/Assinatura'
 import { verifyToken } from '@/lib/auth'
 
-interface IOnboardingSite {
+interface LeanSite {
   _id: { toString(): string }
   status: string
+}
+interface LeanAssinatura {
+  plano: string
 }
 
 export async function GET(req: NextRequest) {
@@ -23,17 +27,29 @@ export async function GET(req: NextRequest) {
   const site = (await Site
     .findOne({ usuarioId: payload.id })
     .sort({ dataCriacao: -1 })
-    .lean()) as IOnboardingSite | null
+    .lean()) as LeanSite | null
+
+  const assinatura = (await Assinatura
+    .findOne({ usuarioId: payload.id })
+    .lean()) as LeanAssinatura | null
 
   if (!site) {
     return NextResponse.json(
-      { etapa: 'BASIC_INFO', siteId: null },
+      {
+        etapa: 'BASIC_INFO',
+        siteId: null,
+        plano: assinatura?.plano || 'gratuito'
+      },
       { status: 200 }
     )
   }
 
   return NextResponse.json(
-    { etapa: site.status, siteId: site._id.toString() },
+    {
+      etapa: site.status,
+      siteId: site._id.toString(),
+      plano: assinatura?.plano || 'gratuito'
+    },
     { status: 200 }
   )
 }

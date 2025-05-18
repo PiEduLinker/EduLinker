@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { connectToDB } from '@/lib/mongodb';
 import Template from '@/models/Template'
 
+interface LeanTemplate {
+  _id: { toString(): string }
+  nome: string
+  exemploUrl: string
+  'disponívelPara': string[]
+} 
+
 export async function POST(req: NextRequest) {
   await connectToDB();
 
@@ -44,16 +51,27 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
-    try {
-      await connectToDB()
-  
-      const templates = await Template.find()
-  
-      return NextResponse.json(templates, { status: 200 })
-    } catch (error) {
-      console.error('Erro ao buscar templates:', error)
-      return NextResponse.json({ erro: 'Erro ao buscar templates' }, { status: 500 })
-    }
-  }
+export async function GET(req: NextRequest) {
+  try {
+    await connectToDB()
 
+    const raw = await Template.find().lean() as unknown[]
+
+    const tpl = raw as LeanTemplate[]
+
+    const out = tpl.map((t) => ({
+      id:         t._id.toString(),
+      nome:       t.nome,
+      imgPreview: t.exemploUrl,
+      pro:        !t['disponívelPara'].includes('gratuito'),
+    }))
+
+    return NextResponse.json(out, { status: 200 })
+  } catch (error) {
+    console.error('Erro ao buscar templates:', error)
+    return NextResponse.json(
+      { erro: 'Erro ao buscar templates' },
+      { status: 500 }
+    )
+  }
+}

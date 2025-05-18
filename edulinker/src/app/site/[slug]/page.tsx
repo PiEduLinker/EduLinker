@@ -1,25 +1,56 @@
 import { notFound } from 'next/navigation'
 import { connectToDB } from '@/lib/mongodb'
 import Site from '@/models/Site'
+import TemplateModel from '@/models/Template'
 import GratuitoTemplate from '@/app/components/common/templates/Gratuito'
-import PremiumTemplate from '@/app/components/common/templates/Premium'
+import PremiumTemplate   from '@/app/components/common/templates/Premium'
 import { SiteConfig } from '@/types/site'
 
-export default async function SiteSlugPage({ params }: { params: { slug: string } }) {
+interface LeanSite {
+  templateOriginalId: string
+  configuracoes: SiteConfig
+}
+
+interface LeanTemplate {
+  disponívelPara: string[]
+}
+
+export default async function SiteSlugPage({
+  params,
+}: {
+  params: { slug: string }
+}) {
   await connectToDB()
-  const site = await Site.findOne({ slug: params.slug })
+
+  const rawSite = await Site.findOne({ slug: params.slug }).lean()
+  const site = rawSite as LeanSite | null
   if (!site) return notFound()
 
-  const config = site.configuracoes as SiteConfig
-  const Template = site.tema === 'premium' ? PremiumTemplate : GratuitoTemplate
+  const rawTpl = await TemplateModel
+    .findById(site.templateOriginalId)
+    .lean()
+  const tpl = rawTpl as LeanTemplate | null
+  if (!tpl) return notFound()
+
+  const dispo = tpl.disponívelPara
+  const isPremiumTemplate =
+    dispo.includes('premium') &&
+    !dispo.includes('gratuito')
+
+  const TemplateComponent = isPremiumTemplate
+    ? PremiumTemplate
+    : GratuitoTemplate
 
   return (
-    // injeta cores dinâmicas via CSS variables
-    <div style={{
-      ['--bg' as any]: config.corFundo,
-      ['--fg' as any]: config.corTexto
-    }}>
-      <Template config={config} />
+    <div
+      style={
+        {
+          '--bg': site.configuracoes.corFundo,
+          '--fg': site.configuracoes.corTexto,
+        } as React.CSSProperties
+      }
+    >
+      <TemplateComponent config={site.configuracoes} />
     </div>
   )
 }

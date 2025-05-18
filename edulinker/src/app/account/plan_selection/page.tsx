@@ -3,12 +3,11 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import CreateAccountLayout from '@/components/Layouts/CreateAccountLayout'
-import { BadgeCheck, ShieldCheck, Star } from 'lucide-react'
+import { BadgeCheck, ShieldCheck } from 'lucide-react'
 
 export default function PlanSelectionPage() {
   const router = useRouter()
-  const params = useSearchParams()
-  const siteId = params.get('siteId')
+  const siteId = useSearchParams().get('siteId') // usado só para montar a URL de theme_choice
 
   const [selectedPlan, setSelectedPlan] = useState<'gratuito' | 'premium' | ''>('')
   const [error, setError] = useState('')
@@ -34,18 +33,14 @@ export default function PlanSelectionPage() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          siteId,
-          plano: selectedPlan,
-        }),
+        body: JSON.stringify({ plano: selectedPlan }),
       })
       const data = await res.json()
       if (!res.ok) {
         setError(data.erro || 'Falha ao salvar plano.')
         return
       }
-
-      router.push(`/account/theme_choice?siteId=${siteId}`)
+      router.push(`/account/theme_choice?siteId=${data.siteId}`)
     } catch {
       setError('Erro de conexão. Tente novamente.')
     }
