@@ -4,6 +4,7 @@ export interface SiteConfig {
     descricao:    string
     corFundo:     string
     corTexto:     string
+    fonte:        string
     logo:         string
     carrossel?:   Array<{ imagem: string; link?: string }>
     galerias?:    Array<{ imagem: string }>

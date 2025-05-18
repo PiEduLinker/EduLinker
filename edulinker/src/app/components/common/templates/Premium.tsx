@@ -12,13 +12,22 @@ export default function Premium({ config }: { config: SiteConfig }) {
   const bgTo = '#ffffff'
   const fg = config.corTexto
 
+ //fontes
+  const fontClass = {
+    montserrat: 'font-montserrat',
+    geist: 'font-geist',
+    'geist-mono': 'font-geist-mono',
+    roboto: 'font-roboto',
+    Poppins: 'font-poppins',
+  }[config.fonte || 'montserrat']
+
   return (
     <div
       style={{
         background: `linear-gradient(90deg, ${bgFrom}, ${bgTo})`,
         color: fg,
       }}
-      className="min-h-screen flex flex-col"
+      className={`min-h-screen flex flex-col ${fontClass}`} 
     >
       {/* Cabeçalho */}
       <header className="py-8 text-center">

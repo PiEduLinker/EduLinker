@@ -20,6 +20,15 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
   const bg = config.corFundo || '#ffffff' // Cor de fundo padrão se não for fornecida
   const fg = config.corTexto || '#000000' // Cor de texto padrão se não for fornecida
 
+  //fontes
+  const fontClass = {
+    montserrat: 'font-montserrat',
+    geist: 'font-geist',
+    'geist-mono': 'font-geist-mono',
+    roboto: 'font-roboto',
+    Poppins: 'font-poppins',
+  }[config.fonte || 'montserrat']
+
   // Preenche valores padrão para configurações opcionais
   const carrosselItems = config.carrossel?.length
     ? config.carrossel
@@ -68,7 +77,7 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
   return (
     <div
       style={{ backgroundColor: bg, color: fg }}
-      className="min-h-screen flex flex-col font-sans"
+      className={`min-h-screen flex flex-col ${fontClass}`}
     >
       {/* Cabeçalho com navegação */}
       <header className="py-4 px-6 shadow-md bg-white sticky top-0 z-50">

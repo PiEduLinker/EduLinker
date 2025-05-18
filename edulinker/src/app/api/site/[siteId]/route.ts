@@ -53,6 +53,11 @@ export async function PUT(
     return NextResponse.json({ erro: 'Configurações ausentes.' }, { status: 400 })
   }
 
+  const allowedFonts = ['montserrat', 'geist', 'geist-mono', 'roboto', 'Poppins']
+  if (newConfigs.fonte && !allowedFonts.includes(newConfigs.fonte)) {
+    return NextResponse.json({ erro: 'Fonte inválida.' }, { status: 400 })
+  }
+
   const site = await Site.findOne({
     usuarioId: payload.id,
     _id: params.siteId,
