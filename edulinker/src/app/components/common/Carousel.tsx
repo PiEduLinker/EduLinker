@@ -28,8 +28,10 @@ export default function Carousel({
 
   // Initialize loaded images state
   useEffect(() => {
-    setLoadedImages(items.map(() => false));
-  }, [items]);
+    if (items.length !== loadedImages.length) {
+      setLoadedImages(items.map(() => false));
+    }
+  }, [items, loadedImages.length]);
 
   // Handle image loading errors with multiple fallbacks
   const handleImageError = (index: number) => (e: React.SyntheticEvent<HTMLImageElement, Event>) => {

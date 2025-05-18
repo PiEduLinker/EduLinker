@@ -1,5 +1,3 @@
-// src/app/account/theme_choice/page.tsx
-
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -31,7 +29,7 @@ export default function ThemeChoicePage() {
   // Mapeamento estático das thumbnails
   const IMAGE_MAP: Record<string,string> = {
     '682953cfeacbea36d53508b9': '/images/themeImages/Facilita Sites.jpg',   // gratuito
-    'template-268293fe8eacbea36d53507ea':'/images/themeImages/Advocacia.jpg',         // premium
+    '682a30fc7e6132facb3e70cc':'/images/themeImages/Advocacia.jpg',         // premium
   }
 
   useEffect(() => {
