@@ -2,8 +2,6 @@
 
 import React from 'react'
 import Carousel from '@/app/components/common/gratuito/Carousel'
-import Gallery from '@/app/components/common/gratuito/Gallery'
-import AulaCard from '@/app/components/common/gratuito/AulaCard'
 import DepoimentoCardPremium from '@/app/components/common/premium/DepoimentoCardPremium'
 import ProfessorCardPremium from '@/app/components/common/premium/ProfessorCardPremium'
 import AulaCardPremium from '@/app/components/common/premium/AulaCardPremium'
@@ -75,7 +73,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
               className="px-4 py-2 rounded-md font-medium hover:bg-gray-800 hover:text-pink-400 transition-all duration-300 flex items-center"
             >
               AULAS
-              <span className="ml-1 bg-pink-600 text-xs px-2 py-1 rounded-full">NOVO</span> {/* Span NOVO mantido */}
             </a>
             <a
               href="#professores" // Link para a seção PROFESSORES
@@ -137,7 +134,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
               onClick={() => setMenuOpen(false)} // Fecha o menu no clique
             >
               AULAS
-              <span className="ml-2 bg-pink-600 text-xs px-2 py-1 rounded-full">NOVO</span> {/* Span NOVO mantido */}
             </a>
             <a
               href="#professores" // Link para a seção PROFESSORES
