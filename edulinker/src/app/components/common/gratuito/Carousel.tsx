@@ -33,7 +33,6 @@ export default function Carousel({
     }
   }, [items, loadedImages.length]);
 
-
   // Handle image loading errors with multiple fallbacks
   const handleImageError = (index: number) => (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;

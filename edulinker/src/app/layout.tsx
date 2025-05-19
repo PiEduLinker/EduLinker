@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Geist, Geist_Mono } from "next/font/google";
+import { Montserrat, Geist, Geist_Mono, Roboto, Poppins } from "next/font/google";
 import "../styles/globals.css";
 
 const geistSans = Geist({
@@ -17,6 +17,9 @@ const montserrat = Montserrat({
   subsets: ["latin"],
 });
 
+const roboto = Roboto({ variable: '--font-roboto', subsets: ['latin'] });
+
+const poppins = Poppins({ variable: '--font-poppins', subsets: ['latin'], weight: ['400','700'], });
 
 export const metadata: Metadata = {
   title: "EduLinker",
@@ -30,9 +33,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} antialiased`}
-      >
+      <body className={`
+        ${montserrat.variable}
+        ${geistSans.variable}
+        ${geistMono.variable}
+        ${roboto.variable}
+        ${poppins.variable} 
+        antialiased
+      `}>
         {children}
       </body>
     </html>

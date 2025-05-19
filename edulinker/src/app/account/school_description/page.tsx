@@ -72,11 +72,18 @@ export default function SchoolInfoPage() {
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null
-    setLogoFile(f)
     if (f) {
+      if (!f.type.startsWith('image/')) {
+        setError('Apenas imagens são permitidas.')
+        setLogoFile(null)
+        setLogoPreview('')
+        return
+      }
+      setLogoFile(f)
       const preview = URL.createObjectURL(f)
       setLogoPreview(preview)
     } else {
+      setLogoFile(null)
       setLogoPreview('')
     }
   }

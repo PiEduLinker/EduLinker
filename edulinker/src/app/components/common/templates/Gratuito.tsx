@@ -20,6 +20,15 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
   const bg = config.corFundo || '#ffffff' // Cor de fundo padrão se não for fornecida
   const fg = config.corTexto || '#000000' // Cor de texto padrão se não for fornecida
 
+  //fontes
+  const fontClass = {
+    montserrat: 'font-montserrat',
+    geist: 'font-geist',
+    'geist-mono': 'font-geist-mono',
+    roboto: 'font-roboto',
+    Poppins: 'font-poppins',
+  }[config.fonte || 'montserrat']
+
   // Preenche valores padrão para configurações opcionais
   const carrosselItems = config.carrossel?.length
     ? config.carrossel
@@ -39,14 +48,16 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
       titulo: 'Aula Padrão'
     })
 
-  const professoresItems = config.professores?.length
-    ? config.professores.map(prof => ({
-      ...prof,
-      foto: prof.foto || DEFAULT_PROFESSOR_IMAGE
-    }))
-    : Array(4).fill({
-      foto: DEFAULT_PROFESSOR_IMAGE,
-      texto: 'Professor experiente na área'
+   const professoresItems = config.professores?.length
+   ? config.professores.map(prof => ({
+       nome: prof.nome,
+       descricao: prof.descricao,
+       foto: prof.imagem || DEFAULT_PROFESSOR_IMAGE,
+     }))
+   : Array(4).fill({
+       nome: 'Professor Experiente',
+       descricao: 'Professor experiente na área',
+       foto: DEFAULT_PROFESSOR_IMAGE,
     })
 
   const depoimentosItems = config.depoimentos?.length
@@ -68,7 +79,7 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
   return (
     <div
       style={{ backgroundColor: bg, color: fg }}
-      className="min-h-screen flex flex-col font-sans"
+      className={`min-h-screen flex flex-col ${fontClass}`}
     >
       {/* Cabeçalho com navegação */}
       <header className="py-4 px-6 shadow-md bg-white sticky top-0 z-50">
@@ -190,12 +201,13 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
           <h2 className="text-3xl font-bold mb-8 text-center">Nossos Professores</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {professoresItems.map((item, idx) => (
-              <ProfessorCard
-                key={idx}
-                foto={item.foto}
-                texto={item.texto}
-              />
-            ))}
+            <ProfessorCard
+              key={idx}
+              foto={item.foto}
+              nome={item.nome}
+              descricao={item.descricao}
+            />
+          ))}
           </div>
         </section>
 

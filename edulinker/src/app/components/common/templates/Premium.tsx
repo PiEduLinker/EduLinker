@@ -26,13 +26,22 @@ export default function Premium({ config }: { config: SiteConfig }) {
   const fg = config.corTexto
   const [menuOpen, setMenuOpen] = useState(false);
 
+ //fontes
+  const fontClass = {
+    montserrat: 'font-montserrat',
+    geist: 'font-geist',
+    'geist-mono': 'font-geist-mono',
+    roboto: 'font-roboto',
+    Poppins: 'font-poppins',
+  }[config.fonte || 'montserrat']
+
   return (
     <div
       style={{
         background: `linear-gradient(90deg, ${bgFrom}, ${bgTo})`,
         color: fg,
       }}
-      className="min-h-screen flex flex-col"
+      className={`min-h-screen flex flex-col ${fontClass}`} 
     >
       {/* Cabeçalho */}
       <header id='home' className={`bg-gradient-to-r from-gray-900 to-black text-white shadow-lg`}>
@@ -345,9 +354,9 @@ export default function Premium({ config }: { config: SiteConfig }) {
               {config.professores?.map((item, idx) => (
                 <ProfessorCardPremium
                   key={idx}
-                  foto={item.foto}
+                  //foto={item.foto}
                   //nome={item.nome}
-                  texto={item.texto}
+                 // texto={item.texto}
                 //especialidade={item.especialidade}
                 />
               ))}
