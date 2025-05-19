@@ -48,14 +48,16 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
       titulo: 'Aula Padrão'
     })
 
-  const professoresItems = config.professores?.length
-    ? config.professores.map(prof => ({
-      ...prof,
-      foto: prof.foto || DEFAULT_PROFESSOR_IMAGE
-    }))
-    : Array(4).fill({
-      foto: DEFAULT_PROFESSOR_IMAGE,
-      texto: 'Professor experiente na área'
+   const professoresItems = config.professores?.length
+   ? config.professores.map(prof => ({
+       nome: prof.nome,
+       descricao: prof.descricao,
+       foto: prof.imagem || DEFAULT_PROFESSOR_IMAGE,
+     }))
+   : Array(4).fill({
+       nome: 'Professor Experiente',
+       descricao: 'Professor experiente na área',
+       foto: DEFAULT_PROFESSOR_IMAGE,
     })
 
   const depoimentosItems = config.depoimentos?.length
@@ -199,12 +201,13 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
           <h2 className="text-3xl font-bold mb-8 text-center">Nossos Professores</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {professoresItems.map((item, idx) => (
-              <ProfessorCard
-                key={idx}
-                foto={item.foto}
-                texto={item.texto}
-              />
-            ))}
+            <ProfessorCard
+              key={idx}
+              foto={item.foto}
+              nome={item.nome}
+              descricao={item.descricao}
+            />
+          ))}
           </div>
         </section>
 
