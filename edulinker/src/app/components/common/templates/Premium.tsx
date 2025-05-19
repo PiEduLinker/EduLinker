@@ -26,6 +26,19 @@ export default function Premium({ config }: { config: SiteConfig }) {
   const fg = config.corTexto
   const [menuOpen, setMenuOpen] = useState(false);
 
+    // Mapeia os professores (sem especialidade)
+  const professoresItems = config.professores?.length
+    ? config.professores.map(prof => ({
+        nome: prof.nome,
+        texto: prof.descricao,
+        foto: prof.imagem || DEFAULT_PROFESSOR_IMAGE,
+      }))
+    : Array(4).fill({
+        nome: 'Professor Experiente',
+        texto: 'Especialista com anos de experiência em transformar vidas.',
+        foto: DEFAULT_PROFESSOR_IMAGE,
+      })
+
  //fontes
   const fontClass = {
     montserrat: 'font-montserrat',
@@ -325,41 +338,40 @@ export default function Premium({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Professores */}
-        <section id='professores' className="relative py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
-          {/* Elementos decorativos de fundo */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-10">
-            <div className="absolute top-20 left-1/4 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-20"></div>
-            <div className="absolute bottom-10 right-1/4 w-80 h-80 rounded-full bg-purple-500 filter blur-3xl opacity-15"></div>
+      <section id="professores" className="relative py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
+        {/* Elementos decorativos de fundo */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-10">
+          <div className="absolute top-20 left-1/4 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-20"></div>
+          <div className="absolute bottom-10 right-1/4 w-80 h-80 rounded-full bg-purple-500 filter blur-3xl opacity-15"></div>
+        </div>
+
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          {/* Cabeçalho elegante */}
+          <div className="text-center mb-16">
+            <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
+              Nossa Equipe
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              <span className="relative inline-block pb-2">
+                Professores
+                <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
+              </span>
+            </h2>
+            <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+              Conheça nosso time de especialistas dedicados à sua evolução
+            </p>
           </div>
 
-          <div className="container mx-auto px-4 lg:px-8 relative z-10">
-            {/* Cabeçalho elegante */}
-            <div className="text-center mb-16">
-              <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
-                Nossa Equipe
-              </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                <span className="relative inline-block pb-2">
-                  Professores
-                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
-                </span>
-              </h2>
-              <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
-                Conheça nosso time de especialistas dedicados à sua evolução
-              </p>
-            </div>
-
-            {/* Grid de professores */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {config.professores?.map((item, idx) => (
-                <ProfessorCardPremium
-                  key={idx}
-                  foto={item.foto}
-                  //nome={item.nome}
-                  texto={item.texto}
-                //especialidade={item.especialidade}
-                />
-              ))}
+          {/* Grid de professores */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {professoresItems.map((item, idx) => (
+              <ProfessorCardPremium
+                key={idx}
+                foto={item.foto}
+                nome={item.nome}
+                texto={item.texto}
+              />
+            ))}
             </div>
           </div>
         </section>
