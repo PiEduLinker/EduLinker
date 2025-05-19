@@ -1,16 +1,16 @@
 import React from 'react'
 import { SiteConfig } from '@/types/site'
-import Carousel from '@/app/components/common/Carousel'
-import Gallery from '@/app/components/common/Gallery'
-import AulaCard from '@/app/components/common/AulaCard'
-import ProfessorCard from '@/app/components/common/ProfessorCard'
-import DepoimentoCard from '@/app/components/common/DepoimentoCard'
-import ContatoSection from '@/app/components/common/ContatoSection'
+import Carousel from '@/app/components/common/gratuito/Carousel'
+import Gallery from '@/app/components/common/gratuito/Gallery'
+import AulaCard from '@/app/components/common/gratuito/AulaCard'
+import ProfessorCard from '@/app/components/common/gratuito/ProfessorCard'
+import DepoimentoCard from '@/app/components/common/gratuito/DepoimentoCard'
+import ContatoSection from '@/app/components/common/gratuito/ContatoSection'
 
 // Imagens padrão (você pode importar de seus assets ou usar URLs externas)
 const DEFAULT_LOGO = '/default-logo.png'
-const DEFAULT_CAROUSEL_IMAGE = '/templates/free/woman.jpg'
-const DEFAULT_GALLERY_IMAGE = '/templates/free/woman2.jpg'
+const DEFAULT_CAROUSEL_IMAGE = '/templates/free/banner1.jpg'
+const DEFAULT_GALLERY_IMAGE = '/templates/free/banner2.jpg'
 const DEFAULT_AULA_IMAGE = '/default-aula.jpg'
 const DEFAULT_PROFESSOR_IMAGE = '/default-professor.jpg'
 const DEFAULT_DEPOIMENTO_IMAGE = '/default-avatar.jpg'
@@ -115,7 +115,7 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
         </div>
       </header>
 
-      <main className="flex-grow space-y-16">
+      <main className="flex-grow space-y-12">
         {/* Carrossel de destaques - ocupa 100% da largura */}
         <section className="w-full">
           <Carousel
