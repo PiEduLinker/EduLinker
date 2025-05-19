@@ -6,7 +6,11 @@ import React, { use } from 'react';
 export default function AdminPanelPage() {
     return (
         <AdminLayout>
-        <div></div>
+        <div>
+            <h1>
+                Teste Teste
+            </h1>
+        </div>
         </AdminLayout>
     );
 }
