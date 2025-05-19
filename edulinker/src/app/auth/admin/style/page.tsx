@@ -143,11 +143,10 @@ export default function AdminStylePage() {
     <AdminLayout>
       <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 overflow-x-hidden">
         {/* Cabeçalho */}
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 my-10">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
             Designer de Identidade Visual
           </h1>
-          <p className="text-sm sm:text-base font-bold">Personalize cada detalhe do seu site</p>
           {error && (
             <div className="mt-3 p-2 sm:p-3 bg-red-50 text-red-600 rounded-lg inline-block mx-auto text-sm">
               {error}

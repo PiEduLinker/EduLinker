@@ -109,9 +109,15 @@ export default function AdminTeachersPage() {
     <AdminLayout>
       <div className="p-4 sm:p-8 max-w-4xl mx-auto">
         {/* Cabeçalho */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">Gerenciar Professores</h1>
-          {error && <p className="text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-lg inline-block">{error}</p>}
+        <div className="text-center space-y-2 my-10">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+            Cadastro de Professores
+          </h1>
+          {error && (
+            <div className="mt-3 p-2 sm:p-3 bg-red-50 text-red-600 rounded-lg inline-block mx-auto text-sm">
+              {error}
+            </div>
+          )}
         </div>
 
         {/* Lista de Professores */}
