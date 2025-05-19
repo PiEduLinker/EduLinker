@@ -1,17 +1,17 @@
-import React from 'react';
-import { User, Award, BookOpen } from 'lucide-react';
+import React from 'react'
+import { User, BookOpen } from 'lucide-react'
 
-export default function ProfessorCardPremium({ 
-  foto, 
-  nome, 
-  texto, 
-  especialidade 
-}: { 
-  foto?: string; 
-  nome?: string; 
-  texto?: string;
-  especialidade?: string;
-}) {
+interface ProfessorCardPremiumProps {
+  foto?: string
+  nome?: string
+  texto?: string
+}
+
+export default function ProfessorCardPremium({
+  foto,
+  nome,
+  texto,
+}: ProfessorCardPremiumProps) {
   return (
     <div className="group relative">
       {/* Efeito de fundo */}
@@ -38,15 +38,9 @@ export default function ProfessorCardPremium({
           </div>
         </div>
         
-        {/* Nome e especialidade */}
+        {/* Nome */}
         <div className="mb-4">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{nome || 'Professor'}</h3>
-          {especialidade && (
-            <div className="flex items-center justify-center text-pink-500 text-sm font-medium">
-              <Award className="w-4 h-4 mr-1" />
-              <span>{especialidade}</span>
-            </div>
-          )}
         </div>
         
         {/* Descrição */}
@@ -60,5 +54,5 @@ export default function ProfessorCardPremium({
         </div>
       </div>
     </div>
-  );
+  )
 }
