@@ -252,7 +252,7 @@ export default function AdminStylePage() {
 
                 {logoPreview && (
                   <div className="flex flex-col items-center">
-                    <div className="relative">
+                    <div>
                       <img
                         src={logoPreview}
                         alt="Preview do logo"
