@@ -211,8 +211,8 @@ export default function Premium({ config }: { config: SiteConfig }) {
                 <div className="absolute rounded-xl opacity-75 blur-lg group-hover:opacity-100 transition-all duration-500"></div>
                 <div className="relative overflow-hidden rounded-xl shadow-2xl">
                   <img
-                    src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1172&q=80"
-                    alt="Nossa equipe em ação"
+                    src={config.fotoSobre || 'https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1172&q=80'}
+                    alt="Sobre nós"
                     className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
