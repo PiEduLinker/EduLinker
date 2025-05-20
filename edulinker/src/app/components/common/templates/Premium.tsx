@@ -242,16 +242,26 @@ export default function Premium({ config }: { config: SiteConfig }) {
 
                 </div>
 
-                {/* Destaques */}
+                {/* -- DESTAQUES DINÂMICOS -- */}
                 <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {[
-                    { number: '10+', label: 'Anos de experiência' },
-                    { number: '5.000+', label: 'Alunos formados' },
-                    { number: '98%', label: 'Satisfação' }
-                  ].map((item, index) => (
-                    <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-pink-500">
-                      <p className="text-2xl font-bold text-gray-900 dark:text-white">{item.number}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">{item.label}</p>
+                  {(config.destaques && config.destaques.length
+                    ? config.destaques
+                    : [
+                      { number: '10+', label: 'Anos de experiência' },
+                      { number: '5.000+', label: 'Alunos formados' },
+                      { number: '98%', label: 'Satisfação' },
+                    ]
+                  ).map((item, i) => (
+                    <div
+                      key={i}
+                      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-pink-500"
+                    >
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {item.number}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        {item.label}
+                      </p>
                     </div>
                   ))}
                 </div>

@@ -2,6 +2,7 @@ export interface SiteConfig {
     titulo:       string
     descricao:    string
     fotoSobre?:   string
+    destaques?:   Array<{ number: string; label?: string }>
     corFundo:     string
     corTexto:     string
     fonte:        string
@@ -13,3 +14,6 @@ export interface SiteConfig {
     depoimentos?: Array<{ foto: string; nome: string; texto: string }>
     contato?:     { texto: string; imagem: string }
   }
+
+
+  
