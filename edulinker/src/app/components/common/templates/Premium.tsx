@@ -52,7 +52,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
     geist: 'font-geist',
     'geist-mono': 'font-geist-mono',
     roboto: 'font-roboto',
-    Poppins: 'font-poppins',
+    poppins: 'font-poppins',
   }[config.fonte || 'montserrat']
 
   return (
