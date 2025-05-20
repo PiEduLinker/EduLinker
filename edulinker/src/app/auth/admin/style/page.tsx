@@ -236,7 +236,7 @@ export default function AdminStylePage() {
               <div className="space-y-3">
                 <label className="flex flex-col items-center justify-center w-full h-24 sm:h-28 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition p-4">
                   <div className="flex flex-col items-center justify-center">
-                    <Upload className="w-6 h-6 sm:w-8 sm:h-8 mb-2 text-gray-400" />
+                    <Upload className="w-6 h-6 sm:w-8 sm:h-8 mb-2 text-white" />
                     <p className="mb-1 text-xs sm:text-sm text-white text-center">
                       <span className="font-medium">Clique para enviar</span> ou arraste
                     </p>
