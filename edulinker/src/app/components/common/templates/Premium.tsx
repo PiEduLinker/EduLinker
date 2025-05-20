@@ -18,28 +18,26 @@ const DEFAULT_PROFESSOR_IMAGE = '/default-professor.jpg'
 const DEFAULT_DEPOIMENTO_IMAGE = '/default-avatar.jpg'
 const DEFAULT_CONTATO_IMAGE = '/default-contato.jpg'
 
-
 export default function Premium({ config }: { config: SiteConfig }) {
 
-  const bgFrom = config.corFundo
-  const bgTo = '#ffffff'
-  const fg = config.corTexto
+  const fg = config.corTexto;
+  const bg = config.corFundo;
   const [menuOpen, setMenuOpen] = useState(false);
 
-    // Mapeia os professores (sem especialidade)
+  // Mapeia os professores (sem especialidade)
   const professoresItems = config.professores?.length
     ? config.professores.map(prof => ({
-        nome: prof.nome,
-        texto: prof.descricao,
-        foto: prof.imagem || DEFAULT_PROFESSOR_IMAGE,
-      }))
+      nome: prof.nome,
+      texto: prof.descricao,
+      foto: prof.imagem || DEFAULT_PROFESSOR_IMAGE,
+    }))
     : Array(4).fill({
-        nome: 'Professor Experiente',
-        texto: 'Especialista com anos de experiência em transformar vidas.',
-        foto: DEFAULT_PROFESSOR_IMAGE,
-      })
+      nome: 'Professor Experiente',
+      texto: 'Especialista com anos de experiência em transformar vidas.',
+      foto: DEFAULT_PROFESSOR_IMAGE,
+    })
 
- //fontes
+  //fontes
   const fontClass = {
     montserrat: 'font-montserrat',
     geist: 'font-geist',
@@ -51,10 +49,10 @@ export default function Premium({ config }: { config: SiteConfig }) {
   return (
     <div
       style={{
-        background: `linear-gradient(90deg, ${bgFrom}, ${bgTo})`,
+        background: bg,
         color: fg,
       }}
-      className={`min-h-screen flex flex-col ${fontClass}`} 
+      className={`min-h-screen flex flex-col ${fontClass}`}
     >
       {/* Cabeçalho */}
       <header id='home' className={`bg-gradient-to-r from-gray-900 to-black text-white shadow-lg`}>
@@ -205,16 +203,12 @@ export default function Premium({ config }: { config: SiteConfig }) {
 
         {/* Sobre */}
         <section id='sobre-nos' className="relative py-20 overflow-hidden">
-          {/* Efeito de fundo decorativo */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-5">
-            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-pink-500 to-purple-600"></div>
-          </div>
 
           <div className="container mx-auto px-4 lg:px-8">
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
               {/* Imagem com efeito e moldura */}
               <div className="relative w-full lg:w-1/2 group">
-                <div className="absolute -inset-2 bg-gradient-to-tr from-pink-400 to-purple-500 rounded-xl opacity-75 blur-lg group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="absolute rounded-xl opacity-75 blur-lg group-hover:opacity-100 transition-all duration-500"></div>
                 <div className="relative overflow-hidden rounded-xl shadow-2xl">
                   <img
                     src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1172&q=80"
@@ -229,10 +223,10 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <div className="w-full lg:w-1/2">
                 {/* Título com efeito */}
                 <div className="mb-2">
-                  <span className="inline-block text-lg font-semibold text-pink-500 mb-3 uppercase tracking-wider">
+                  <span className="inline-block text-lg font-semibold mb-3 uppercase tracking-wider">
                     Quem somos
                   </span>
-                  <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 relative">
+                  <h2 className="text-4xl md:text-5xl font-bold mb-6 relative">
                     <span className="relative inline-block">
                       Sobre Nós
                       <span className="absolute bottom-0 left-0 w-1/3 h-1 from-pink-500"></span>
@@ -244,7 +238,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
                 <div className="prose prose-lg space-y-4">
                   <p>
                     {config.descricao ?? "Sua Descrição vem aqui"}
-
                   </p>
 
                 </div>
@@ -262,6 +255,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
                     </div>
                   ))}
                 </div>
+
               </div>
             </div>
           </div>
@@ -338,40 +332,40 @@ export default function Premium({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Professores */}
-      <section id="professores" className="relative py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
-        {/* Elementos decorativos de fundo */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-20 left-1/4 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-20"></div>
-          <div className="absolute bottom-10 right-1/4 w-80 h-80 rounded-full bg-purple-500 filter blur-3xl opacity-15"></div>
-        </div>
-
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          {/* Cabeçalho elegante */}
-          <div className="text-center mb-16">
-            <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
-              Nossa Equipe
-            </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              <span className="relative inline-block pb-2">
-                Professores
-                <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
-              </span>
-            </h2>
-            <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
-              Conheça nosso time de especialistas dedicados à sua evolução
-            </p>
+        <section id="professores" className="relative py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
+          {/* Elementos decorativos de fundo */}
+          <div className="absolute top-0 left-0 w-full h-full opacity-10">
+            <div className="absolute top-20 left-1/4 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-20"></div>
+            <div className="absolute bottom-10 right-1/4 w-80 h-80 rounded-full bg-purple-500 filter blur-3xl opacity-15"></div>
           </div>
 
-          {/* Grid de professores */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {professoresItems.map((item, idx) => (
-              <ProfessorCardPremium
-                key={idx}
-                foto={item.foto}
-                nome={item.nome}
-                texto={item.texto}
-              />
-            ))}
+          <div className="container mx-auto px-4 lg:px-8 relative z-10">
+            {/* Cabeçalho elegante */}
+            <div className="text-center mb-16">
+              <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
+                Nossa Equipe
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                <span className="relative inline-block pb-2">
+                  Professores
+                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
+                </span>
+              </h2>
+              <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+                Conheça nosso time de especialistas dedicados à sua evolução
+              </p>
+            </div>
+
+            {/* Grid de professores */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {professoresItems.map((item, idx) => (
+                <ProfessorCardPremium
+                  key={idx}
+                  foto={item.foto}
+                  nome={item.nome}
+                  texto={item.texto}
+                />
+              ))}
             </div>
           </div>
         </section>
