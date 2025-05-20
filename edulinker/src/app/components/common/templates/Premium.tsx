@@ -25,6 +25,14 @@ export default function Premium({ config }: { config: SiteConfig }) {
   const fg = config.corTexto
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const slides = config.carrossel && config.carrossel.length > 0
+  ? config.carrossel
+  : [
+      { imagem: DEFAULT_CAROUSEL_IMAGE },
+      { imagem: DEFAULT_CAROUSEL_IMAGE }
+    ]
+
+
   // Mapeia os professores (sem especialidade)
   const professoresItems = config.professores?.length
     ? config.professores.map(prof => ({
@@ -185,21 +193,15 @@ export default function Premium({ config }: { config: SiteConfig }) {
 
       {/* Conteúdo principal */}
       <main className="flex-grow space-y-12">
-        {/* Carrossel */}
-        <section className="w-full">
-          <Carousel
-            items={[
-              { imagem: "/slide1.jpg", link: "/promo1", alt: "Promoção 1" },
-              { imagem: "/slide2.jpg", link: "/promo2", alt: "Promoção 2" }
-            ]}
-            autoPlay={true}
-            interval={6000}
-            fallbackImages={[
-              '/templates/free/banner1.jpg',
-              '/templates/free/banner2.jpg'
-            ]}
-          />
-        </section>
+       {/* Carrossel */}
+      <section className="w-full">
+        <Carousel
+          items={slides}
+          autoPlay
+          interval={6000}
+        />
+      </section>
+
 
 
         {/* Sobre */}
