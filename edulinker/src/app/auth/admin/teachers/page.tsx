@@ -214,7 +214,7 @@ export default function AdminTeachersPage() {
               {saving ? (
                 <Loader2 size={18} className="animate-spin" />
               ) : (
-                <Save size={18} />
+                <Save size={18} /> 
               )}
               {saving ? 'Salvando...' : 'Salvar professores'}
             </button>

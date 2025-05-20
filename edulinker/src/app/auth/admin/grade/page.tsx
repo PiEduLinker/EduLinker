@@ -3,7 +3,7 @@
 import AdminLayout from '@/components/Layouts/AdminLayout';
 import React, { use } from 'react';
 
-export default function AdminPanelPage() {
+export default function AdminGradePage() {
     return (
         <AdminLayout>
         <div>
