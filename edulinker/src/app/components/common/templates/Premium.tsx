@@ -243,7 +243,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
                 {/* Texto */}
                 <div className="prose prose-lg space-y-4">
                   <p>
-                    {config.sobre ?? "Sua Descrição vem aqui"}
+                    {config.descricao ?? "Sua Descrição vem aqui"}
 
                   </p>
 
