@@ -3,10 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
     "@fontsource/montserrat": "^5.2.5",
@@ -14,6 +13,7 @@
     "bcrypt": "^5.1.1",
     "dotenv": "^16.5.0",
     "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.501.0",
     "mongoose": "^8.13.2",
     "next": "15.2.4",

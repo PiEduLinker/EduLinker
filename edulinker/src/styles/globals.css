@@ -20,8 +20,45 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+.font-montserrat {
+  font-family: var(--font-montserrat);
+}
+.font-geist {
+  font-family: var(--font-geist-sans);
+}
+.font-geist-mono {
+  font-family: var(--font-geist-mono);
+}
+.font-roboto {
+  font-family: var(--font-roboto);
+}
+
+.font-poppins {
+  font-family: var(--font-poppins);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-montserrat), Arial, Helvetica, sans-serif;
+}
+
+/* No seu arquivo global.css */
+.drawer-enter {
+  transform: translateX(-100%);
+}
+.drawer-enter-active {
+  transform: translateX(0);
+  transition: transform 300ms ease-in-out;
+}
+.drawer-exit {
+  transform: translateX(0);
+}
+.drawer-exit-active {
+  transform: translateX(-100%);
+  transition: transform 300ms ease-in-out;
 }
