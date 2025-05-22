@@ -20,9 +20,8 @@ const DEFAULT_CONTATO_IMAGE = '/default-contato.jpg'
 
 export default function Premium({ config }: { config: SiteConfig }) {
 
-  const bgFrom = config.corFundo
-  const bgTo = '#ffffff'
-  const fg = config.corTexto
+  const fg = config.corTexto;
+  const bg = config.corFundo;
   const [menuOpen, setMenuOpen] = useState(false);
 
   const slides = config.carrossel && config.carrossel.length > 0
@@ -58,7 +57,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
   return (
     <div
       style={{
-        background: `linear-gradient(90deg, ${bgFrom}, ${bgTo})`,
+        background: bg,
         color: fg,
       }}
       className={`min-h-screen flex flex-col ${fontClass}`}
@@ -206,16 +205,12 @@ export default function Premium({ config }: { config: SiteConfig }) {
 
         {/* Sobre */}
         <section id='sobre-nos' className="relative py-20 overflow-hidden">
-          {/* Efeito de fundo decorativo */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-5">
-            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-pink-500 to-purple-600"></div>
-          </div>
 
           <div className="container mx-auto px-4 lg:px-8">
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
               {/* Imagem com efeito e moldura */}
               <div className="relative w-full lg:w-1/2 group">
-                <div className="absolute -inset-2 bg-gradient-to-tr from-pink-400 to-purple-500 rounded-xl opacity-75 blur-lg group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="absolute rounded-xl opacity-75 blur-lg group-hover:opacity-100 transition-all duration-500"></div>
                 <div className="relative overflow-hidden rounded-xl shadow-2xl">
                   <img
                     src={config.fotoSobre || 'https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1172&q=80'}
@@ -230,10 +225,10 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <div className="w-full lg:w-1/2">
                 {/* Título com efeito */}
                 <div className="mb-2">
-                  <span className="inline-block text-lg font-semibold text-pink-500 mb-3 uppercase tracking-wider">
+                  <span className="inline-block text-lg font-semibold mb-3 uppercase tracking-wider">
                     Quem somos
                   </span>
-                  <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 relative">
+                  <h2 className="text-4xl md:text-5xl font-bold mb-6 relative">
                     <span className="relative inline-block">
                       Sobre Nós
                       <span className="absolute bottom-0 left-0 w-1/3 h-1 from-pink-500"></span>
@@ -245,7 +240,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
                 <div className="prose prose-lg space-y-4">
                   <p>
                     {config.descricao ?? "Sua Descrição vem aqui"}
-
                   </p>
 
                 </div>
@@ -273,6 +267,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
                     </div>
                   ))}
                 </div>
+
               </div>
             </div>
           </div>

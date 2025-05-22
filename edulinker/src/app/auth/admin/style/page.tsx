@@ -143,11 +143,10 @@ export default function AdminStylePage() {
     <AdminLayout>
       <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 overflow-x-hidden">
         {/* Cabeçalho */}
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 my-10">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
             Designer de Identidade Visual
           </h1>
-          <p className="text-sm sm:text-base font-bold">Personalize cada detalhe do seu site</p>
           {error && (
             <div className="mt-3 p-2 sm:p-3 bg-red-50 text-red-600 rounded-lg inline-block mx-auto text-sm">
               {error}
@@ -237,11 +236,11 @@ export default function AdminStylePage() {
               <div className="space-y-3">
                 <label className="flex flex-col items-center justify-center w-full h-24 sm:h-28 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition p-4">
                   <div className="flex flex-col items-center justify-center">
-                    <Upload className="w-6 h-6 sm:w-8 sm:h-8 mb-2 text-gray-400" />
+                    <Upload className="w-6 h-6 sm:w-8 sm:h-8 mb-2 text-white" />
                     <p className="mb-1 text-xs sm:text-sm text-white text-center">
                       <span className="font-medium">Clique para enviar</span> ou arraste
                     </p>
-                    <p className="text-[0.65rem] sm:text-xs text-white">PNG, JPG ou SVG (Máx. 5MB)</p>
+                    <p className="text-[0.65rem] sm:text-xs text-white">PNG, JPG ou SVG</p>
                   </div>
                   <input
                     type="file"
@@ -253,7 +252,7 @@ export default function AdminStylePage() {
 
                 {logoPreview && (
                   <div className="flex flex-col items-center">
-                    <div className="relative">
+                    <div>
                       <img
                         src={logoPreview}
                         alt="Preview do logo"

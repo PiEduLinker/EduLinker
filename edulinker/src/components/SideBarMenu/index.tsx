@@ -31,11 +31,13 @@ export default function SideBarMenu({ onClose }: Props) {
   const menuItems = [
     { label: "Painel inicial", path: "/auth/admin" },
     { label: "Estilo do site", path: "/auth/admin/style" },
-    { label: "Professores", path: "/auth/admin/teachers" },
-    { label: "Grade de aulas", path: "/auth/admin/grade" },
-    { label: "Sobre a escola", path: "/auth/admin/about" },
-    { label: "Depoimentos", path: "/auth/admin/testimonials" },
     { label: "Banners rotativos", path: "/auth/admin/banners" },
+    { label: "Sobre a escola", path: "/auth/admin/about" },
+    { label: "Galeria de Fotos", path: "/auth/admin/gallery" },
+    { label: "Grade de aulas", path: "/auth/admin/grade" },
+    { label: "Professores", path: "/auth/admin/teachers" },
+    { label: "Depoimentos", path: "/auth/admin/testimonials" },
+    { label: "Contato", path: "/auth/admin/contact" },
     { label: "Relatórios (pro)", path: "/auth/admin/reports" },
   ];
 
@@ -74,12 +76,12 @@ export default function SideBarMenu({ onClose }: Props) {
             );
           })}
           <li className="px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
-              onClick={() => {
-                handleLogout(); // Elimina a chave de sessão
-                onClose?.(); // Fecha o menu se estiver em modo mobile
-              }}>
+            onClick={() => {
+              handleLogout(); // Elimina a chave de sessão
+              onClose?.(); // Fecha o menu se estiver em modo mobile
+            }}>
             Sair
-            </li>
+          </li>
         </ul>
       </nav>
 
