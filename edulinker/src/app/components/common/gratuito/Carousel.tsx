@@ -94,8 +94,9 @@ export default function Carousel({
         {items.map((item, idx) => {
            const errCount = imageErrors[idx] || 0
           const src = errCount === 0
-            ? item.imagem
-            : (fallbackImages[errCount - 1] ?? '/default-carousel.jpg')
+  ? item.imagem
+  : (fallbackImages[errCount - 1] ?? '/Logo/EduLinker.png')
+
           return (
              <div
                  key={idx}
@@ -116,6 +117,7 @@ export default function Carousel({
                 className="object-cover"
                 onError={handleImageError(idx)}
               />
+              console.log('Imagem carregada:', src)
             </div>
           )
         })}
