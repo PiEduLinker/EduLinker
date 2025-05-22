@@ -2,21 +2,35 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
-import { Edit2, Save, Mail, Phone, MapPin, FacebookIcon, Instagram, Youtube } from 'lucide-react'
+import {
+  Edit2,
+  Save,
+  Mail,
+  Phone,
+  MessageCircle,
+  Clock,
+  MapPin,
+  FacebookIcon,
+  Instagram,
+  Youtube
+} from 'lucide-react'
 
 type ContactConfig = {
+  descricaoBreve?: string
+  horarioSemana?: string
+  horarioSabado?: string
   email?: string
   telefone?: string
+  whatsapp?: string
   endereco?: string
   cidade?: string
-  descricaoBreve?: string
+  mapEmbedUrl?: string
   socialMedia?: {
     facebook?: string
     instagram?: string
     youtube?: string
   }
 }
-
 
 export default function AdminContactPage() {
   const [siteId, setSiteId] = useState<string | null>(null)
@@ -26,8 +40,9 @@ export default function AdminContactPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  // Carrega configurações atuais
   useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       try {
         const st = await fetch('/api/onboarding/status', { credentials: 'include' })
         const { siteId: id } = await st.json()
@@ -46,10 +61,11 @@ export default function AdminContactPage() {
     })()
   }, [])
 
+  // Atualiza um campo simples ou de socialMedia
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     if (name.startsWith('socialMedia.')) {
-      const key = name.replace('socialMedia.', '')
+      const key = name.split('.')[1]
       setConfig(c => ({
         ...c,
         socialMedia: {
@@ -62,32 +78,41 @@ export default function AdminContactPage() {
     }
   }, [])
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!siteId) return
-    setSaving(true)
-    setError('')
-    try {
-      const res = await fetch(`/api/site/${siteId}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ configuracoes: { contato: config } })
-      })
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro || 'Falha ao salvar')
+  // Envia atualização ao backend
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (!siteId) return
+      setSaving(true)
+      setError('')
+
+      try {
+        const res = await fetch(`/api/site/${siteId}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ configuracoes: { contato: config } })
+        })
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}))
+          throw new Error(body.erro || 'Falha ao salvar')
+        }
+        setIsEditing(false)
+      } catch (err: any) {
+        setError(err.message)
+      } finally {
+        setSaving(false)
       }
-      setIsEditing(false)
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setSaving(false)
-    }
-  }, [siteId, config])
+    },
+    [siteId, config]
+  )
 
   if (loading) {
-    return <AdminLayout><p className="p-6 text-center">Carregando…</p></AdminLayout>
+    return (
+      <AdminLayout>
+        <p className="p-6 text-center">Carregando…</p>
+      </AdminLayout>
+    )
   }
 
   return (
@@ -95,73 +120,127 @@ export default function AdminContactPage() {
       <div className="max-w-3xl mx-auto space-y-6 sm:p-6">
         {error && <p className="text-red-600">{error}</p>}
 
+        {/* Título e botões de ação */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Informações de Contato</h1>
-          {!isEditing
-            ? <button onClick={() => setIsEditing(true)} className="btn-primary">
+          <h1 className="text-2xl font-bold">Configuração da Seção Contato</h1>
+          {!isEditing ? (
+            <button onClick={() => setIsEditing(true)} className="btn-primary">
               <Edit2 className="mr-1" /> Editar
             </button>
-            : <button onClick={() => setIsEditing(false)} className="btn-secondary">
+          ) : (
+            <button onClick={() => setIsEditing(false)} className="btn-secondary">
               Cancelar
             </button>
-          }
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-xl p-6 shadow">
           {/* Descrição Breve */}
           <div className="flex items-center gap-4">
             <Edit2 className="w-6 h-6 text-yellow-500" />
-            {isEditing
-              ? <input
+            {isEditing ? (
+              <input
                 name="descricaoBreve"
                 type="text"
                 value={config.descricaoBreve || ''}
                 onChange={handleChange}
                 className="flex-1 border rounded p-2"
-                placeholder="Descrição breve do site"
+                placeholder="Texto introdutório da seção Contato"
               />
-              : <p>{config.descricaoBreve || '—'}</p>
-            }
+            ) : (
+              <p>{config.descricaoBreve || 'Bem-vindo à nossa seção de contato. Fale conosco!'}</p>
+            )}
           </div>
 
+          {/* Horários */}
+          <div className="flex items-center gap-4">
+            <Clock className="w-6 h-6 text-pink-500" />
+            {isEditing ? (
+              <input
+                name="horarioSemana"
+                type="text"
+                value={config.horarioSemana || ''}
+                onChange={handleChange}
+                className="flex-1 border rounded p-2"
+                placeholder="Seg a Sex: 09h - 12h | 13h - 21h"
+              />
+            ) : (
+              <p>{config.horarioSemana || 'Seg a Sex: 09h - 12h | 13h - 21h'}</p>
+            )}
+          </div>
 
-          {/* Email */}
+          <div className="flex items-center gap-4">
+            <Clock className="w-6 h-6 text-pink-500" />
+            {isEditing ? (
+              <input
+                name="horarioSabado"
+                type="text"
+                value={config.horarioSabado || ''}
+                onChange={handleChange}
+                className="flex-1 border rounded p-2"
+                placeholder="Sábado: 09h - 14h"
+              />
+            ) : (
+              <p>{config.horarioSabado || 'Sábado: 09h - 14h'}</p>
+            )}
+          </div>
+
+          {/* E-mail */}
           <div className="flex items-center gap-4">
             <Mail className="w-6 h-6 text-blue-500" />
-            {isEditing
-              ? <input
+            {isEditing ? (
+              <input
                 name="email"
                 type="email"
                 value={config.email || ''}
                 onChange={handleChange}
                 className="flex-1 border rounded p-2"
-                placeholder="seu@exemplo.com"
+                placeholder="contato@seudominio.com"
               />
-              : <p>{config.email || '—'}</p>
-            }
+            ) : (
+              <p>{config.email || 'contato@seudominio.com'}</p>
+            )}
           </div>
 
           {/* Telefone */}
           <div className="flex items-center gap-4">
             <Phone className="w-6 h-6 text-green-500" />
-            {isEditing
-              ? <input
+            {isEditing ? (
+              <input
                 name="telefone"
                 type="tel"
                 value={config.telefone || ''}
                 onChange={handleChange}
                 className="flex-1 border rounded p-2"
-                placeholder="+55 (11) 9XXXX-XXXX"
+                placeholder="(11) 99999-0000"
               />
-              : <p>{config.telefone || '—'}</p>
-            }
+            ) : (
+              <p>{config.telefone || '(11) 99999-0000'}</p>
+            )}
           </div>
 
-          {/* Endereço */}
+          {/* WhatsApp */}
+          <div className="flex items-center gap-4">
+            <MessageCircle className="w-6 h-6 text-green-500" />
+            {isEditing ? (
+              <input
+                name="whatsapp"
+                type="tel"
+                value={config.whatsapp || ''}
+                onChange={handleChange}
+                className="flex-1 border rounded p-2"
+                placeholder="WhatsApp: (11) 98888-1111"
+              />
+            ) : (
+              <p>{config.whatsapp || '(11) 98888-1111'}</p>
+            )}
+          </div>
+
+          {/* Endereço e Cidade */}
           <div className="flex items-center gap-4">
             <MapPin className="w-6 h-6 text-purple-500" />
-            {isEditing
-              ? <input
+            {isEditing ? (
+              <input
                 name="endereco"
                 type="text"
                 value={config.endereco || ''}
@@ -169,24 +248,42 @@ export default function AdminContactPage() {
                 className="flex-1 border rounded p-2"
                 placeholder="Rua, número"
               />
-              : <p>{config.endereco || '—'}</p>
-            }
+            ) : (
+              <p>{config.endereco || 'Rua Exemplo, 123'}</p>
+            )}
           </div>
 
-          {/* Cidade */}
           <div className="flex items-center gap-4">
             <MapPin className="w-6 h-6 text-purple-500" />
-            {isEditing
-              ? <input
+            {isEditing ? (
+              <input
                 name="cidade"
                 type="text"
                 value={config.cidade || ''}
                 onChange={handleChange}
                 className="flex-1 border rounded p-2"
-                placeholder="Cidade - UF"
+                placeholder="Cidade - UF, CEP"
               />
-              : <p>{config.cidade || '—'}</p>
-            }
+            ) : (
+              <p>{config.cidade || 'São Paulo - SP, 01000-000'}</p>
+            )}
+          </div>
+
+          {/* Mapa embutido */}
+          <div className="flex items-center gap-4">
+            <MapPin className="w-6 h-6 text-gray-500" />
+            {isEditing ? (
+              <input
+                name="mapEmbedUrl"
+                type="url"
+                value={config.mapEmbedUrl || ''}
+                onChange={handleChange}
+                className="flex-1 border rounded p-2"
+                placeholder="URL embed do Google Maps"
+              />
+            ) : (
+              <p className="break-all">{config.mapEmbedUrl || 'https://maps.google.com/…'}</p>
+            )}
           </div>
 
           {/* Redes Sociais */}
@@ -254,6 +351,7 @@ export default function AdminContactPage() {
             </div>
           </div>
 
+          {/* Botão salvar */}
           {isEditing && (
             <div className="text-right">
               <button type="submit" disabled={saving} className="btn-primary">

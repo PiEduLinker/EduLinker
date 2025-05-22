@@ -8,7 +8,7 @@ import AulaCardPremium from '@/app/components/common/premium/AulaCardPremium'
 import GalleryPremium from '@/app/components/common/premium/GalleryPremium'
 import { SiteConfig } from '@/types/site'
 import { useState } from "react";
-import { FacebookIcon, Instagram, Youtube } from 'lucide-react';
+import { Clock, FacebookIcon, Instagram, Mail, Phone, Youtube } from 'lucide-react';
 
 // Imagens padrão (você pode importar de seus assets ou usar URLs externas)
 const DEFAULT_LOGO = '/default-logo.png'
@@ -54,6 +54,20 @@ export default function Premium({ config }: { config: SiteConfig }) {
     roboto: 'font-roboto',
     poppins: 'font-poppins',
   }[config.fonte || 'montserrat']
+
+  const contato = config.contato || {}
+  const {
+    descricaoBreve,
+    horarioSemana,
+    horarioSabado,
+    email,
+    telefone,
+    whatsapp,
+    endereco,
+    cidade,
+    mapEmbedUrl,
+    socialMedia = {}
+  } = contato
 
   return (
     <div
@@ -407,15 +421,18 @@ export default function Premium({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Contato */}
-        <section id='contato' className="relative py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden">
-          {/* Elementos decorativos de fundo */}
+        <section
+          id="contato"
+          className="relative py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden"
+        >
+          {/* Elementos decorativos */}
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
-            <div className="absolute top-20 -left-20 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-30"></div>
-            <div className="absolute bottom-10 -right-20 w-80 h-80 rounded-full bg-purple-500 filter blur-3xl opacity-20"></div>
+            <div className="absolute top-20 -left-20 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-30" />
+            <div className="absolute bottom-10 -right-20 w-80 h-80 rounded-full bg-purple-500 filter blur-3xl opacity-20" />
           </div>
 
           <div className="container mx-auto px-4 lg:px-8 relative z-10">
-            {/* Cabeçalho elegante */}
+            {/* Cabeçalho */}
             <div className="text-center mb-16">
               <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
                 Conecte-se conosco
@@ -423,77 +440,96 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
                 <span className="relative inline-block pb-2">
                   Contato
-                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
+                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-pink-500 to-purple-600" />
                 </span>
               </h2>
               <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
-                Estamos à disposição para esclarecer dúvidas, receber sugestões ou agendar sua visita.
+                {descricaoBreve ??
+                  'Estamos à disposição para esclarecer dúvidas, receber sugestões ou agendar sua visita.'}
               </p>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-12 xl:gap-20 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
-              {/* Coluna de informações de contato */}
-              <div className="w-full lg:w-1/2 p-10 lg:p-12 xl:p-16">
-                <div className="space-y-8">
-                  {/* Bloco de horário */}
-                  <div className="flex items-start gap-5">
-                    <div className="flex-shrink-0 mt-1">
-                      <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-gray-700 flex items-center justify-center">
-                        <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">Horário de Funcionamento</h3>
-                      <p className="text-gray-600 dark:text-gray-300">Segunda à Sexta: 09h - 12h | 13h - 21h</p>
-                      <p className="text-gray-600 dark:text-gray-300">Sábado: 09h - 14h</p>
+              {/* Coluna de informações */}
+              <div className="w-full lg:w-1/2 p-10 lg:p-12 xl:p-16 space-y-8">
+                {/* Horários */}
+                <div className="flex items-start gap-5">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-gray-700 flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-pink-500" />
                     </div>
                   </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
+                      Horário de Funcionamento
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {horarioSemana ?? 'Segunda à Sexta: 09h - 12h | 13h - 21h'}
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {horarioSabado ?? 'Sábado: 09h - 14h'}
+                    </p>
+                  </div>
+                </div>
 
-                  {/* Bloco de e-mail */}
-                  <div className="flex items-start gap-5">
-                    <div className="flex-shrink-0 mt-1">
-                      <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-gray-700 flex items-center justify-center">
-                        <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">E-mail</h3>
-                      <p className="text-gray-600 dark:text-gray-300 break-all">contato@escoladeyoga.com.br</p>
+                {/* E-mail */}
+                <div className="flex items-start gap-5">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-gray-700 flex items-center justify-center">
+                      <Mail className="w-5 h-5 text-pink-500" />
                     </div>
                   </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
+                      E-mail
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 break-all">
+                      {email ?? 'contato@seudominio.com'}
+                    </p>
+                  </div>
+                </div>
 
-                  {/* Bloco de telefone */}
-                  <div className="flex items-start gap-5">
-                    <div className="flex-shrink-0 mt-1">
-                      <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-gray-700 flex items-center justify-center">
-                        <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                        </svg>
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">Telefone</h3>
-                      <p className="text-gray-600 dark:text-gray-300">(11) 99999-0000</p>
-                      <p className="text-gray-600 dark:text-gray-300">WhatsApp: (11) 98888-1111</p>
+                {/* Telefone + WhatsApp */}
+                <div className="flex items-start gap-5">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-gray-700 flex items-center justify-center">
+                      <Phone className="w-5 h-5 text-pink-500" />
                     </div>
                   </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
+                      Telefone
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {telefone ?? '(11) 99999-0000'}
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      WhatsApp: {whatsapp ?? '(11) 98888-1111'}
+                    </p>
+                  </div>
+                </div>
 
-                  {/* Botão premium */}
-                  <div className="pt-4">
-                    <a
-                      href="#"
-                      className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-semibold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                {/* Botão fale conosco (exemplo, link para WhatsApp) */}
+                <div className="pt-4">
+                  <a
+                    href={whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, '')}` : '#'}
+                    className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-semibold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  >
+                    FALE CONOSCO
+                    <svg
+                      className="w-4 h-4 ml-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      FALE CONOSCO
-                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                      </svg>
-                    </a>
-                  </div>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      />
+                    </svg>
+                  </a>
                 </div>
               </div>
 
@@ -501,21 +537,24 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <div className="w-full lg:w-1/2 bg-gray-100 dark:bg-gray-700 p-1">
                 <div className="relative h-full min-h-[400px] lg:min-h-[500px]">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.197584455882!2d-46.65867598440738!3d-23.56134606735893!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce59c8da0aa315%3A0xd59f9431f2c9776a!2sAv.%20Paulista%2C%20S%C3%A3o%20Paulo%20-%20SP!5e0!3m2!1spt-BR!2sbr!4v1629840000000!5m2!1spt-BR!2sbr"
+                    src={mapEmbedUrl ?? 'https://maps.google.com/?q=Seu+Endereço'}
                     width="100%"
                     height="100%"
                     className="absolute inset-0"
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
-                    aria-hidden="false"
-                    tabIndex={0}
-                  ></iframe>
+                    title="Mapa de localização"
+                  />
 
                   {/* Endereço flutuante */}
                   <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 px-6 py-3 rounded-lg shadow-lg text-center">
-                    <p className="font-medium text-gray-800 dark:text-white">Rua Tananã, 105 - Jd. Mandala</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">São Paulo - SP, 04501-000</p>
+                    <p className="font-medium text-gray-800 dark:text-white">
+                      {endereco ?? 'Rua Exemplo, 123'}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      {cidade ?? 'São Paulo - SP, 01000-000'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -641,11 +680,11 @@ export default function Premium({ config }: { config: SiteConfig }) {
                     <Youtube className="w-6 h-6 text-pink-500" />
                   </a>
                 )}
-                 </div>
               </div>
             </div>
+          </div>
 
-         {/* Rodapé inferior */}
+          {/* Rodapé inferior */}
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left mb-4 md:mb-0">
               <p className="text-sm text-gray-400">
