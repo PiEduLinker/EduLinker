@@ -30,7 +30,7 @@ export interface SiteConfig {
     duracao: string
   }>
   professores?: Array<{ imagem: string; nome: string; descricao: string; }>
-  depoimentos?: Array<{ foto: string; nome: string; texto: string }>
+  depoimentos?: Array<{ foto: string; nome: string; texto: string, estrelas?: 1 | 2 | 3 | 4 | 5 }>
 }
 
 

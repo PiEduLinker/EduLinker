@@ -381,7 +381,10 @@ export default function Premium({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Depoimentos */}
-        <section id='depoimentos' className="relative py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden">
+        <section
+          id="depoimentos"
+          className="relative py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden"
+        >
           {/* Elementos decorativos de fundo */}
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
             <div className="absolute top-1/4 -left-20 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-20"></div>
@@ -405,15 +408,32 @@ export default function Premium({ config }: { config: SiteConfig }) {
               </p>
             </div>
 
-            {/* Grid de depoimentos */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {config.depoimentos?.map((item, idx) => (
+            {/* Grid de depoimentos (até 4) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8">
+              {(
+                config.depoimentos && config.depoimentos.length > 0
+                  ? config.depoimentos.slice(0, 4)
+                  : [
+                    {
+                      foto: '',
+                      nome: 'João Silva',
+                      texto: '“A experiência foi incrível e mudou minha forma de aprender.”',
+                      estrelas: 5,
+                    },
+                    {
+                      foto: '',
+                      nome: 'Maria Souza',
+                      texto: '“Conteúdo super didático e professores atenciosos!”',
+                      estrelas: 4,
+                    },
+                  ]
+              ).map((item, idx) => (
                 <DepoimentoCardPremium
                   key={idx}
                   foto={item.foto}
                   nome={item.nome}
                   texto={item.texto}
-                //role={item.role} // Adicione esta prop se disponível
+                  estrelas={item.estrelas}
                 />
               ))}
             </div>
