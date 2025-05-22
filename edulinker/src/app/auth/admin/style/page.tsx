@@ -240,7 +240,7 @@ export default function AdminStylePage() {
                     <p className="mb-1 text-xs sm:text-sm text-white text-center">
                       <span className="font-medium">Clique para enviar</span> ou arraste
                     </p>
-                    <p className="text-[0.65rem] sm:text-xs text-white">PNG, JPG ou SVG (Máx. 5MB)</p>
+                    <p className="text-[0.65rem] sm:text-xs text-white">PNG, JPG ou SVG</p>
                   </div>
                   <input
                     type="file"

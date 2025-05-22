@@ -150,7 +150,7 @@ export default function AdminAboutPage() {
               <p className="mb-1 text-sm text-white text-center">
                 <span className="font-medium">Clique para enviar</span> ou arraste a imagem
               </p>
-              <p className="text-xs text-white">PNG, JPG (Máx. 5MB)</p>
+              <p className="text-xs text-white">PNG, JPG</p>
             </div>
             <input 
               type="file" 
