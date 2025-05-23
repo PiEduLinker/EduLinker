@@ -110,7 +110,7 @@ export default function AdminTeachersPage() {
       <div className="p-4 sm:p-8 max-w-4xl mx-auto">
         {/* Cabeçalho */}
         <div className="text-center space-y-2 my-10">
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl font-bold text-black">
             Cadastro de Professores
           </h1>
           {error && (
@@ -209,7 +209,7 @@ export default function AdminTeachersPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white py-2.5 px-6 rounded-lg transition-all shadow hover:shadow-md disabled:opacity-70 cursor-pointer"
+              className="flex items-center gap-2 text-white py-2.5 px-6 rounded-lg transition-all shadow hover:shadow-md disabled:opacity-70 cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg"
             >
               {saving ? (
                 <Loader2 size={18} className="animate-spin" />

@@ -127,10 +127,9 @@ export default function AdminAboutPage() {
       <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-8 mt-8">
         {/* Cabeçalho */}
         <div className="text-center">
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
-            Sobre Nós
+          <h1 className="text-2xl sm:text-3xl font-bold text-black">
+            Sobre a Escola
           </h1>
-          <p className="mt-2 font-bold">Personalize a seção "Quem Somos" do seu site</p>
           {error && (
             <div className="mt-4 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300 rounded-lg inline-block">
               {error}
@@ -254,7 +253,7 @@ export default function AdminAboutPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white py-3 px-8 rounded-lg hover:from-purple-700 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 cursor-pointer"
+            className="flex items-center gap-2 text-white py-3 px-8 rounded-lg transition-all shadow-lg hover:shadow-xl disabled:opacity-70 cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg"
           >
             {saving ? (
               <Loader2 className="animate-spin" size={18} />

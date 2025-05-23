@@ -120,8 +120,8 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
         <section className="w-full">
           <Carousel
             items={[
-              { imagem: "/slide1.jpg", link: "/promo1", alt: "Promoção 1" },
-              { imagem: "/slide2.jpg", link: "/promo2", alt: "Promoção 2" }
+              { imagem: "/slide1.jpg" },
+              { imagem: "/slide2.jpg" }
             ]}
             autoPlay={true}
             interval={6000}

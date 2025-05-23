@@ -144,7 +144,7 @@ export default function AdminStylePage() {
       <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 overflow-x-hidden">
         {/* Cabeçalho */}
         <div className="text-center space-y-2 my-10">
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl font-bold text-black">
             Designer de Identidade Visual
           </h1>
           {error && (
@@ -268,7 +268,7 @@ export default function AdminStylePage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="w-full mt-4 sm:mt-6 bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2.5 sm:py-3 rounded-lg hover:from-purple-700 hover:to-pink-600 transition-all shadow hover:shadow-md flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
+              className="w-full mt-4 sm:mt-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg text-white py-2.5 sm:py-3 rounded-lg transition-all shadow hover:shadow-md flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
             >
               {saving ? (
                 <Loader2 className="animate-spin w-4 h-4 sm:w-5 sm:h-5" />

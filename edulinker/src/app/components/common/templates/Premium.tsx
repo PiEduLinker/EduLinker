@@ -24,6 +24,14 @@ export default function Premium({ config }: { config: SiteConfig }) {
   const bg = config.corFundo;
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const slides = config.carrossel && config.carrossel.length > 0
+  ? config.carrossel
+  : [
+      { imagem: DEFAULT_CAROUSEL_IMAGE },
+      { imagem: DEFAULT_CAROUSEL_IMAGE }
+    ]
+
+
   // Mapeia os professores (sem especialidade)
   const professoresItems = config.professores?.length
     ? config.professores.map(prof => ({
@@ -43,7 +51,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
     geist: 'font-geist',
     'geist-mono': 'font-geist-mono',
     roboto: 'font-roboto',
-    Poppins: 'font-poppins',
+    poppins: 'font-poppins',
   }[config.fonte || 'montserrat']
 
   return (
@@ -184,21 +192,15 @@ export default function Premium({ config }: { config: SiteConfig }) {
 
       {/* Conteúdo principal */}
       <main className="flex-grow space-y-12">
-        {/* Carrossel */}
-        <section className="w-full">
-          <Carousel
-            items={[
-              { imagem: "/slide1.jpg", link: "/promo1", alt: "Promoção 1" },
-              { imagem: "/slide2.jpg", link: "/promo2", alt: "Promoção 2" }
-            ]}
-            autoPlay={true}
-            interval={6000}
-            fallbackImages={[
-              '/templates/free/banner1.jpg',
-              '/templates/free/banner2.jpg'
-            ]}
-          />
-        </section>
+       {/* Carrossel */}
+      <section className="w-full">
+        <Carousel
+          items={slides}
+          autoPlay
+          interval={6000}
+        />
+      </section>
+
 
 
         {/* Sobre */}
@@ -300,41 +302,24 @@ export default function Premium({ config }: { config: SiteConfig }) {
           </div>
         </section>
 
-        {/* Aulas */}
-        <section id='aulas' className="relative py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden">
-          {/* Elementos decorativos de fundo */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-10">
-            <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-20"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-purple-500 filter blur-3xl opacity-15"></div>
-          </div>
-
-          <div className="container mx-auto px-4 lg:px-8 relative z-10">
-            {/* Cabeçalho elegante */}
-            <div className="text-center mb-16">
-              <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
-                Nossa Metodologia
-              </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                <span className="relative inline-block pb-2">
-                  Aulas Premium
-                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
-                </span>
-              </h2>
-              <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
-                Descubra nossa variedade de aulas cuidadosamente elaboradas para sua evolução
-              </p>
-            </div>
-
-            {/* Grid de aulas */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {config.aulas?.map((item, idx) => (
+       {/* Aulas Premium */}
+        <section id="aulas" className="py-20 bg-white dark:bg-gray-900">
+          <div className="container mx-auto px-4 lg:px-8">
+            <h2 className="text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+              Aulas Premium
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {(config.aulas?.length
+                ? config.aulas
+                : []
+              ).map((item, idx) => (
                 <AulaCardPremium
                   key={idx}
                   foto={item.foto}
                   titulo={item.titulo}
-                //descricao={item.descricao}
-                //nivel={item.nivel}
-                //duracao={item.duracao} // Nova prop opcional
+                  descricao={item.descricao}
+                  nivel={item.nivel}
+                  duracao={item.duracao}
                 />
               ))}
             </div>

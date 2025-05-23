@@ -17,7 +17,7 @@ export default function AdminLayout({ children }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       {/* NavBar */}
       <NavBar
         onMenuClick={() => setIsMenuOpen(!isMenuOpen)} //Abre e fecha menu
