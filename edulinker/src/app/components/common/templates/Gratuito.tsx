@@ -136,22 +136,12 @@ export default function EscolaTemplate({ config }: { config: SiteConfig }) {
         {/* Hero Section - Static Image */}
         <section className="relative h-[500px] w-full">
           <Image
-            src="/templates/free/banner1.jpg" // Imagem original que você usava
-            alt="Banner principal"
+            src="/templates/free/banner1.jpg" // Mantenha o mesmo caminho da imagem
+            alt="Banner principal" // Alt text sem mencionar o texto removido
             fill
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-            <div className="text-center text-white px-4">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">
-                {config.titulo || "Nome da Escola"}
-              </h1>
-              <p className="text-xl md:text-2xl max-w-2xl mx-auto">
-                {config.descricao || "Descrição da escola"}
-              </p>
-            </div>
-          </div>
         </section>
         {/* Sobre Nós */}
         <section id="sobre" className="py-20 bg-white">
