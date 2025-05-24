@@ -6,13 +6,15 @@ export default function AulaCardPremium({
   titulo, 
   descricao, 
   nivel,
-  duracao
+  duracao,
+  contato
 }: { 
   foto?: string; 
   titulo?: string; 
   descricao?: string;
   nivel?: string;
   duracao?: string;
+  contato?: string;
 }) {
   return (
     <div className="group relative h-full">
@@ -66,10 +68,10 @@ export default function AulaCardPremium({
               </div>
             )}
             
-            <button className="flex items-center text-pink-500 hover:text-pink-600 dark:hover:text-pink-400 font-medium text-sm transition-colors duration-300">
+            <a href={contato ? `https://wa.me/${contato.replace(/\D/g, '')}` : '#'} className="flex items-center text-pink-500 hover:text-pink-600 dark:hover:text-pink-400 font-medium text-sm transition-colors duration-300">
               Saiba mais
               <ArrowRight className="w-4 h-4 ml-1" />
-            </button>
+            </a>
           </div>
         </div>
       </div>

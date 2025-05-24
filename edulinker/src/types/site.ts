@@ -1,5 +1,6 @@
 export interface SiteConfig {
   titulo: string
+  sobre: string
   descricao: string
   fotoSobre?: string
   corFundo: string

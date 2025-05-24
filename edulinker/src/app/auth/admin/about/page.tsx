@@ -27,7 +27,7 @@ export default function AdminAboutPage() {
 
   // Carrega dados iniciais
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       try {
         const st = await fetch('/api/onboarding/status', { credentials: 'include' })
         const { siteId: id } = await st.json()
@@ -151,20 +151,20 @@ export default function AdminAboutPage() {
               </p>
               <p className="text-xs text-white">PNG, JPG</p>
             </div>
-            <input 
-              type="file" 
-              accept="image/*" 
-              onChange={handleFileChange} 
-              className="hidden" 
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
             />
           </label>
           {preview && (
             <div className="mt-4 flex justify-center">
               <div className="relative group">
-                <img 
-                  src={preview} 
-                  className="w-48 h-auto rounded-lg shadow-md border-2 border-white dark:border-gray-700" 
-                  alt="Preview" 
+                <img
+                  src={preview}
+                  className="w-48 h-auto rounded-lg shadow-md border-2 border-white dark:border-gray-700"
+                  alt="Preview"
                 />
                 <button
                   onClick={() => {
@@ -195,58 +195,61 @@ export default function AdminAboutPage() {
           />
         </div>
 
+
         {/* Destaques editáveis */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
-            <Award className="w-5 h-5" />
-            Destaques
-          </h2>
-          
-          <div className="space-y-4">
-            {destaques.map((d, idx) => (
-              <div key={idx} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-                <div className="sm:col-span-3">
-                  <input
-                    type="text"
-                    value={d.number}
-                    onChange={e => handleDestaqueChange(idx, 'number', e.target.value)}
-                    placeholder="Número"
-                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-gray-300 text-white"
-                  />
+        {true && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+            <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
+              <Award className="w-5 h-5" />
+              Destaques
+            </h2>
+
+            <div className="space-y-4">
+              {destaques.map((d, idx) => (
+                <div key={idx} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                  <div className="sm:col-span-3">
+                    <input
+                      type="text"
+                      value={d.number}
+                      onChange={e => handleDestaqueChange(idx, 'number', e.target.value)}
+                      placeholder="Número"
+                      className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-gray-300 text-white"
+                    />
+                  </div>
+                  <div className="sm:col-span-8">
+                    <input
+                      type="text"
+                      value={d.label}
+                      onChange={e => handleDestaqueChange(idx, 'label', e.target.value)}
+                      placeholder="Ex: Anos de experiência"
+                      className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-gray-300 text-white"
+                    />
+                  </div>
+                  <div className="sm:col-span-1 flex justify-end">
+                    <button
+                      onClick={() => handleRemove(idx)}
+                      disabled={saving}
+                      className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </div>
-                <div className="sm:col-span-8">
-                  <input
-                    type="text"
-                    value={d.label}
-                    onChange={e => handleDestaqueChange(idx, 'label', e.target.value)}
-                    placeholder="Ex: Anos de experiência"
-                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-gray-300 text-white"
-                  />
-                </div>
-                <div className="sm:col-span-1 flex justify-end">
-                  <button
-                    onClick={() => handleRemove(idx)}
-                    disabled={saving}
-                    className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </div>
-            ))}
-            
-            {destaques.length < 3 && (
-              <button
-                onClick={handleAdd}
-                disabled={saving}
-                className="flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 mt-4 cursor-pointer"
-              >
-                <Plus size={18} />
-                Adicionar Destaque
-              </button>
-            )}
+              ))}
+
+              {destaques.length < 3 && (
+                <button
+                  onClick={handleAdd}
+                  disabled={saving}
+                  className="flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 mt-4 cursor-pointer"
+                >
+                  <Plus size={18} />
+                  Adicionar Destaque
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Botão de salvar */}
         <div className="flex justify-end">
@@ -265,5 +268,5 @@ export default function AdminAboutPage() {
         </div>
       </div>
     </AdminLayout>
-      )
+  )
 }

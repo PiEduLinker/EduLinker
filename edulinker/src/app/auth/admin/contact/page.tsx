@@ -189,7 +189,7 @@ export default function AdminContactPage() {
                       <Clock size={20} />
                     </div>
                     <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Horário Sábado</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Horário Fim de Semana</label>
                       {isEditing ? (
                         <input
                           name="horarioSabado"
