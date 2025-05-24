@@ -1,36 +1,51 @@
-import React from 'react';
+import React from 'react'
 
-// Add 'descricao' and 'nivel' props
-export default function AulaCard({ foto, titulo, descricao, nivel }: { foto?: string; titulo?: string; descricao?: string; nivel?: string }) {
+export default function AulaCard({ 
+  foto, 
+  titulo, 
+  descricao, 
+  nivel 
+}: { 
+  foto?: string
+  titulo?: string
+  descricao?: string
+  nivel?: string 
+}) {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col"> {/* Card container */}
-      {/* Image */}
-      {foto && ( // Render image only if foto prop exists
-        <div className="w-full h-48 overflow-hidden"> {/* Image container with fixed height */}
-          <img src={foto} alt={titulo || 'Imagem da aula'} className="object-cover w-full h-full" /> {/* Image styling */}
-        </div>
-      )}
-
-      {/* Card Content */}
-      <div className="p-5 flex flex-col flex-grow"> {/* Content padding and flex-grow to fill space */}
-        {/* Level Label */}
-        {nivel && ( // Render label only if nivel prop exists
-           <span className="inline-block bg-pink-100 text-pink-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2 self-start"> {/* Label styling */}
-             {nivel} {/* Display level */}
-           </span>
+    <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all">
+      <div className="relative h-60 w-full">
+        {foto ? (
+          <img 
+            src={foto} 
+            alt={titulo || 'Aula'} 
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <span className="text-gray-500">Sem imagem</span>
+          </div>
         )}
-
-        {/* Title */}
-        <h3 className="text-xl font-semibold text-gray-800 mb-2">{titulo || 'Título da Aula'}</h3> {/* Title styling */}
-
-        {/* Description */}
-        {descricao && ( // Render description only if descricao prop exists
-          <p className="text-gray-600 text-sm flex-grow">{descricao}</p>
+        {nivel && (
+          <span className="absolute top-3 right-3 bg-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+            {nivel}
+          </span>
         )}
-
-        {/* Optional: Add button or link here if needed per card */}
-        {/* <a href="#" className="mt-4 text-pink-600 hover:underline self-start">Saiba Mais</a> */}
+      </div>
+      
+      <div className="p-5">
+        <h3 className="text-xl font-bold mb-2 text-gray-800">
+          {titulo || 'Título da Aula'}
+        </h3>
+        <p className="text-gray-600 mb-4 line-clamp-2">
+          {descricao || 'Descrição da aula...'}
+        </p>
+        <button className="text-pink-500 font-semibold hover:underline flex items-center">
+          Saiba mais
+          <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
     </div>
-  );
+  )
 }

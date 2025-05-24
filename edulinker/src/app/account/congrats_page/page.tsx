@@ -97,13 +97,6 @@ export default function CongratsPage() {
                     >
                         Painel Administrativo
                     </button>
-
-                    <button 
-                        onClick={handleViewSite}
-                        className="mt-2 bg-[#F6339A] hover:bg-[#c41a74] text-white font-semibold py-3 px-6 rounded-full  cursor-pointer transition flex-1 max-w-xs"
-                    >
-                        Ver Site Publicado
-                    </button>
                 </div>
 
                 {/* Mostra o link se disponível */}

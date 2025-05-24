@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react'
-import Carousel from '@/app/components/common/gratuito/Carousel'
+import CarouselPremium from '@/app/components/common/premium/CarouselPremium'
 import DepoimentoCardPremium from '@/app/components/common/premium/DepoimentoCardPremium'
 import ProfessorCardPremium from '@/app/components/common/premium/ProfessorCardPremium'
 import AulaCardPremium from '@/app/components/common/premium/AulaCardPremium'
@@ -13,11 +13,7 @@ import { Clock, FacebookIcon, Instagram, Mail, Phone, Youtube } from 'lucide-rea
 // Imagens padrão (você pode importar de seus assets ou usar URLs externas)
 const DEFAULT_LOGO = '/default-logo.png'
 const DEFAULT_CAROUSEL_IMAGE = '/templates/free/banner1.jpg'
-const DEFAULT_GALLERY_IMAGE = '/templates/free/banner2.jpg'
-const DEFAULT_AULA_IMAGE = '/default-aula.jpg'
 const DEFAULT_PROFESSOR_IMAGE = '/default-professor.jpg'
-const DEFAULT_DEPOIMENTO_IMAGE = '/default-avatar.jpg'
-const DEFAULT_CONTATO_IMAGE = '/default-contato.jpg'
 
 export default function Premium({ config }: { config: SiteConfig }) {
 
@@ -209,7 +205,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
       <main className="flex-grow space-y-12">
         {/* Carrossel */}
         <section className="w-full">
-          <Carousel
+          <CarouselPremium
             items={slides}
             autoPlay
             interval={6000}
