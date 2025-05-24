@@ -197,7 +197,7 @@ export default function AdminAboutPage() {
 
 
         {/* Destaques editáveis */}
-        {false && (
+        {true && (
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
             <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
               <Award className="w-5 h-5" />
