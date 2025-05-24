@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Users, Clock, Monitor, Globe } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface ReportsData {
   totalVisits: number
@@ -15,6 +16,8 @@ export default function AdminReportsPage() {
   const [data, setData] = useState<ReportsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+
 
   useEffect(() => {
     async function load() {
@@ -23,14 +26,17 @@ export default function AdminReportsPage() {
         const st = await fetch('/api/onboarding/status', { credentials: 'include' })
         const { siteId } = await st.json()
         if (!siteId) throw new Error('Nenhum site em andamento')
-
-        // 2) busca o slug para chamar a API de relatórios
+        // 2) busca o slug
         const siteRes = await fetch(`/api/site/${siteId}`, { credentials: 'include' })
         if (!siteRes.ok) throw new Error('Não foi possível carregar o site')
         const { slug } = await siteRes.json()
-
         // 3) chama a API de relatórios
         const rpt = await fetch(`/api/reports/${slug}`, { credentials: 'include' })
+        if (rpt.status === 403) {
+          // conta gratuita
+          setError('Relatórios disponíveis somente para contas Premium.')
+          return
+        }
         if (!rpt.ok) throw new Error('Falha ao carregar relatórios')
         const json: ReportsData = await rpt.json()
         setData(json)
@@ -41,7 +47,7 @@ export default function AdminReportsPage() {
       }
     }
     load()
-  }, [])
+  }, [router])
 
   if (loading) return (
     <AdminLayout>
@@ -54,13 +60,6 @@ export default function AdminReportsPage() {
       <p className="p-6 text-center text-red-600">{error}</p>
     </AdminLayout>
   )
-
-  // formata segundos para mm:ss
-  const fmtTime = (s: number) => {
-    const m = Math.floor(s / 60)
-    const sec = Math.floor(s % 60)
-    return `${m}m ${sec}s`
-  }
 
   return (
     <AdminLayout>
