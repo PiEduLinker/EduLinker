@@ -5,9 +5,9 @@ interface Props {
   searchParams: { siteId?: string | string[] }
 }
 
-export default function CongratsPage({ searchParams }: Props) {
-  // normalizeia siteId para string
-  const raw = searchParams.siteId
+export default async function CongratsPage({ searchParams }: Props) {
+  const params = await searchParams
+  const raw = params.siteId
   const siteId = Array.isArray(raw) ? raw[0] : raw
 
   return (
