@@ -12,7 +12,6 @@ type Props = {
 };
 
 export default function SideBarMenu({ onClose }: Props) {
-
   // Remove o Token de sessão do LocalStorage
   const router = useRouter();
 
@@ -27,6 +26,9 @@ export default function SideBarMenu({ onClose }: Props) {
   //Pega o caminho da URL sem o domínio
   const pathname = usePathname();
 
+  // Variável de exemplo - substitua pela sua condição real
+  const isProActive = false;
+
   //Lista de caminhos para as páginas
   const menuItems = [
     { label: "Painel inicial", path: "/auth/admin" },
@@ -38,8 +40,18 @@ export default function SideBarMenu({ onClose }: Props) {
     { label: "Professores", path: "/auth/admin/teachers" },
     { label: "Depoimentos", path: "/auth/admin/testimonials" },
     { label: "Contato", path: "/auth/admin/contact" },
-    { label: "Relatórios (pro)", path: "/auth/admin/reports" },
+    { label: "Relatórios (pro)", path: "/auth/admin/reports", isPro: true },
   ];
+
+  // Função para lidar com clique em itens Pro
+  const handleItemClick = (item: any, e: React.MouseEvent) => {
+    if (item.isPro && !isProActive) {
+      e.preventDefault();
+      alert('Este recurso está disponível apenas na versão Pro!');
+      return;
+    }
+    onClose?.();
+  };
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -61,16 +73,21 @@ export default function SideBarMenu({ onClose }: Props) {
           {menuItems.map((item) => {
             const isActive = pathname === item.path;
             return (
-              <li key={item.path}>
+              <li key={item.path} className="relative">
                 <Link
                   href={item.path}
                   className={`block px-4 py-3 rounded-lg transition-colors ${isActive
                     ? 'bg-blue-50 text-green-600 font-medium border-l-4 border-green-600'
                     : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  onClick={onClose}
+                    } ${item.isPro ? 'pr-10' : ''}`}
+                  onClick={(e) => handleItemClick(item, e)}
                 >
                   {item.label}
+                  {item.isPro && !isProActive && (
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                      Pro
+                    </span>
+                  )}
                 </Link>
               </li>
             );

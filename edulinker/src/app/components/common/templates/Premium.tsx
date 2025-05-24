@@ -130,7 +130,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
           {/* CONTATO + MENU TOGGLE */}
           <div className="flex items-center gap-3">
             <a
-              href="#contato" // Link para a seção CONTATO (já estava correto)
+              href={whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, '')}` : '#'}
               className="hidden lg:inline-block bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-full transition-all duration-300 shadow-lg hover:shadow-pink-500/30 transform hover:-translate-y-0.5"
             >
               CONTATO
@@ -211,8 +211,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
             interval={6000}
           />
         </section>
-
-
 
         {/* Sobre */}
         <section id='sobre-nos' className="relative py-20 overflow-hidden">
@@ -317,7 +315,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
         <section id="aulas" className="py-20 bg-white dark:bg-gray-900">
           <div className="container mx-auto px-4 lg:px-8">
             <h2 className="text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-              Aulas Premium
+              Aulas
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {(config.aulas?.length
@@ -459,10 +457,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
                   <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-pink-500 to-purple-600" />
                 </span>
               </h2>
-              <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
-                {descricaoBreve ??
-                  'Estamos à disposição para esclarecer dúvidas, receber sugestões ou agendar sua visita.'}
-              </p>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-12 xl:gap-20 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
@@ -518,9 +512,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300">
                       {telefone ?? '(11) 99999-0000'}
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      WhatsApp: {whatsapp ?? '(11) 98888-1111'}
                     </p>
                   </div>
                 </div>
@@ -706,11 +697,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <p className="text-sm text-gray-400">
                 © {new Date().getFullYear()} {config.titulo || 'Nome da Escola'}. Todos os direitos reservados.
               </p>
-            </div>
-
-            <div className="flex items-center space-x-6">
-              <a href="#" className="text-sm text-gray-400 hover:text-pink-400 transition-colors">Política de Privacidade</a>
-              <a href="#" className="text-sm text-gray-400 hover:text-pink-400 transition-colors">Termos de Uso</a>
             </div>
 
             <div className="mt-4 md:mt-0">
