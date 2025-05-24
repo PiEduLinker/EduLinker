@@ -17,7 +17,7 @@ export default function AdminLayout({ children }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       {/* NavBar */}
       <NavBar
         onMenuClick={() => setIsMenuOpen(!isMenuOpen)} //Abre e fecha menu
@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: Props) {
         </aside>
 
         {/* Overlay e Sidebar mobile */}
-        <div className={`fixed inset-0 xl:hidden transition-opacity duration-300 ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`fixed inset-0 xl:hidden transition-opacity duration-300 z-1000 ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Overlay escuro */}
           <div
             className="fixed inset-0 bg-black/50"

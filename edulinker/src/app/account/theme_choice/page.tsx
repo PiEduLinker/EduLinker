@@ -28,8 +28,8 @@ export default function ThemeChoicePage() {
 
   // Mapeamento estático das thumbnails
   const IMAGE_MAP: Record<string,string> = {
-    '682953cfeacbea36d53508b9': 'themeImages/Facilita Sites.jpg',   // gratuito
-    '682a30fc7e6132facb3e70cc':'themeImages/Advocacia.jpg',         // premium
+    '682953cfeacbea36d53508b9': '/images/themeImages/Facilita Sites.jpg',   // gratuito
+    '682a30fc7e6132facb3e70cc':'/images/themeImages/Advocacia.jpg',         // premium
   }
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function ThemeChoicePage() {
         setError(data.erro || 'Falha ao salvar template.')
         return
       }
-      router.push('/auth/admin')
+      router.push('/account/congrats_page')
     } catch {
       setError('Erro de conexão. Tente novamente.')
     }
@@ -167,7 +167,7 @@ export default function ThemeChoicePage() {
           type="submit"
           className="w-full max-w-md bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 transition cursor-pointer"
         >
-          Finalizar e Ir para Painel
+          Finalizar
         </button>
       </form>
     </CreateAccountLayout>

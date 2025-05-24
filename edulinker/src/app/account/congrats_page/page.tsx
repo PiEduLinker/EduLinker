@@ -80,7 +80,7 @@ export default function CongratsPage() {
 
                 <div className="w-64 aspect-[4/5] relative">
                     <Image
-                        src="backgrounds/happySmartPhone.png"
+                        src="/images/backgrounds/happySmartPhone.png"
                         alt="Celular comemorando"
                         fill
                         className="object-contain"
@@ -96,13 +96,6 @@ export default function CongratsPage() {
                         className="mt-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 px-6 rounded-full cursor-pointer transition flex-1 max-w-xs"
                     >
                         Painel Administrativo
-                    </button>
-
-                    <button 
-                        onClick={handleViewSite}
-                        className="mt-2 bg-[#F6339A] hover:bg-[#c41a74] text-white font-semibold py-3 px-6 rounded-full  cursor-pointer transition flex-1 max-w-xs"
-                    >
-                        Ver Site Publicado
                     </button>
                 </div>
 

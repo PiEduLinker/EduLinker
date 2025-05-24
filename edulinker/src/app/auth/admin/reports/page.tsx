@@ -1,6 +1,6 @@
 import AdminLayout from '@/components/Layouts/AdminLayout';
 
-export default function AdminPanelPage() {
+export default function AdminReportsPage() {
     return (
         <AdminLayout>
             <div className="w-[95%]">

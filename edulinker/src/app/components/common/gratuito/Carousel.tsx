@@ -38,6 +38,7 @@ export default function Carousel({
   const prev = () => setCurrentIndex(i => (i === 0 ? items.length - 1 : i - 1))
   const next = () => setCurrentIndex(i => (i === items.length - 1 ? 0 : i + 1))
 
+  // Se não houver slides, exibe apenas um fallback
   if (!items.length) {
     return (
       <div className="relative w-full h-[500px] bg-gray-100 rounded-lg">

@@ -13,7 +13,7 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
             <nav className="px-4 sm:px-6 py-4 flex justify-between items-center">
                 <Link href="/" className="flex items-center space-x-2">
                     <Image
-                        src="/images/logo/EduLinker.png"
+                        src="/logo/EduLinker.png"
                         alt="Logo"
                         width={120}
                         height={120}
