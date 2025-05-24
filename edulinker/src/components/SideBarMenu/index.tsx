@@ -1,111 +1,125 @@
-'use client';
+'use client'
 
-//Imports
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { X } from 'lucide-react'
+import { useEffect, useState, useCallback } from 'react'
 
-//Definição de tipos
-type Props = {
-  onClose?: () => void; //Função para fechar o menu mobile
-};
+type MenuItem = {
+  label: string
+  path: string
+  isPro?: boolean
+}
 
-export default function SideBarMenu({ onClose }: Props) {
-  // Remove o Token de sessão do LocalStorage
-  const router = useRouter();
+export default function SideBarMenu({ onClose }: { onClose?: () => void }) {
+  const router = useRouter()
+  const pathname = usePathname()
 
-  async function handleLogout() {
-    await fetch('/api/logout', {
-      method: 'POST',
-      credentials: 'include'
-    })
+  const [plan, setPlan] = useState<'gratuito'|'premium'>('gratuito')
+  const [loadingPlan, setLoadingPlan] = useState(true)
+  const [notice, setNotice] = useState<string>('')
+
+  useEffect(() => {
+    async function fetchPlan() {
+      try {
+        const res = await fetch('/api/onboarding/status', { credentials: 'include' })
+        if (!res.ok) throw new Error()
+        const json = await res.json() as { plano: 'gratuito'|'premium' }
+        setPlan(json.plano)
+      } catch {
+        setPlan('gratuito')
+      } finally {
+        setLoadingPlan(false)
+      }
+    }
+    fetchPlan()
+  }, [])
+
+  const handleLogout = useCallback(async () => {
+    await fetch('/api/logout', { method: 'POST', credentials: 'include' })
     router.push('/')
+  }, [router])
+
+  const menuItems: MenuItem[] = [
+    { label: "Painel inicial",   path: "/auth/admin" },
+    { label: "Estilo do site",   path: "/auth/admin/style" },
+    { label: "Banners rotativos",path: "/auth/admin/banners" },
+    { label: "Sobre a escola",   path: "/auth/admin/about" },
+    { label: "Galeria de Fotos", path: "/auth/admin/gallery" },
+    { label: "Grade de aulas",   path: "/auth/admin/grade" },
+    { label: "Professores",      path: "/auth/admin/teachers" },
+    { label: "Depoimentos",      path: "/auth/admin/testimonials" },
+    { label: "Contato",          path: "/auth/admin/contact" },
+    { label: "Relatórios (Pro)", path: "/auth/admin/reports", isPro: true },
+  ]
+
+  const handleClick = (item: MenuItem, e: React.MouseEvent) => {
+    if (item.isPro && plan === 'gratuito') {
+      e.preventDefault()
+      setNotice('🛑 Este recurso está disponível apenas na versão Premium.')
+      return
+    }
+    onClose?.()
   }
 
-  //Pega o caminho da URL sem o domínio
-  const pathname = usePathname();
-
-  // Variável de exemplo - substitua pela sua condição real
-  const isProActive = false;
-
-  //Lista de caminhos para as páginas
-  const menuItems = [
-    { label: "Painel inicial", path: "/auth/admin" },
-    { label: "Estilo do site", path: "/auth/admin/style" },
-    { label: "Banners rotativos", path: "/auth/admin/banners" },
-    { label: "Sobre a escola", path: "/auth/admin/about" },
-    { label: "Galeria de Fotos", path: "/auth/admin/gallery" },
-    { label: "Grade de aulas", path: "/auth/admin/grade" },
-    { label: "Professores", path: "/auth/admin/teachers" },
-    { label: "Depoimentos", path: "/auth/admin/testimonials" },
-    { label: "Contato", path: "/auth/admin/contact" },
-    { label: "Relatórios (pro)", path: "/auth/admin/reports", isPro: true },
-  ];
-
-  // Função para lidar com clique em itens Pro
-  const handleItemClick = (item: any, e: React.MouseEvent) => {
-    if (item.isPro && !isProActive) {
-      e.preventDefault();
-      alert('Este recurso está disponível apenas na versão Pro!');
-      return;
-    }
-    onClose?.();
-  };
+  if (loadingPlan) {
+    return <div className="p-6 text-center">Carregando menu…</div>
+  }
 
   return (
     <div className="h-full flex flex-col bg-white">
-      {/* Cabeçalho com botão de fechar */}
-      <div className="flex justify-between items-center p-6 border-b border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-800">Escola Konosuba</h2>
-        <button
-          onClick={onClose}
-          className="xl:hidden p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
-          aria-label="Fechar menu"
-        >
-          <X className="w-8 h-8 text-gray-600 mb-1" />
+      <div className="flex justify-between items-center p-6 border-b">
+        <h2 className="text-2xl font-bold">Painel</h2>
+        <button onClick={onClose} className="xl:hidden p-2">
+          <X className="w-6 h-6" />
         </button>
       </div>
 
-      {/* Lista de itens do menu */}
+      {notice && (
+        <div className="bg-yellow-100 text-yellow-800 px-4 py-2 text-sm">
+          {notice}
+        </div>
+      )}
+
       <nav className="flex-1 overflow-y-auto p-4">
         <ul className="space-y-2">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.path;
+          {menuItems.map(item => {
+            const isActive = pathname === item.path
+            const disabled = item.isPro && plan === 'gratuito'
+
             return (
-              <li key={item.path} className="relative">
+              <li key={item.path}>
                 <Link
-                  href={item.path}
-                  className={`block px-4 py-3 rounded-lg transition-colors ${isActive
-                    ? 'bg-blue-50 text-green-600 font-medium border-l-4 border-green-600'
-                    : 'text-gray-700 hover:bg-gray-100'
-                    } ${item.isPro ? 'pr-10' : ''}`}
-                  onClick={(e) => handleItemClick(item, e)}
+                  href={disabled ? '#' : item.path}
+                  className={`
+                    block px-4 py-2 rounded-lg transition
+                    ${isActive 
+                      ? 'bg-blue-50 text-blue-700 font-medium'
+                      : 'text-gray-700 hover:bg-gray-100'
+                    }
+                    ${disabled 
+                      ? 'opacity-50 cursor-not-allowed hover:bg-transparent'
+                      : ''
+                    }
+                  `}
+                  onClick={e => handleClick(item, e)}
                 >
                   {item.label}
-                  {item.isPro && !isProActive && (
-                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">
-                      Pro
-                    </span>
-                  )}
                 </Link>
               </li>
-            );
+            )
           })}
-          <li className="px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
-            onClick={() => {
-              handleLogout(); // Elimina a chave de sessão
-              onClose?.(); // Fecha o menu se estiver em modo mobile
-            }}>
+
+          <li
+            onClick={() => { handleLogout(); onClose?.() }}
+            className="mt-4 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer"
+          >
             Sair
           </li>
         </ul>
       </nav>
 
-      {/* Rodapé */}
-      <div className="p-4 border-t border-gray-200 text-sm text-gray-500">
-        Versão 1.0.0
-      </div>
+      <div className="p-4 border-t text-sm text-gray-500">v1.0.0</div>
     </div>
-  );
+  )
 }
