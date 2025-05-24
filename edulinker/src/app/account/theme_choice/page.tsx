@@ -85,7 +85,7 @@ export default function ThemeChoicePage() {
         setError(data.erro || 'Falha ao salvar template.')
         return
       }
-      router.push('/account/congrats_page')
+      router.push(`/account/congrats_page?siteId=${siteId}`)
     } catch {
       setError('Erro de conexão. Tente novamente.')
     }
