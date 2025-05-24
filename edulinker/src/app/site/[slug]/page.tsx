@@ -1,4 +1,3 @@
-// src/app/site/[slug]/page.tsx
 import { notFound } from 'next/navigation'
 import { connectToDB } from '@/lib/mongodb'
 import Site from '@/models/Site'
