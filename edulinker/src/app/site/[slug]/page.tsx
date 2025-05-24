@@ -5,7 +5,7 @@ import Site from '@/models/Site'
 import TemplateModel from '@/models/Template'
 import GratuitoTemplate from '@/app/components/common/templates/Gratuito'
 import PremiumTemplate from '@/app/components/common/templates/Premium'
-import PageTracker from '@/components/pageTracker'    
+import PageTracker from '@/components/pageTracker'
 import { SiteConfig } from '@/types/site'
 
 interface LeanSite {
@@ -14,8 +14,10 @@ interface LeanSite {
   configuracoes: SiteConfig
 }
 
-export default async function SiteSlugPage({ params }: { params: { slug?: string } }) {
-  const slug = params.slug
+export default async function SiteSlugPage(
+  { params }: { params: Promise<{ slug?: string }> }
+) {
+  const { slug } = await params
   if (!slug) return notFound()
 
   await connectToDB()

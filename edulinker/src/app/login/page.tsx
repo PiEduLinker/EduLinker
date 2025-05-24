@@ -74,7 +74,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="absolute top-4 md:top-8 left-4 md:left-8">
           <Image
-            src="/images/logo/EduLinker.png"
+            src="/Logo/EduLinker.png"
             alt="Logo"
             width={120}
             height={120}
@@ -155,7 +155,7 @@ export default function LoginPage() {
       {/* Seção da Imagem */}
       <div className="hidden md:block md:w-1/2 relative">
         <Image
-          src="/images/backgrounds/happyBusinessWoman.jpg"
+          src="/Backgrounds/happyBusinessWoman.jpg"
           alt="Side Image"
           fill
           className="object-cover"

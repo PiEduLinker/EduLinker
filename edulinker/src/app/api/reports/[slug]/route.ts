@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { UAParser, IResult } from 'ua-parser-js'
 import { connectToDB } from '@/lib/mongodb'
 import PageView from '@/models/PageView'
@@ -11,10 +11,10 @@ interface LeanSite {
 }
 
 export async function GET(
-  req: Request,
-  { params }: { params: { slug: string } }
+  req: NextRequest,
+  context: { params: Promise<{ slug: string }> }
 ) {
-  const { slug } = params
+  const { slug } = await context.params
   await connectToDB()
 
   // 1) Carrega site tipado

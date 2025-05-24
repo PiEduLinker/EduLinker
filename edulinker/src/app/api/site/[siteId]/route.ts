@@ -11,7 +11,7 @@ interface LeanSite {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { siteId: string } }
+  context: { params: Promise<{ siteId: string }> }
 ) {
   await connectToDB()
 
@@ -21,9 +21,11 @@ export async function GET(
     return NextResponse.json({ erro: 'Não autorizado.' }, { status: 401 })
   }
 
+  const { siteId } = await context.params
+
   const site = (await Site.findOne({
     usuarioId: payload.id,
-    _id: params.siteId,
+    _id: siteId,
   })
     .lean()) as LeanSite | null     
 
@@ -40,7 +42,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { siteId: string } }
+  context: { params: Promise<{ siteId: string }> }
 ) {
   await connectToDB()
 
@@ -60,9 +62,11 @@ export async function PUT(
     return NextResponse.json({ erro: 'Fonte inválida.' }, { status: 400 })
   }
 
+  const { siteId } = await context.params
+
   const site = await Site.findOne({
     usuarioId: payload.id,
-    _id: params.siteId,
+    _id: siteId,
   })
   if (!site) {
     return NextResponse.json({ erro: 'Site não encontrado.' }, { status: 404 })

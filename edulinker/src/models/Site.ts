@@ -29,8 +29,5 @@ const SiteSchema = new Schema<ISite>({
   templateOriginalId: { type: Schema.Types.ObjectId, ref: 'Template' }
 });
 
-SiteSchema.index({ usuarioId: 1 }, { unique: true })
-
-
 const Site = models.Site || model<ISite>('Site', SiteSchema);
 export default Site;
