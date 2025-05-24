@@ -5,6 +5,7 @@ import { verifyToken } from '@/lib/auth'
 
 interface LeanSite {
   _id: { toString(): string }
+  slug: string
   configuracoes: any
 }
 
@@ -32,6 +33,7 @@ export async function GET(
 
   return NextResponse.json({
     siteId: site._id.toString(),
+    slug: site.slug,
     configuracoes: site.configuracoes,
   })
 }
