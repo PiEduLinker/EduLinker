@@ -1,305 +1,421 @@
-import React from 'react'
-import { SiteConfig } from '@/types/site'
-import Carousel from '@/app/components/common/gratuito/Carousel'
-import Gallery from '@/app/components/common/gratuito/Gallery'
-import AulaCard from '@/app/components/common/gratuito/AulaCard'
-import ProfessorCard from '@/app/components/common/gratuito/ProfessorCard'
-import DepoimentoCard from '@/app/components/common/gratuito/DepoimentoCard'
-import ContatoSection from '@/app/components/common/gratuito/ContatoSection'
+import React from "react";
+import Image from "next/image";
+import { SiteConfig } from "@/types/site";
+import AulaCard from "@/app/components/common/gratuito/AulaCard";
+import ProfessorCard from "@/app/components/common/gratuito/ProfessorCard";
+import DepoimentoCard from "@/app/components/common/gratuito/DepoimentoCard";
 
-// Imagens padrão (você pode importar de seus assets ou usar URLs externas)
-const DEFAULT_LOGO = '/default-logo.png'
-const DEFAULT_CAROUSEL_IMAGE = '/templates/free/banner1.jpg'
-const DEFAULT_GALLERY_IMAGE = '/templates/free/banner2.jpg'
-const DEFAULT_AULA_IMAGE = '/default-aula.jpg'
-const DEFAULT_PROFESSOR_IMAGE = '/default-professor.jpg'
-const DEFAULT_DEPOIMENTO_IMAGE = '/default-avatar.jpg'
-const DEFAULT_CONTATO_IMAGE = '/default-contato.jpg'
+const DEFAULT_LOGO = "/default-logo.png";
+const DEFAULT_HERO_IMAGE = "/banner-principal.jpg";
+const DEFAULT_GALLERY_IMAGE = "/gallery-placeholder.jpg";
+const DEFAULT_AULA_IMAGE = "/default-aula.jpg";
+const DEFAULT_PROFESSOR_IMAGE = "/default-professor.jpg";
+const DEFAULT_DEPOIMENTO_IMAGE = "/default-avatar.jpg";
 
 export default function EscolaTemplate({ config }: { config: SiteConfig }) {
-  const bg = config.corFundo || '#ffffff' // Cor de fundo padrão se não for fornecida
-  const fg = config.corTexto || '#000000' // Cor de texto padrão se não for fornecida
+  const bg = config.corFundo || "#ffffff";
+  const fg = config.corTexto || "#000000";
 
-  //fontes
   const fontClass = {
-    montserrat: 'font-montserrat',
-    geist: 'font-geist',
-    'geist-mono': 'font-geist-mono',
-    roboto: 'font-roboto',
-    Poppins: 'font-poppins',
-  }[config.fonte || 'montserrat']
+    montserrat: "font-montserrat",
+    geist: "font-geist",
+    "geist-mono": "font-geist-mono",
+    roboto: "font-roboto",
+    poppins: "font-poppins",
+  }[config.fonte || "montserrat"];
 
-  // Preenche valores padrão para configurações opcionais
-  const carrosselItems = config.carrossel?.length
-    ? config.carrossel
-    : [{ imagem: DEFAULT_CAROUSEL_IMAGE }]
-
-  const galeriaItems = config.galerias?.length
-    ? config.galerias
-    : Array(6).fill({ imagem: DEFAULT_GALLERY_IMAGE })
+  // Process data with fallbacks
+  const sobreContent = config.sobre || [
+    {
+      titulo: "Nossa História",
+      texto:
+        "Fundada em 2010, nossa escola tem transformado vidas através da educação de qualidade.",
+    },
+    {
+      titulo: "Nossa Missão",
+      texto:
+        "Proporcionar ensino excelente e formar cidadãos preparados para os desafios do futuro.",
+    },
+  ];
 
   const aulasItems = config.aulas?.length
-    ? config.aulas.map(aula => ({
-      ...aula,
-      foto: aula.foto || DEFAULT_AULA_IMAGE
-    }))
+    ? config.aulas.map((aula) => ({
+        ...aula,
+        foto: aula.foto || DEFAULT_AULA_IMAGE,
+      }))
     : Array(4).fill({
-      foto: DEFAULT_AULA_IMAGE,
-      titulo: 'Aula Padrão'
-    })
+        foto: DEFAULT_AULA_IMAGE,
+        titulo: "Aula Padrão",
+        descricao: "Descrição da aula",
+        nivel: "Iniciante",
+      });
 
-   const professoresItems = config.professores?.length
-   ? config.professores.map(prof => ({
-       nome: prof.nome,
-       descricao: prof.descricao,
-       foto: prof.imagem || DEFAULT_PROFESSOR_IMAGE,
-     }))
-   : Array(4).fill({
-       nome: 'Professor Experiente',
-       descricao: 'Professor experiente na área',
-       foto: DEFAULT_PROFESSOR_IMAGE,
-    })
+  const professoresItems = config.professores?.length
+    ? config.professores.map((prof) => ({
+        nome: prof.nome,
+        descricao: prof.descricao,
+        foto: prof.imagem || DEFAULT_PROFESSOR_IMAGE,
+      }))
+    : Array(4).fill({
+        nome: "Professor Experiente",
+        descricao: "Professor experiente na área",
+        foto: DEFAULT_PROFESSOR_IMAGE,
+      });
 
   const depoimentosItems = config.depoimentos?.length
-    ? config.depoimentos.map(dep => ({
-      ...dep,
-      foto: dep.foto || DEFAULT_DEPOIMENTO_IMAGE
-    }))
+    ? config.depoimentos.map((dep) => ({
+        ...dep,
+        foto: dep.foto || DEFAULT_DEPOIMENTO_IMAGE,
+      }))
     : Array(2).fill({
-      foto: DEFAULT_DEPOIMENTO_IMAGE,
-      nome: 'Cliente Satisfeito',
-      texto: 'Excelente experiência com a escola!'
-    })
+        foto: DEFAULT_DEPOIMENTO_IMAGE,
+        nome: "Cliente Satisfeito",
+        texto: "Excelente experiência com a escola!",
+      });
 
-  const contatoInfo = config.contato || {
-    texto: 'Entre em contato conosco para mais informações',
-    imagem: DEFAULT_CONTATO_IMAGE
-  }
+  // Limit gallery to 3 images
+  const galleryItems = (
+    config.galerias?.length
+      ? config.galerias
+      : Array(3).fill({ imagem: DEFAULT_GALLERY_IMAGE })
+  ).slice(0, 3);
 
   return (
     <div
       style={{ backgroundColor: bg, color: fg }}
       className={`min-h-screen flex flex-col ${fontClass}`}
     >
-      {/* Cabeçalho com navegação */}
-      <header className="py-4 px-6 shadow-md bg-white sticky top-0 z-50">
+      {/* Header */}
+      <header className="py-4 px-6 bg-white shadow-sm sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between">
-          {/* Logo à esquerda */}
-          <img
-            src={config.logo || DEFAULT_LOGO}
-            alt="Logo da Escola"
-            className="h-14 w-auto"
-          />
+          <img src={config.logo || DEFAULT_LOGO} alt="Logo" className="h-12" />
 
-          {/* Resto do componente permanece igual */}
-          <nav className="hidden md:flex space-x-8 mx-6">
-            <a href="#" className="text-gray-700 hover:text-blue-600 transition font-medium">Home</a>
-            <a href="#sobre" className="text-gray-700 hover:text-blue-600 transition font-medium">Sobre nós</a>
-            <a href="#aulas" className="text-gray-700 hover:text-blue-600 transition font-medium">Aulas</a>
-            <a href="#professores" className="text-gray-700 hover:text-blue-600 transition font-medium">Professores</a>
-            <a href="#depoimentos" className="text-gray-700 hover:text-blue-600 transition font-medium">Depoimentos</a>
+          <nav className="hidden md:flex space-x-8">
+            <a
+              href="#"
+              className="text-gray-800 hover:text-pink-600 font-medium"
+            >
+              Home
+            </a>
+            <a
+              href="#sobre"
+              className="text-gray-800 hover:text-pink-600 font-medium"
+            >
+              Sobre
+            </a>
+            <a
+              href="#aulas"
+              className="text-gray-800 hover:text-pink-600 font-medium"
+            >
+              Aulas
+            </a>
+            <a
+              href="#professores"
+              className="text-gray-800 hover:text-pink-600 font-medium"
+            >
+              Professores
+            </a>
+            <a
+              href="#contato"
+              className="text-gray-800 hover:text-pink-600 font-medium"
+            >
+              Contato
+            </a>
           </nav>
 
           <a
             href="#contato"
-            className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full font-medium transition shadow-md transform hover:scale-105"
+            className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full font-medium transition"
           >
             Contato
           </a>
-
-          <button className="md:hidden text-gray-700">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
         </div>
       </header>
 
-      <main className="flex-grow space-y-12">
-        {/* Carrossel de destaques - ocupa 100% da largura */}
-        <section className="w-full">
-          <Carousel
-            items={[
-              { imagem: "/slide1.jpg" },
-              { imagem: "/slide2.jpg" }
-            ]}
-            autoPlay={true}
-            interval={6000}
-            fallbackImages={[
-              '/templates/free/woman.jpg',
-              '/templates/free/woman2.jpg'
-            ]}
+      <main className="flex-grow">
+        {/* Hero Section - Static Image */}
+        <section className="relative h-[500px] w-full">
+          <Image
+            src="/templates/free/banner1.jpg" // Imagem original que você usava
+            alt="Banner principal"
+            fill
+            className="object-cover"
+            priority
           />
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+            <div className="text-center text-white px-4">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                {config.titulo || "Nome da Escola"}
+              </h1>
+              <p className="text-xl md:text-2xl max-w-2xl mx-auto">
+                {config.descricao || "Descrição da escola"}
+              </p>
+            </div>
+          </div>
         </section>
+        {/* Sobre Nós */}
+        <section id="sobre" className="py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-16">Sobre Nós</h2>
 
-        {/* Título e descrição */}
-        <section className="py-12 bg-gray-50 sm:py-16 lg:py-20">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row items-center md:space-x-8 lg:space-x-12">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-8">
+                {Array.isArray(sobreContent) ? (
+                  sobreContent.map((item, index) => (
+                    <div key={index} className="bg-gray-50 p-8 rounded-xl">
+                      <h3 className="text-2xl font-bold text-pink-600 mb-4">
+                        {item.titulo}
+                      </h3>
+                      <p className="text-gray-700">{item.texto}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="bg-gray-50 p-8 rounded-xl">
+                    <p className="text-gray-700">{sobreContent}</p>
+                  </div>
+                )}
+              </div>
 
-              <div className="w-full md:w-1/2 mb-6 md:mb-0">
-                <img
-                  src="/templates/free/man.jpg"
-                  alt="Sobre Nós - Imagem da Empresa"
-                  className="rounded-lg shadow-xl object-cover w-full h-auto max-h-[300px] sm:max-h-[400px] md:max-h-[450px] lg:max-h-[500px]"
+              <div className="relative h-96 rounded-xl overflow-hidden shadow-lg">
+                <Image
+                  src="/about-us.jpg"
+                  alt="Sobre Nós"
+                  fill
+                  className="object-cover"
                 />
               </div>
-
-              <div className="w-full md:w-1/2 text-center md:text-left">
-                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-                  Sobre Nós
-                </h2>
-                <p className="text-gray-700 text-base sm:text-lg leading-relaxed mb-4">
-                  Bem-vindo à nossa empresa! Somos apaixonados por fornecer soluções inovadoras e de alta qualidade que atendam às necessidades dos nossos clientes. Nossa jornada começou com a visão de fazer a diferença e, desde então, temos trabalhado incansavelmente para transformar essa visão em realidade.
-                </p>
-                <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-                  Nossa equipe é composta por profissionais dedicados e experientes, comprometidos com a excelência em cada projeto. Valorizamos a colaboração, a criatividade e um forte relacionamento com nossos clientes e parceiros.
-                </p>
-              </div>
-
             </div>
           </div>
         </section>
 
+        {/* Galeria (limitada a 3 imagens) */}
+        <section id="galeria" className="py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-12">
+              Galeria de Fotos
+            </h2>
 
-        {/* Galeria de fotos */}
-        <section id="galeria" className="py-8">
-          <h2 className="text-3xl font-bold mb-8 text-center">Nossa Galeria</h2>
-          <Gallery items={galeriaItems} />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {galleryItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="relative aspect-square overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all"
+                >
+                  <Image
+                    src={item.imagem}
+                    alt={`Foto da galeria ${index + 1}`}
+                    fill
+                    className="object-cover hover:scale-105 transition-transform"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
-        {/* Aulas oferecidas */}
-        <section id="aulas" className="py-12 bg-white"> {/* Added background, adjusted padding */}
-          <div className="max-w-6xl mx-auto px-4"> {/* Centering container with horizontal padding */}
+        {/* Aulas */}
+        <section id="aulas" className="py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-16">
+              Nossas Aulas
+            </h2>
 
-            <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center text-gray-800">Conheça nossas aulas</h2> {/* Updated title text, adjusted margin */}
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"> {/* Grid layout */}
-              {aulasItems && aulasItems.map((item, idx) => ( // Check if aulasItems exists
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {aulasItems.map((item, index) => (
                 <AulaCard
-                  key={idx}
+                  key={index}
                   foto={item.foto}
                   titulo={item.titulo}
-                  descricao={item.descricao} // Pass description
-                  nivel={item.nivel}       // Pass level
+                  descricao={item.descricao}
+                  nivel={item.nivel}
                 />
               ))}
             </div>
-
-            {/* "FALE CONOSCO" Button below the grid */}
-            <div className="text-center mt-10"> {/* Center the button */}
-              <a href="#" className="inline-block px-6 py-3 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600 transition duration-300 ease-in-out"> {/* Button styling */}
-                FALE CONOSCO
-              </a>
-            </div>
-
           </div>
         </section>
 
-        {/* Corpo docente */}
-        <section id="professores" className="py-8">
-          <h2 className="text-3xl font-bold mb-8 text-center">Nossos Professores</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {professoresItems.map((item, idx) => (
-            <ProfessorCard
-              key={idx}
-              foto={item.foto}
-              nome={item.nome}
-              descricao={item.descricao}
-            />
-          ))}
+        {/* Professores */}
+        <section id="professores" className="py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-16">
+              Nossos Professores
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {professoresItems.map((professor, index) => (
+                <ProfessorCard
+                  key={index}
+                  foto={professor.foto}
+                  nome={professor.nome}
+                  descricao={professor.descricao}
+                />
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Depoimentos */}
-        <section className="py-12 bg-gray-50"> {/* Adjusted background for contrast, added padding */}
-          <div className="max-w-6xl mx-auto px-4"> {/* Centering container with horizontal padding */}
-            <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center text-gray-800">O que dizem sobre nós</h2> {/* Adjusted text size and margin */}
+        <section className="py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-16">
+              Depoimentos
+            </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8"> {/* Grid layout */}
-              {depoimentosItems && depoimentosItems.map((item, idx) => ( // Check if depoimentosItems exists
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {depoimentosItems.map((depoimento, index) => (
                 <DepoimentoCard
-                  key={idx}
-                  foto={item.foto}
-                  nome={item.nome}
-                  texto={item.texto}
+                  key={index}
+                  foto={depoimento.foto}
+                  nome={depoimento.nome}
+                  texto={depoimento.texto}
                 />
               ))}
             </div>
-
-            {/* Optional: Add navigation arrows if you later implement a slider */}
-            <div className="flex justify-center mt-8">
-              <button className="mx-2 p-3 rounded-full bg-gray-200 hover:bg-gray-300">{'<'}</button>
-              <button className="mx-2 p-3 rounded-full bg-gray-200 hover:bg-gray-300">{'>'}</button>
-            </div>
-
           </div>
         </section>
 
-        {/* Seção de contato */}
-        <section className="bg-gray-100 py-10"> {/* Adjust background and padding as needed */}
-          <div className="container mx-auto px-4"> {/* Centering container with padding */}
-            <div className="flex flex-wrap lg:flex-nowrap gap-8"> {/* Flex container, wraps on smaller screens, no wrap on large */}
+        {/* Contato (sem mapa) */}
+        <section id="contato" className="py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-8">
+              <h2 className="text-4xl font-bold mb-8">Entre em Contato</h2>
 
-              {/* Contact Info Column */}
-              <div className="w-full lg:w-1/2"> {/* Takes full width on small, half on large */}
-                <h2 className="text-3xl font-semibold mb-6 text-gray-800">Contato</h2> {/* Adjust text size and weight */}
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-2xl font-bold mb-4">Informações</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-start">
+                      <div className="bg-pink-100 p-2 rounded-full mr-4">
+                        <svg
+                          className="w-6 h-6 text-pink-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-medium">Telefone</p>
+                        <p className="text-gray-600">(11) 9999-9999</p>
+                      </div>
+                    </div>
 
-                <div className="mb-4">
-                  <p className="font-bold text-gray-700">Horário de funcionamento:</p>
-                  <p className="text-gray-600">Seg à sex: 09h - 12h | 13h - 21h</p> {/* Replace with actual hours */}
+                    <div className="flex items-start">
+                      <div className="bg-pink-100 p-2 rounded-full mr-4">
+                        <svg
+                          className="w-6 h-6 text-pink-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-medium">Email</p>
+                        <p className="text-gray-600">contato@escola.com.br</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start">
+                      <div className="bg-pink-100 p-2 rounded-full mr-4">
+                        <svg
+                          className="w-6 h-6 text-pink-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-medium">Endereço</p>
+                        <p className="text-gray-600">
+                          Rua Exemplo, 123 - São Paulo/SP
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mb-4">
-                  <p className="font-bold text-gray-700">E-mail:</p>
-                  <p className="text-gray-600 break-words">contato@escoladeyoga.com.br</p> {/* Replace with actual email */}
+                <div>
+                  <h3 className="text-2xl font-bold mb-4">
+                    Horário de Atendimento
+                  </h3>
+                  <ul className="space-y-4">
+                    <li className="flex justify-between border-b pb-2">
+                      <span className="text-gray-600">Segunda a Sexta</span>
+                      <span className="font-medium">08:00 - 18:00</span>
+                    </li>
+                    <li className="flex justify-between border-b pb-2">
+                      <span className="text-gray-600">Sábado</span>
+                      <span className="font-medium">09:00 - 12:00</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="text-gray-600">Domingo</span>
+                      <span className="font-medium">Fechado</span>
+                    </li>
+                  </ul>
                 </div>
-
-                <div className="mb-4">
-                  <p className="font-bold text-gray-700">Telefone para contato:</p>
-                  <p className="text-gray-600">(11) 99999-0000</p> {/* Replace with actual phone */}
-                </div>
-
-                {/* Button */}
-                <a href="#" className="inline-block mt-6 px-6 py-3 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600 transition duration-300 ease-in-out"> {/* Adjust button styling */}
-                  FALE CONOSCO
-                </a>
               </div>
-
-              {/* Map Column */}
-              <div className="w-full lg:w-1/2 flex flex-col items-center"> {/* Takes full width on small, half on large, centers content */}
-                {/* Map Placeholder - Replace with your actual map embed */}
-                <div className="w-full h-64 bg-gray-300 flex items-center justify-center mb-4"> {/* Adjust height */}
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10000!2d-46.633309!3d-23.55052!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce043b24771f8b%3A0x4b2b829070260748!2sS%C3%A3o%20Paulo%2C%20State%20of%20S%C3%A3o%20Paulo!5e0!3m2!1sen!2sus!4v1678880000000!5m2!1sen!2sus" // URL de embed para uma área aleatória em São Paulo
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen={true}
-                    loading="lazy"
-                  ></iframe>                </div>
-
-                {/* Address below the map */}
-                <p className="text-center text-gray-600 text-sm"> {/* Adjust text size and color */}
-                  Rua Tananã, 105 - Jd. Mandala, São Paulo - SP {/* Replace with actual address */}
-                </p>
-              </div>
-
             </div>
           </div>
         </section>
-
-
       </main>
-      {/* Rodapé */}
-      <footer className="bg-gray-800 text-gray-300 pb-12">
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white pt-16 pb-8">
         <div className="container mx-auto px-4">
-          <div className="border-t border-gray-700 pt-8 text-center text-sm">
-            <p>© {new Date().getFullYear()} {config.titulo || 'Nome da Escola'}. Todos os direitos reservados.</p>
-            <p className="mt-2">Versão Gratuita – Edulinker</p>
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <img
+              src={config.logo || DEFAULT_LOGO}
+              alt="Logo"
+              className="h-10 mb-6 md:mb-0"
+            />
+            <div className="flex space-x-6">
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                Termos
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                Privacidade
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                FAQ
+              </a>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
+            <p>
+              © {new Date().getFullYear()} {config.titulo || "Escola"}. Todos os
+              direitos reservados.
+            </p>
+            <p className="mt-2">Versão Gratuita - Edulinker</p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }

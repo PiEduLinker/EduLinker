@@ -28,8 +28,8 @@ export default function ThemeChoicePage() {
 
   // Mapeamento estático das thumbnails
   const IMAGE_MAP: Record<string,string> = {
-    '682953cfeacbea36d53508b9': '/images/themeImages/Facilita Sites.jpg',   // gratuito
-    '682a30fc7e6132facb3e70cc':'/images/themeImages/Advocacia.jpg',         // premium
+    '682953cfeacbea36d53508b9': 'themeImages/Facilita Sites.jpg',   // gratuito
+    '682a30fc7e6132facb3e70cc':'themeImages/Advocacia.jpg',         // premium
   }
 
   useEffect(() => {

@@ -80,7 +80,7 @@ export default function CongratsPage() {
 
                 <div className="w-64 aspect-[4/5] relative">
                     <Image
-                        src="/images/backgrounds/happySmartPhone.png"
+                        src="backgrounds/happySmartPhone.png"
                         alt="Celular comemorando"
                         fill
                         className="object-contain"
