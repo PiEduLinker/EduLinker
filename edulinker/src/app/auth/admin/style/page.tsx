@@ -1,113 +1,62 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Palette, Type, ImageIcon, Upload, Loader2, Save, Eye } from 'lucide-react'
-
-
-interface Configs {
-  corFundo?: string
-  corTexto?: string
-  fonte?: string
-  logo?: string
-}
+import { useSite } from '@/contexts/siteContext'
+import { fileToBase64 } from '@/lib/fileUtils'
 
 export default function AdminStylePage() {
-  const [siteId, setSiteId] = useState<string | null>(null)
-  const [bgColor, setBgColor] = useState('#ffffff')
-  const [textColor, setTextColor] = useState('#000000')
-  const [fonte, setFonte] = useState('montserrat')
-  const [initialLogo, setInitialLogo] = useState<string>('')   // ← logo que veio do servidor
-  const [logoFile, setLogoFile] = useState<File | null>(null)   // ← arquivo novo, se o usuário escolher
-  const [logoPreview, setLogoPreview] = useState<string>('')    // ← URL ou base64 pra preview
-  const [loading, setLoading] = useState(true)
+  // 1) Pegue slug (siteId) e configuracoes do contexto
+  const { slug: siteId, configuracoes } = useSite()
+
+  // 2) Estados iniciais baseados em configuracoes vindas do layout (server)
+  const [bgColor, setBgColor]         = useState(configuracoes.corFundo  ?? '#ffffff')
+  const [textColor, setTextColor]     = useState(configuracoes.corTexto  ?? '#000000')
+  const [fonte, setFonte]             = useState(configuracoes.fonte      ?? 'montserrat')
+  const [initialLogo]                 = useState(configuracoes.logo       ?? '')
+  const [logoFile, setLogoFile]       = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState(configuracoes.logo       ?? '')
+
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError]   = useState('')
 
-  const fontFamilyMap: Record<string, string> = {
+  const fontFamilyMap: Record<string,string> = {
     montserrat: 'var(--font-montserrat)',
-    geist: 'var(--font-geist-sans)',
-    'geist-mono': 'var(--font-geist-mono)',
-    roboto: 'var(--font-roboto)',
-    poppins: 'var(--font-poppins)',
+    geist:      'var(--font-geist-sans)',
+    'geist-mono':'var(--font-geist-mono)',
+    roboto:     'var(--font-roboto)',
+    poppins:    'var(--font-poppins)',
   }
 
-  // Converte File → base64
-  function fileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = err => reject(err)
-    })
-  }
-
-  // Quando o usuário escolhe um novo arquivo, valida e mostra preview
-  async function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
+  // 3) Atualiza preview quando o usuário escolhe um arquivo
+  const handleLogoChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     setError('')
-    const f = e.target.files?.[0] ?? null
-    if (f) {
-      if (!f.type.startsWith('image/')) {
-        setError('Apenas imagens são permitidas para o logo.')
-        return
-      }
-      setLogoFile(f)
-      // preview rápido via blob URL
-      setLogoPreview(URL.createObjectURL(f))
-    } else {
+    const file = e.target.files?.[0] ?? null
+    if (!file) {
       setLogoFile(null)
       setLogoPreview(initialLogo)
+      return
     }
-  }
-
-  useEffect(() => {
-    async function load() {
-      try {
-        // 1) obtém o siteId do onboarding
-        const st = await fetch('/api/onboarding/status', {
-          credentials: 'include',
-        })
-        const { siteId: id } = await st.json()
-        if (!id) throw new Error('Nenhum site em andamento')
-        setSiteId(id)
-
-        // 2) carrega as configs atuais do site
-        const res = await fetch(`/api/site/${id}`, {
-          credentials: 'include',
-        })
-        if (!res.ok) throw new Error('Falha ao carregar configs')
-        const { configuracoes } = (await res.json()) as { configuracoes: Configs }
-
-        setBgColor(configuracoes.corFundo || '#ffffff')
-        setTextColor(configuracoes.corTexto || '#000000')
-        setFonte(configuracoes.fonte || 'montserrat')
-
-        // configura logo inicial e preview
-        const logoValue = configuracoes.logo || ''
-        setInitialLogo(logoValue)
-        setLogoPreview(logoValue)
-      } catch (err: any) {
-        setError(err.message || 'Erro ao carregar dados.')
-      } finally {
-        setLoading(false)
-      }
+    if (!file.type.startsWith('image/')) {
+      setError('Apenas imagens são permitidas para o logo.')
+      return
     }
-    load()
-  }, [])
+    setLogoFile(file)
+    setLogoPreview(URL.createObjectURL(file))
+  }, [initialLogo])
 
-  const handleSave = async () => {
-    if (!siteId) return
+  // 4) Grava todas as configs de uma vez
+  const handleSave = useCallback(async () => {
     setSaving(true)
     setError('')
-
     try {
-      // 1) prepara o valor final do logo
+      // prepara logo (base64) apenas se mudou
       let logoData = initialLogo
       if (logoFile) {
         logoData = await fileToBase64(logoFile)
       }
 
-      // 2) envia PUT com todas as configs
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
         credentials: 'include',
@@ -122,26 +71,16 @@ export default function AdminStylePage() {
         }),
       })
       if (!res.ok) throw new Error('Falha ao salvar')
-      // opcional: atualizar initialLogo após salvar
-      setInitialLogo(logoData)
-    } catch {
-      setError('Erro ao salvar configurações.')
+    } catch (err: any) {
+      setError(err.message || 'Erro ao salvar configurações.')
     } finally {
       setSaving(false)
     }
-  }
-
-  if (loading) {
-    return (
-      <AdminLayout>
-        <p className="p-6 text-center">Carregando configurações…</p>
-      </AdminLayout>
-    )
-  }
+  }, [siteId, bgColor, textColor, fonte, logoFile, initialLogo])
 
   return (
     <AdminLayout>
-      <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 overflow-x-hidden">
+  <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 overflow-x-hidden">
         {/* Cabeçalho */}
         <div className="text-center space-y-2 my-10">
           <h1 className="text-2xl sm:text-3xl font-bold text-black">
@@ -319,5 +258,6 @@ export default function AdminStylePage() {
           </div>
         </div>
       </div>
-    </AdminLayout>)
+    </AdminLayout>
+  )
 }
