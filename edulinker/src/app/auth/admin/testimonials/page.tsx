@@ -1,8 +1,10 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
-import { Plus, Trash2, Star, Loader2 } from 'lucide-react'
+import { Plus, Trash2, Star, Loader2, Save } from 'lucide-react'
+import { useSite } from '@/contexts/siteContext'
+import { fileToBase64 } from '@/lib/fileUtils'
 
 type Testimonial = {
   foto: string
@@ -11,41 +13,13 @@ type Testimonial = {
   estrelas: number
 }
 
-async function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(new Error('Erro ao processar imagem'))
-  })
-}
-
 export default function AdminTestimonialsPage() {
-  const [siteId, setSiteId] = useState<string | null>(null)
-  const [items, setItems] = useState<Testimonial[]>([])
-  const [loading, setLoading] = useState(true)
+  const { configuracoes, slug: siteId } = useSite()
+  const [items, setItems] = useState<Testimonial[]>(
+    configuracoes.depoimentos ?? []
+  )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const st = await fetch('/api/onboarding/status', { credentials: 'include' })
-        const { siteId: id } = await st.json()
-        if (!id) throw new Error('Nenhum site em andamento')
-        setSiteId(id)
-
-        const res = await fetch(`/api/site/${id}`, { credentials: 'include' })
-        if (!res.ok) throw new Error('Falha ao carregar depoimentos')
-        const { configuracoes } = await res.json()
-        setItems(configuracoes.depoimentos ?? [])
-      } catch (err: any) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }, [])
 
   const handleAdd = useCallback(() => {
     if (items.length < 4) {
@@ -56,45 +30,49 @@ export default function AdminTestimonialsPage() {
     }
   }, [items.length])
 
-  const handleRemove = useCallback((idx: number) => {
+ const handleRemove = useCallback((idx: number) => {
     setItems(i => i.filter((_, j) => j !== idx))
   }, [])
 
   const handleRemoveImage = useCallback((idx: number) => {
     setItems(i => i.map((it, j) => j === idx ? { ...it, foto: '' } : it))
   }, [])
-
   const handleFile = useCallback(async (idx: number, file: File | null) => {
     if (!file) return
     try {
       const b64 = await fileToBase64(file)
-      setItems(i => i.map((it, j) =>
-        j === idx ? { ...it, foto: b64 } : it
-      ))
+      setItems(i =>
+        i.map((it, j) => (j === idx ? { ...it, foto: b64 } : it))
+      )
     } catch {
       setError('Erro ao processar imagem')
     }
   }, [])
 
-  const handleChange = useCallback((idx: number, field: keyof Testimonial, value: string | number) => {
-    setItems(i => i.map((it, j) =>
-      j === idx ? { ...it, [field]: value } : it
-    ))
-  }, [])
+  const handleChange = useCallback(
+    (idx: number, field: keyof Testimonial, value: string | number) => {
+      setItems(i =>
+        i.map((it, j) =>
+          j === idx ? { ...it, [field]: value } : it
+        )
+      )
+    },
+    []
+  )
 
   const handleSave = useCallback(async () => {
-    if (!siteId) return
     setSaving(true)
     setError('')
     try {
       const res = await fetch(`/api/site/${siteId}`, {
-        method: 'PUT', credentials: 'include',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ configuracoes:{ depoimentos: items } })
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ configuracoes: { depoimentos: items } })
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro||'Falha ao salvar')
+        throw new Error(body.erro || 'Falha ao salvar')
       }
     } catch (err: any) {
       setError(err.message)
@@ -103,17 +81,7 @@ export default function AdminTestimonialsPage() {
     }
   }, [siteId, items])
 
-  if (loading) {
-    return (
-      <AdminLayout>
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="animate-spin text-indigo-600" size={32} />
-        </div>
-      </AdminLayout>
-    )
-  }
-
-  return (
+   return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
