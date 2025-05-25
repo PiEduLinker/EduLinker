@@ -26,3 +26,17 @@ export const verifyToken = (token: string): any => {
     return null
   }
 }
+
+// Extrai userId (ou outra claim) de um token válido
+export function getUserIdFromToken(token: string): string | null {
+  const payload = verifyToken(token)
+  if (
+    payload &&
+    typeof payload === 'object'
+  ) {
+    // aceita tanto userId quanto id
+    const uid = (payload as any).userId ?? (payload as any).id
+    return uid ? String(uid) : null
+  }
+  return null
+}

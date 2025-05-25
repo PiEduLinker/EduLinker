@@ -1,6 +1,7 @@
 'use client';
 import Image from "next/image";
 import { Star, Menu } from "lucide-react";
+import { useSite } from '@/contexts/siteContext'
 
 type Props = {
   onMenuClick?: () => void;
@@ -8,6 +9,8 @@ type Props = {
 };
 
 export default function NavBar({ onMenuClick, isMenuOpen }: Props) {
+
+    const { plano } = useSite()
   return (
     <nav className="w-screen h-14 flex justify-center bg-[#1E2330]">
       <div className="w-[90%] flex justify-between items-center">
@@ -27,10 +30,10 @@ export default function NavBar({ onMenuClick, isMenuOpen }: Props) {
           Experimente a versão pro e tenha <b>maior controle e crescimento da sua escola!</b>
         </p>
 
-        {/* Botões (sempre alinhados à direita) */}
+         {/* Botões */}
         <div className="flex items-center gap-4">
-          {/* Botão Upgrade */}
-          {true && (
+          {/* Só aparece para usuários GRATUITOS */}
+          {plano === 'gratuito' && (
             <a
               href="/auth/admin/upgrade"
               className="flex items-center gap-2 bg-[#9FFF64] px-4 py-1 md:px-6 md:py-2 rounded-lg hover:bg-[#74EB2A] transition"
