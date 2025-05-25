@@ -35,3 +35,8 @@ export function useSite() {
   }
   return ctx
 }
+
+export function useIsPremium() {
+  const { plano } = useSite();
+  return plano === 'premium';
+}

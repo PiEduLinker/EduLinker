@@ -1,16 +1,21 @@
-import { notFound } from 'next/navigation'
-import { connectToDB } from '@/lib/mongodb'
+import { IAssinatura } from '@/models/Assinatura'
+import Assinatura from '@/models/Assinatura'
 import Site from '@/models/Site'
 import TemplateModel from '@/models/Template'
+import { SiteProvider, Plan } from '@/contexts/siteContext'
 import GratuitoTemplate from '@/app/components/common/templates/Gratuito'
 import PremiumTemplate from '@/app/components/common/templates/Premium'
 import PageTracker from '@/components/pageTracker'
-import { SiteConfig } from '@/types/site'
+import { connectToDB } from '@/lib/mongodb'
+import { notFound } from 'next/navigation'
 
 interface LeanSite {
+  usuarioId: string
   slug: string
+  descricao?: string
+  status: 'BASIC_INFO' | 'PLAN_SELECTION' | 'TEMPLATE_SELECTION' | 'COMPLETED'
+  configuracoes: any
   templateOriginalId: string
-  configuracoes: SiteConfig
 }
 
 export default async function SiteSlugPage(
@@ -25,26 +30,43 @@ export default async function SiteSlugPage(
   const site = rawSite as LeanSite | null
   if (!site) return notFound()
 
-  const rawTpl = await TemplateModel.findById(site.templateOriginalId).lean()
-  const tpl = rawTpl as { disponívelPara: string[] } | null
-  if (!tpl) return notFound()
+  // 1) Buscando assinatura com findOne + lean()
+  const rawAssinatura = await Assinatura
+  .findOne({
+    usuarioId: site.usuarioId,
+    status: 'ativa'           
+  })
+  .sort({ dataInicio: -1 })  
+  .lean()
 
-  const isPremium = tpl.disponívelPara.includes('premium') && !tpl.disponívelPara.includes('gratuito')
-  const TemplateComponent = isPremium ? PremiumTemplate : GratuitoTemplate
+const assinatura = rawAssinatura as IAssinatura | null
+
+  // 2) Determina premium por conteúdo da assinatura
+  const isPremiumUser = assinatura?.plano === 'premium'
+
+  // 3) Escolhe template certo
+  const TemplateComponent = isPremiumUser
+    ? PremiumTemplate
+    : GratuitoTemplate
+
+  // 4) Monta o valor de contexto forçando 'plano' a ser do tipo Plan
+  const contextValue = {
+    slug: site.slug,
+    descricao: site.descricao ?? '',
+    configuracoes: site.configuracoes,
+    status: site.status,
+    plano: (isPremiumUser ? 'premium' : 'gratuito') as Plan,
+  }
 
   return (
-    <>
-      {/* dispara o POST /api/page-view */}
+    <SiteProvider site={contextValue}>
       <PageTracker slug={slug} />
-
-      <div
-        style={{
-          '--bg': site.configuracoes.corFundo,
-          '--fg': site.configuracoes.corTexto,
-        } as React.CSSProperties}
-      >
+      <div style={{
+        '--bg': site.configuracoes.corFundo,
+        '--fg': site.configuracoes.corTexto,
+      } as React.CSSProperties}>
         <TemplateComponent config={site.configuracoes} />
       </div>
-    </>
+    </SiteProvider>
   )
 }

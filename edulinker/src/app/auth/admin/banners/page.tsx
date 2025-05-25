@@ -4,23 +4,29 @@ import { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
 import { useSite } from '@/contexts/siteContext'
+import { useIsPremium } from '@/contexts/siteContext'
 import { fileToBase64 } from '@/lib/fileUtils'
 
 interface BannerItem { imagem: string }
 
 export default function AdminBannerPage() {
   const { slug: siteId, configuracoes } = useSite()
-  const initial = configuracoes.carrossel as BannerItem[] | undefined
+  const isPremium = useIsPremium()
 
-  const [banners, setBanners] = useState<BannerItem[]>(initial ?? [])
+  // Se free, só importa o primeiro banner
+  const initial = (configuracoes.carrossel as BannerItem[]) ?? []
+  const [banners, setBanners] = useState<BannerItem[]>(initial)
+  
   const [saving, setSaving] = useState(false)
   const [error, setError]   = useState('')
 
+  const maxBanners = isPremium ? 3 : 1
+
   const handleAdd = useCallback(() => {
-    if (banners.length < 3) {
+    if (banners.length < maxBanners) {
       setBanners(b => [...b, { imagem: '' }])
     }
-  }, [banners.length])
+  }, [banners.length, maxBanners])
 
   const handleRemove = useCallback((idx: number) => {
     setBanners(b => b.filter((_, i) => i !== idx))
@@ -42,11 +48,17 @@ export default function AdminBannerPage() {
     setSaving(true)
     setError('')
     try {
+      const payload = { 
+        // no free, sempre salve só o primeiro banner
+        configuracoes: { 
+          carrossel: isPremium ? banners : banners.slice(0, 1) 
+        } 
+      }
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ configuracoes: { carrossel: banners } }),
+        body: JSON.stringify(payload),
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
@@ -57,7 +69,7 @@ export default function AdminBannerPage() {
     } finally {
       setSaving(false)
     }
-  }, [siteId, banners])
+  }, [siteId, banners, isPremium])
 
   return (
     <AdminLayout> <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -131,6 +143,14 @@ export default function AdminBannerPage() {
                 <Plus size={18} />
                 <span>Adicionar Banner</span>
               </button>
+            )}
+
+            {/* mensagem de upgrade */}
+            {!isPremium && (
+              <p className="mt-4 text-sm text-gray-500">
+                No plano gratuito, apenas <strong>1 banner estatico</strong>. Faça upgrade para Premium
+                para gerenciar até 3 banners rotativos.
+              </p>
             )}
 
             <div className="mt-8 pt-6 border-t border-gray-200">
