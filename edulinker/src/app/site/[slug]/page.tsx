@@ -1,7 +1,7 @@
 import { IAssinatura } from '@/models/Assinatura'
 import Assinatura from '@/models/Assinatura'
 import Site from '@/models/Site'
-import TemplateModel from '@/models/Template'
+import TemplateModel, { ITemplate } from '@/models/Template'
 import { SiteProvider, Plan } from '@/contexts/siteContext'
 import GratuitoTemplate from '@/app/components/common/templates/Gratuito'
 import PremiumTemplate from '@/app/components/common/templates/Premium'
@@ -26,45 +26,52 @@ export default async function SiteSlugPage(
 
   await connectToDB()
 
+  // 1) Busca o site
   const rawSite = await Site.findOne({ slug }).lean()
   const site = rawSite as LeanSite | null
   if (!site) return notFound()
 
-  // 1) Buscando assinatura com findOne + lean()
+  // 2) Busca a assinatura mais recente e ativa
   const rawAssinatura = await Assinatura
-  .findOne({
-    usuarioId: site.usuarioId,
-    status: 'ativa'           
-  })
-  .sort({ dataInicio: -1 })  
-  .lean()
-
-const assinatura = rawAssinatura as IAssinatura | null
-
-  // 2) Determina premium por conteúdo da assinatura
+    .findOne({ usuarioId: site.usuarioId, status: 'ativa' })
+    .sort({ dataInicio: -1 })
+    .lean()
+  const assinatura = rawAssinatura as IAssinatura | null
   const isPremiumUser = assinatura?.plano === 'premium'
 
-  // 3) Escolhe template certo
-  const TemplateComponent = isPremiumUser
-    ? PremiumTemplate
-    : GratuitoTemplate
+  // 3) Carrega o template escolhido
+  const rawTpl = await TemplateModel.findById(site.templateOriginalId).lean()
+  const tpl = rawTpl as ITemplate | null
+  if (!tpl) return notFound()
 
-  // 4) Monta o valor de contexto forçando 'plano' a ser do tipo Plan
+  // 4) Verifica se o plano do usuário permite este template
+  const planoAtual = isPremiumUser ? 'premium' : 'gratuito'
+  if (!tpl.disponívelPara.includes(planoAtual)) {
+    return notFound() // ou redirecionar para upgrade
+  }
+
+  // 5) Escolhe o componente pelo nome do template armazenado
+  const TemplateComponent =
+    tpl.nome.toLowerCase().includes('premium')
+      ? PremiumTemplate
+      : GratuitoTemplate
+
+  // 6) Prepara o contexto com o plano real do usuário
   const contextValue = {
     slug: site.slug,
     descricao: site.descricao ?? '',
     configuracoes: site.configuracoes,
     status: site.status,
-    plano: (isPremiumUser ? 'premium' : 'gratuito') as Plan,
+    plano: planoAtual as Plan,
   }
 
   return (
     <SiteProvider site={contextValue}>
       <PageTracker slug={slug} />
       <div style={{
-        '--bg': site.configuracoes.corFundo,
-        '--fg': site.configuracoes.corTexto,
-      } as React.CSSProperties}>
+          '--bg': site.configuracoes.corFundo,
+          '--fg': site.configuracoes.corTexto,
+        } as React.CSSProperties}>
         <TemplateComponent config={site.configuracoes} />
       </div>
     </SiteProvider>

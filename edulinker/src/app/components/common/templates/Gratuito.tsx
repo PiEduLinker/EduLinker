@@ -39,12 +39,20 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
   const banners = Array.isArray(config.carrossel) && config.carrossel.length > 0
     ? config.carrossel
     : [{ imagem: DEFAULT_HERO_IMAGE }]
-      console.log('CARROSSEL NO TEMPLATE:', banners, 'isPremium=', isPremium)
-
 
   // Sessão "Sobre" (string simples)
   const sobreTexto = config.descricao || 'Conte aqui a história da sua escola.'
   const fotoSobre = config.fotoSobre || '/teachers/teacher1.jpg'
+
+  const destaques = isPremium
+    ? (config.destaques?.length
+      ? config.destaques
+      : [
+        { number: '10+', label: 'Anos de experiência' },
+        { number: '5.000+', label: 'Alunos formados' },
+        { number: '98%', label: 'Satisfação' },
+      ])
+    : []
 
   // Aulas (até 4 cards)
   const aulasItems = (
@@ -130,12 +138,13 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
       </header>
 
       {/* Hero / Banner */}
-      <section className="relative h-[400px] w-full">
+      <section className="relative w-full h-[400px] overflow-hidden">
         {isPremium ? (
           <CarouselPremium
             items={banners}
             autoPlay
             interval={6000}
+            className="h-full"
           />
         ) : (
           <Image
@@ -154,20 +163,39 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
           <div className="container mx-auto px-4">
             <h2 className="text-4xl font-bold text-center mb-16">Sobre Nós</h2>
 
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <p className="grid md:grid-cols-2 gap-12 items-center">
-                {sobreTexto}
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch">
+              {/* Texto */}
+              <div>
+                <p className="h-full text-lg leading-relaxed break-words">
+                  {sobreTexto}
+                </p>
+              </div>
 
-              <div className="relative h-96 rounded-xl overflow-hidden shadow-lg">
+              {/* Imagem */}
+              <div className="relative w-full h-64 sm:h-80 md:h-96 rounded-xl overflow-hidden shadow-lg">
                 <Image
-                  src={fotoSobre}
+                  src={config.fotoSobre || '/templates/free/woman.jpg'}
                   alt="Sobre Nós"
                   fill
                   className="object-cover"
                 />
               </div>
             </div>
+
+            {/* Destaques (premium apenas) */}
+            {isPremium && (
+              <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {destaques.map((item, i) => (
+                  <div
+                    key={i}
+                    className="bg-white p-6 rounded-lg shadow-md border-l-4 border-black-500"
+                  >
+                    <p className="text-2xl font-bold text-gray-900">{item.number}</p>
+                    <p className="text-sm text-gray-600">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 

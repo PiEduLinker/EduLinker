@@ -7,13 +7,15 @@ interface CarouselProps {
   items?: Array<{ imagem: string }>
   autoPlay?: boolean
   interval?: number
+  className?: string
   fallbackImages?: string[]
 }
 
-export default function Carousel({
+export default function CarouselPremium({
   items = [],
   autoPlay = true,
   interval = 5000,
+  className = '',
   fallbackImages = ['/templates/free/woman.jpg', '/templates/free/woman2.jpg'],
 }: CarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -29,10 +31,10 @@ export default function Carousel({
 
   const handleImageError = useCallback(
     (index: number) => () => {
-      setImageErrors(prev => {
-        const errorCount = prev[index] || 0
-        return { ...prev, [index]: errorCount + 1 }
-      })
+      setImageErrors(prev => ({
+        ...prev,
+        [index]: (prev[index] || 0) + 1
+      }))
     },
     []
   )
@@ -71,7 +73,7 @@ export default function Carousel({
   // Se não houver slides, exibe apenas um fallback
   if (!items.length) {
     return (
-      <div className="w-full bg-gray-200 flex items-center justify-center rounded-xl h-[300px] max-w-[800px] mx-auto">
+      <div className={`relative w-full h-full bg-gray-200 flex items-center justify-center rounded-xl ${className}`}>
         <Image
           src={fallbackImages[0]}
           alt="Nenhum slide disponível"
@@ -85,28 +87,28 @@ export default function Carousel({
   }
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className={`relative w-full h-full overflow-hidden ${className}`}>
       {/* Slides */}
       <div
-        className="flex transition-transform duration-500 ease-in-out"
+        className="flex transition-transform duration-500 ease-in-out h-full"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {items.map((item, idx) => {
-           const errCount = imageErrors[idx] || 0
-          const src = errCount === 0
-            ? item.imagem
-            : (fallbackImages[errCount - 1] ?? '/default-carousel.jpg')
+          const errCount = imageErrors[idx] || 0
+          const src =
+            errCount === 0
+              ? item.imagem
+              : fallbackImages[errCount - 1] ?? '/default-carousel.jpg'
           return (
-             <div
-                 key={idx}
-                 className="
-                   w-full flex-shrink-0 relative 
+            <div
+              key={idx}
+              className="w-full flex-shrink-0 relative 
                    h-48       /* 12rem (192px) em tela móvel */
                    sm:h-64    /* 16rem (256px) acima de 640px */
                    md:h-80    /* 20rem (320px) acima de 768px */
                    lg:h-200    /* 24rem (384px) acima de 1024px */
-                 "
-               >
+                   "
+            >
               <Image
                 src={src}
                 alt={`Slide ${idx + 1}`}
@@ -115,6 +117,7 @@ export default function Carousel({
                 loader={({ src }) => src}
                 className="object-cover"
                 onError={handleImageError(idx)}
+                onLoadingComplete={() => handleImageLoad(idx)}
               />
             </div>
           )
@@ -145,10 +148,9 @@ export default function Carousel({
               <button
                 key={i}
                 onClick={() => goTo(i)}
-                className={`w-3 h-3 rounded-full transition ${i === currentIndex
-                    ? 'bg-white'
-                    : 'bg-white/50 hover:bg-white/75'
-                  }`}
+                className={`w-3 h-3 rounded-full transition ${
+                  i === currentIndex ? 'bg-white' : 'bg-white/50 hover:bg-white/75'
+                }`}
                 aria-label={`Slide ${i + 1}`}
               />
             ))}

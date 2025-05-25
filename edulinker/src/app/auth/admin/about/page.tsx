@@ -2,14 +2,17 @@
 
 import React, { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
-import {Upload, Plus, Trash2, Save, Loader2, Image as ImageIcon, Text, Award,} from 'lucide-react'
-import { useSite } from '@/contexts/siteContext'
+import {
+  Upload,Plus,Trash2,Save,Loader2,Image as ImageIcon,Text,Award,} from 'lucide-react'
+import { useSite, useIsPremium } from '@/contexts/siteContext'
 import { fileToBase64 } from '@/lib/fileUtils'
 
 type Destaque = { number: string; label: string }
 
 export default function AdminAboutPage() {
   const { slug: siteId, configuracoes } = useSite()
+  const isPremium = useIsPremium()
+
   const {
     descricao: initialDescricao = '',
     fotoSobre: initialFoto = '',
@@ -23,11 +26,13 @@ export default function AdminAboutPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  // Bloqueia adicionar se não for premium
   const handleAdd = useCallback(() => {
+    if (!isPremium) return
     if (destaques.length < 3) {
       setDestaques(ds => [...ds, { number: '', label: '' }])
     }
-  }, [destaques.length])
+  }, [destaques.length, isPremium])
 
   const handleRemove = useCallback((idx: number) => {
     setDestaques(ds => ds.filter((_, i) => i !== idx))
@@ -159,14 +164,14 @@ export default function AdminAboutPage() {
         {/* Destaques editáveis */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
           <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
-            <Award className="w-5 h-5" /> 
-            Destaques
+            <Award className="w-5 h-5" /> Destaques
           </h2>
           <div className="space-y-4">
             {destaques.map((d, idx) => (
               <div
                 key={idx}
-                className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center"
+              >
                 <div className="sm:col-span-3">
                   <input
                     type="text"
@@ -197,17 +202,23 @@ export default function AdminAboutPage() {
                   >
                     <Trash2 size={18} />
                   </button>
+                  </div>
                 </div>
-              </div>
             ))}
-            {destaques.length < 3 && (
-              <button
-                onClick={handleAdd}
-                disabled={saving}
-                className="flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 mt-4 cursor-pointer"
-              >
-                <Plus size={18} /> Adicionar Destaque
-              </button>
+            {isPremium ? (
+              destaques.length < 3 && (
+                <button
+                  onClick={handleAdd}
+                  disabled={saving}
+                  className="flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 mt-4 cursor-pointer"
+                >
+                  <Plus size={18} /> Adicionar Destaque
+                </button>
+              )
+            ) : (
+              <p className="mt-4 text-sm text-gray-500">
+                Disponível somente para assinantes <strong>Premium</strong>.
+              </p>
             )}
           </div>
         </div>
@@ -219,11 +230,7 @@ export default function AdminAboutPage() {
             disabled={saving}
             className="flex items-center gap-2 text-white py-3 px-8 rounded-lg transition-all shadow-lg hover:shadow-xl disabled:opacity-70 cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg"
           >
-            {saving ? (
-              <Loader2 className="animate-spin" size={18} />
-            ) : (
-              <Save size={18} />
-            )}
+            {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
             {saving ? 'Salvando...' : 'Salvar Alterações'}
           </button>
         </div>
