@@ -1,70 +1,38 @@
 'use client'
-import React, { useState, useEffect, useCallback } from 'react'
-import AdminLayout from '@/components/Layouts/AdminLayout'
-import { Upload, Plus, Trash2, Save, Loader2, Image as ImageIcon, Text, Award } from 'lucide-react'
 
-// Helper para converter arquivo em base64
-async function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(new Error('Falha ao processar imagem.'))
-  })
-}
+import React, { useState, useCallback } from 'react'
+import AdminLayout from '@/components/Layouts/AdminLayout'
+import {Upload, Plus, Trash2, Save, Loader2, Image as ImageIcon, Text, Award,} from 'lucide-react'
+import { useSite } from '@/contexts/siteContext'
+import { fileToBase64 } from '@/lib/fileUtils'
 
 type Destaque = { number: string; label: string }
 
 export default function AdminAboutPage() {
-  const [siteId, setSiteId] = useState<string | null>(null)
-  const [descricao, setDescricao] = useState('')
-  const [fotoSobre, setFotoSobre] = useState('')
-  const [preview, setPreview] = useState('')
-  const [destaques, setDestaques] = useState<Destaque[]>([])
-  const [loading, setLoading] = useState(true)
+  const { slug: siteId, configuracoes } = useSite()
+  const {
+    descricao: initialDescricao = '',
+    fotoSobre: initialFoto = '',
+    destaques: initialDestaques = [] as Destaque[],
+  } = configuracoes
+
+  const [descricao, setDescricao] = useState(initialDescricao)
+  const [fotoSobre, setFotoSobre] = useState(initialFoto)
+  const [preview, setPreview] = useState(initialFoto)
+  const [destaques, setDestaques] = useState<Destaque[]>(initialDestaques)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
-  // Carrega dados iniciais
-  useEffect(() => {
-    ; (async () => {
-      try {
-        const st = await fetch('/api/onboarding/status', { credentials: 'include' })
-        const { siteId: id } = await st.json()
-        if (!id) throw new Error('Nenhum site em andamento')
-        setSiteId(id)
-
-        const res = await fetch(`/api/site/${id}`, { credentials: 'include' })
-        if (!res.ok) throw new Error('Falha ao carregar dados do site')
-        const { configuracoes } = await res.json()
-
-        setDescricao(configuracoes.descricao ?? '')
-        setFotoSobre(configuracoes.fotoSobre ?? '')
-        setPreview(configuracoes.fotoSobre ?? '')
-        if (configuracoes.destaques?.length) {
-          setDestaques(configuracoes.destaques)
-        }
-      } catch (err: any) {
-        setError(err.message || 'Erro desconhecido')
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }, [])
-
-  // Adiciona um novo destaque
   const handleAdd = useCallback(() => {
     if (destaques.length < 3) {
       setDestaques(ds => [...ds, { number: '', label: '' }])
     }
   }, [destaques.length])
 
-  // Remove destaque pelo índice
   const handleRemove = useCallback((idx: number) => {
     setDestaques(ds => ds.filter((_, i) => i !== idx))
   }, [])
 
-  // Evento para alterar um campo de destaque
   const handleDestaqueChange = useCallback(
     (idx: number, field: keyof Destaque, value: string) => {
       setDestaques(ds =>
@@ -74,26 +42,30 @@ export default function AdminAboutPage() {
     []
   )
 
-  // Upload de imagem
-  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) {
-      setFotoSobre('')
-      setPreview('')
-      return
-    }
-    try {
-      const b64 = await fileToBase64(file)
-      setFotoSobre(b64)
-      setPreview(URL.createObjectURL(file))
-    } catch {
-      setError('Não foi possível processar a imagem.')
-    }
-  }, [])
+  const handleFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (!file) {
+        setFotoSobre('')
+        setPreview('')
+        return
+      }
+      if (!file.type.startsWith('image/')) {
+        setError('Apenas imagens são permitidas.')
+        return
+      }
+      try {
+        const b64 = await fileToBase64(file)
+        setFotoSobre(b64)
+        setPreview(URL.createObjectURL(file))
+      } catch {
+        setError('Não foi possível processar a imagem.')
+      }
+    },
+    []
+  )
 
-  // Salvar tudo
   const handleSave = useCallback(async () => {
-    if (!siteId) return
     setSaving(true)
     setError('')
     try {
@@ -101,26 +73,20 @@ export default function AdminAboutPage() {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ configuracoes: { descricao, fotoSobre, destaques } }),
+        body: JSON.stringify({
+          configuracoes: { descricao, fotoSobre, destaques },
+        }),
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro || 'Falha ao salvar')
+        throw new Error(body.erro || 'Falha ao salvar.')
       }
     } catch (err: any) {
-      setError(err.message || 'Erro ao salvar.')
+      setError(err.message)
     } finally {
       setSaving(false)
     }
   }, [siteId, descricao, fotoSobre, destaques])
-
-  if (loading) {
-    return (
-      <AdminLayout>
-        <p className="p-6 text-center">Carregando configurações…</p>
-      </AdminLayout>
-    )
-  }
 
   return (
     <AdminLayout>
@@ -140,22 +106,18 @@ export default function AdminAboutPage() {
         {/* Upload da imagem */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
           <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
-            <ImageIcon className="w-5 h-5" />
-            Imagem da Seção
+            <ImageIcon className="w-5 h-5" /> Imagem da Seção
           </h2>
           <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition p-4">
-            <div className="flex flex-col items-center justify-center">
-              <Upload className="w-8 h-8 mb-2 text-white" />
-              <p className="mb-1 text-sm text-white text-center">
-                <span className="font-medium">Clique para enviar</span> ou arraste a imagem
-              </p>
-              <p className="text-xs text-white">PNG, JPG</p>
-            </div>
+            <Upload className="w-8 h-8 mb-2 text-white" />
+            <p className="mb-1 text-sm text-white text-center">
+              <span className="font-medium">Clique para enviar</span> ou arraste
+            </p>
             <input
               type="file"
               accept="image/*"
-              onChange={handleFileChange}
               className="hidden"
+              onChange={handleFileChange}
             />
           </label>
           {preview && (
@@ -163,8 +125,8 @@ export default function AdminAboutPage() {
               <div className="relative group">
                 <img
                   src={preview}
-                  className="w-48 h-auto rounded-lg shadow-md border-2 border-white dark:border-gray-700"
                   alt="Preview"
+                  className="w-48 h-auto rounded-lg shadow-md border-2 border-white dark:border-gray-700"
                 />
                 <button
                   onClick={() => {
@@ -183,8 +145,7 @@ export default function AdminAboutPage() {
         {/* Texto descritivo */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
           <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
-            <Text className="w-5 h-5" />
-            Texto Descritivo
+            <Text className="w-5 h-5" /> Texto Descritivo
           </h2>
           <textarea
             rows={6}
@@ -195,61 +156,61 @@ export default function AdminAboutPage() {
           />
         </div>
 
-
         {/* Destaques editáveis */}
-        {true && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-            <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
-              <Award className="w-5 h-5" />
-              Destaques
-            </h2>
-
-            <div className="space-y-4">
-              {destaques.map((d, idx) => (
-                <div key={idx} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-                  <div className="sm:col-span-3">
-                    <input
-                      type="text"
-                      value={d.number}
-                      onChange={e => handleDestaqueChange(idx, 'number', e.target.value)}
-                      placeholder="Número"
-                      className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-gray-300 text-white"
-                    />
-                  </div>
-                  <div className="sm:col-span-8">
-                    <input
-                      type="text"
-                      value={d.label}
-                      onChange={e => handleDestaqueChange(idx, 'label', e.target.value)}
-                      placeholder="Ex: Anos de experiência"
-                      className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-gray-300 text-white"
-                    />
-                  </div>
-                  <div className="sm:col-span-1 flex justify-end">
-                    <button
-                      onClick={() => handleRemove(idx)}
-                      disabled={saving}
-                      className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+          <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
+            <Award className="w-5 h-5" /> 
+            Destaques
+          </h2>
+          <div className="space-y-4">
+            {destaques.map((d, idx) => (
+              <div
+                key={idx}
+                className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div className="sm:col-span-3">
+                  <input
+                    type="text"
+                    value={d.number}
+                    onChange={e =>
+                      handleDestaqueChange(idx, 'number', e.target.value)
+                    }
+                    placeholder="Número"
+                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-gray-300 text-white"
+                  />
                 </div>
-              ))}
-
-              {destaques.length < 3 && (
-                <button
-                  onClick={handleAdd}
-                  disabled={saving}
-                  className="flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 mt-4 cursor-pointer"
-                >
-                  <Plus size={18} />
-                  Adicionar Destaque
-                </button>
-              )}
-            </div>
+                <div className="sm:col-span-8">
+                  <input
+                    type="text"
+                    value={d.label}
+                    onChange={e =>
+                      handleDestaqueChange(idx, 'label', e.target.value)
+                    }
+                    placeholder="Ex: Anos de experiência"
+                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-gray-300 text-white"
+                  />
+                </div>
+                <div className="sm:col-span-1 flex justify-end">
+                  <button
+                    onClick={() => handleRemove(idx)}
+                    disabled={saving}
+                    className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            ))}
+            {destaques.length < 3 && (
+              <button
+                onClick={handleAdd}
+                disabled={saving}
+                className="flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 mt-4 cursor-pointer"
+              >
+                <Plus size={18} /> Adicionar Destaque
+              </button>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Botão de salvar */}
         <div className="flex justify-end">

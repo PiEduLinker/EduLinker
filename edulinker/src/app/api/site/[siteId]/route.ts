@@ -66,7 +66,7 @@ export async function PUT(
 
   const site = await Site.findOne({
     usuarioId: payload.id,
-    _id: siteId,
+    slug: siteId,
   })
   if (!site) {
     return NextResponse.json({ erro: 'Site não encontrado.' }, { status: 404 })
