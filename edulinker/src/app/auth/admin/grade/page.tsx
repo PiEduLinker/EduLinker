@@ -1,8 +1,11 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
+import { useSite } from '@/contexts/siteContext'
+import { fileToBase64 } from '@/lib/fileUtils'
+
 
 interface Aula {
   foto: string
@@ -12,73 +15,56 @@ interface Aula {
   duracao: string
 }
 
-async function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(reader.error)
-  })
-}
-
 export default function AdminGradePage() {
-  const [siteId, setSiteId] = useState<string | null>(null)
-  const [aulas, setAulas] = useState<Aula[]>([])
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  // 1) extraímos siteId e aulas iniciais do contexto
+  const { slug: siteId, configuracoes } = useSite()
+  const initialAulas = configuracoes.aulas ?? []
 
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const st = await fetch('/api/onboarding/status', { credentials: 'include' })
-        const { siteId: id } = await st.json()
-        if (!id) throw new Error('Nenhum site em andamento')
-        setSiteId(id)
+  // 2) estados locais
+  const [aulas, setAulas]     = useState<Aula[]>(initialAulas)
+  const [saving, setSaving]   = useState(false)
+  const [error, setError]     = useState('')
 
-        const res = await fetch(`/api/site/${id}`, { credentials: 'include' })
-        if (!res.ok) throw new Error('Erro ao carregar aulas')
-        const { configuracoes } = await res.json()
-        setAulas(configuracoes.aulas ?? [])
-      } catch (err: any) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }, [])
-
+  // 3) adiciona nova aula
   const handleAdd = useCallback(() => {
-    setAulas(a => [...a, {
-      foto: '',
-      titulo: '',
-      descricao: '',
-      nivel: '',
-      duracao: ''
-    }])
+    setAulas(a => [
+      ...a,
+      { foto: '', titulo: '', descricao: '', nivel: '', duracao: '' }
+    ])
   }, [])
 
+  // 4) remove toda a aula
   const handleRemove = useCallback((idx: number) => {
     setAulas(a => a.filter((_, i) => i !== idx))
   }, [])
 
+  // 5) limpa apenas a imagem
   const handleRemoveImage = useCallback((idx: number) => {
     setAulas(a => a.map((u, i) => i === idx ? { ...u, foto: '' } : u))
   }, [])
 
+  // 6) altera a foto da aula
   const handleFile = useCallback(async (idx: number, file: File | null) => {
     if (!file) return
-    const b64 = await fileToBase64(file)
-    setAulas(a => a.map((u, i) => i === idx ? { ...u, foto: b64 } : u))
+    try {
+      const b64 = await fileToBase64(file)
+      setAulas(a => a.map((u, i) => i === idx ? { ...u, foto: b64 } : u))
+    } catch {
+      setError('Erro ao processar imagem')
+    }
   }, [])
 
+  // 7) altera qualquer campo textual
   const handleChange = useCallback((idx: number, field: keyof Aula, v: string) => {
     setAulas(a => a.map((u, i) => i === idx ? { ...u, [field]: v } : u))
   }, [])
 
+  // 8) salva tudo de uma vez
   const handleSave = useCallback(async () => {
     if (!siteId) return
-    setSaving(true); setError('')
+    setSaving(true)
+    setError('')
+
     try {
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
@@ -96,8 +82,6 @@ export default function AdminGradePage() {
       setSaving(false)
     }
   }, [siteId, aulas])
-
-  if (loading) return <AdminLayout><p className="p-6 text-center">Carregando…</p></AdminLayout>
 
   return (
     <AdminLayout>
