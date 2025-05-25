@@ -3,9 +3,8 @@
 import React, { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
-import { useSite } from '@/contexts/siteContext'
+import { useSite, useIsPremium } from '@/contexts/siteContext'
 import { fileToBase64 } from '@/lib/fileUtils'
-
 
 interface Aula {
   foto: string
@@ -16,34 +15,31 @@ interface Aula {
 }
 
 export default function AdminGradePage() {
-  // 1) extraímos siteId e aulas iniciais do contexto
   const { slug: siteId, configuracoes } = useSite()
-  const initialAulas = configuracoes.aulas ?? []
+  const isPremium = useIsPremium()
+  const maxAulas = isPremium ? 12 : 4
 
-  // 2) estados locais
-  const [aulas, setAulas]     = useState<Aula[]>(initialAulas)
-  const [saving, setSaving]   = useState(false)
-  const [error, setError]     = useState('')
+  const initialAulas = (configuracoes.aulas as Aula[]) ?? []
+  const [aulas, setAulas]   = useState<Aula[]>(initialAulas)
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState('')
 
-  // 3) adiciona nova aula
   const handleAdd = useCallback(() => {
+    if (aulas.length >= maxAulas) return
     setAulas(a => [
       ...a,
       { foto: '', titulo: '', descricao: '', nivel: '', duracao: '' }
     ])
-  }, [])
+  }, [aulas.length, maxAulas])
 
-  // 4) remove toda a aula
   const handleRemove = useCallback((idx: number) => {
     setAulas(a => a.filter((_, i) => i !== idx))
   }, [])
 
-  // 5) limpa apenas a imagem
   const handleRemoveImage = useCallback((idx: number) => {
     setAulas(a => a.map((u, i) => i === idx ? { ...u, foto: '' } : u))
   }, [])
 
-  // 6) altera a foto da aula
   const handleFile = useCallback(async (idx: number, file: File | null) => {
     if (!file) return
     try {
@@ -54,12 +50,10 @@ export default function AdminGradePage() {
     }
   }, [])
 
-  // 7) altera qualquer campo textual
   const handleChange = useCallback((idx: number, field: keyof Aula, v: string) => {
     setAulas(a => a.map((u, i) => i === idx ? { ...u, [field]: v } : u))
   }, [])
 
-  // 8) salva tudo de uma vez
   const handleSave = useCallback(async () => {
     if (!siteId) return
     setSaving(true)
@@ -83,7 +77,7 @@ export default function AdminGradePage() {
     }
   }, [siteId, aulas])
 
-  return (
+return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -197,27 +191,35 @@ export default function AdminGradePage() {
                         />
                       </div>
                     </div>
-                  </div>
+                 </div>
                 </div>
               ))}
             </div>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-between items-center pt-6 border-t border-gray-200">
-              <button
-                onClick={handleAdd}
-                disabled={saving}
-                className="flex items-center justify-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto"
-              >
-                <Plus size={18} />
-                <span>Adicionar Aula</span>
-              </button>
+              {aulas.length < maxAulas ? (
+                <button
+                  onClick={handleAdd}
+                  disabled={saving}
+                  className="flex items-center justify-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto"
+                >
+                  <Plus size={18} />
+                  <span>Adicionar Aula</span>
+                </button>
+              ) : (
+                !isPremium && (
+                  <p className="text-sm text-gray-500">
+                    Você atingiu o limite de 4 aulas. Faça upgrade para adicionar até 12.
+                  </p>
+                )
+              )}
 
               <button
                 onClick={handleSave}
                 disabled={saving}
                 className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition-all ${
-                  saving 
-                    ? 'bg-gray-400 cursor-not-allowed' 
+                  saving
+                    ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
                 }`}
               >

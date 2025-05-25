@@ -12,8 +12,6 @@ import CarouselPremium from '../premium/CarouselPremium'
 // Imagens padrão
 const DEFAULT_LOGO = '/Logo/EduLinker.png'
 const DEFAULT_HERO_IMAGE = '/templates/free/banner1.jpg'
-const DEFAULT_GALLERY_IMAGE = '/Logo/EduLinker.png'
-const DEFAULT_AULA_IMAGE = '/teachers/teacher3.jpg'
 const DEFAULT_PROFESSOR_IMAGE = '/teachers/teacher1.jpg'
 const DEFAULT_DEPOIMENTO_IMAGE = '/teachers/teacher2.jpg'
 
@@ -55,17 +53,10 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
     : []
 
   // Aulas (até 4 cards)
-  const aulasItems = (
-    config.aulas?.map(a => ({
-      ...a,
-      foto: a.foto || DEFAULT_AULA_IMAGE,
-    })) ?? Array(4).fill({
-      foto: DEFAULT_AULA_IMAGE,
-      titulo: 'Aula Padrão',
-      descricao: 'Descrição da aula',
-      nivel: 'Iniciante',
-    })
-  ).slice(0, 4)
+   const allAulas = Array.isArray(config.aulas) ? config.aulas : []
+  const displayedAulas = isPremium
+    ? allAulas
+    : allAulas.slice(0, 4)
 
   // Professores (até 4)
   const professoresItems = (
@@ -232,18 +223,29 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Aulas */}
-        <section id="aulas" className="py-20 bg-white">
-          <h2 className="text-4xl font-bold text-center mb-16">Nossas Aulas</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {aulasItems.map((a, i) => (
-              <AulaCard
-                key={i}
-                foto={a.foto}
-                titulo={a.titulo}
-                descricao={a.descricao}
-                nivel={a.nivel}
-              />
-            ))}
+         <section id="aulas" className="py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-12">Nossas Aulas</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {displayedAulas.map((item, idx) => (
+                <AulaCard
+                  key={idx}
+                  foto={item.foto}
+                  titulo={item.titulo}
+                  descricao={item.descricao}
+                  nivel={item.nivel}
+                  duracao={item.duracao}
+                />
+              ))}
+            </div>
+            {!isPremium && allAulas.length > 4 && (
+              <p className="mt-6 text-center text-sm text-gray-500">
+                Você tem {allAulas.length} aulas, mas no plano gratuito só são exibidas 4.{' '}
+                <a href="/upgrade" className="text-pink-600 underline">
+                  Faça upgrade para ver todas
+                </a>.
+              </p>
+            )}
           </div>
         </section>
 
