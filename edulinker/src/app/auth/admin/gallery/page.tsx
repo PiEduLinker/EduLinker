@@ -1,103 +1,74 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
+import { useSite } from '@/contexts/siteContext'
+import { fileToBase64 } from '@/lib/fileUtils'
 
 interface GalleryItem {
   imagem: string // base64 ou URL
 }
 
-async function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(reader.error)
-  })
-}
-
 export default function AdminGalleryPage() {
-  const [siteId, setSiteId] = useState<string|null>(null)
-  const [galerias, setGalerias] = useState<GalleryItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  // 1) Pegue siteId e galerias do contexto
+  const { slug: siteId, configuracoes } = useSite()
+  const initialGalerias = configuracoes.galerias ?? []
 
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const st = await fetch('/api/onboarding/status', { credentials:'include' })
-        const { siteId: id } = await st.json()
-        if (!id) throw new Error('Nenhum site em andamento')
-        setSiteId(id)
+  // 2) Estados
+  const [galerias, setGalerias] = useState<GalleryItem[]>(initialGalerias)
+  const [saving, setSaving]     = useState(false)
+  const [error, setError]       = useState('')
 
-        const res = await fetch(`/api/site/${id}`, { credentials:'include' })
-        if (!res.ok) throw new Error('Falha ao carregar galeria')
-        const { configuracoes } = await res.json()
-        setGalerias(configuracoes.galerias ?? [])
-      } catch (err: any) {
-        setError(err.message || 'Erro desconhecido')
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }, [])
-
+  // 3) Adicionar slot
   const handleAdd = useCallback(() => {
     if (galerias.length < 12) {
       setGalerias(g => [...g, { imagem: '' }])
     }
   }, [galerias.length])
 
+  // 4) Remover slot inteiro
   const handleRemove = useCallback((idx: number) => {
-    setGalerias(g => g.filter((_,i) => i!==idx))
+    setGalerias(g => g.filter((_, i) => i !== idx))
   }, [])
 
+  // 5) Limpar só a imagem num slot
   const handleRemoveImage = useCallback((idx: number) => {
-    setGalerias(g => g.map((item, i) => i === idx ? { ...item, imagem: '' } : item))
+    setGalerias(g => g.map((it, i) => i === idx ? { imagem: '' } : it))
   }, [])
 
-  const handleFile = useCallback(async (idx: number, file: File|null) => {
+  // 6) Trocar imagem de um slot
+  const handleFile = useCallback(async (idx: number, file: File | null) => {
     if (!file) return
     try {
       const b64 = await fileToBase64(file)
-      setGalerias(g => g.map((it,i)=> i===idx ? { imagem: b64 } : it))
+      setGalerias(g => g.map((it, i) => i === idx ? { imagem: b64 } : it))
     } catch {
       setError('Erro ao processar imagem')
     }
   }, [])
 
+  // 7) Salvar tudo via PUT
   const handleSave = useCallback(async () => {
-    if (!siteId) return
-    setSaving(true); setError('')
+    setSaving(true)
+    setError('')
     try {
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
         credentials: 'include',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ configuracoes: { galerias } })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ configuracoes: { galerias } }),
       })
       if (!res.ok) {
-        const body = await res.json().catch(()=>({}))
-        throw new Error(body.erro||'Falha ao salvar')
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.erro || 'Falha ao salvar')
       }
-    } catch(err: any) {
+    } catch (err: any) {
       setError(err.message)
     } finally {
       setSaving(false)
     }
   }, [siteId, galerias])
-
-  if (loading) {
-    return (
-      <AdminLayout>
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="animate-spin text-indigo-600" size={32} />
-        </div>
-      </AdminLayout>
-    )
-  }
 
   return (
     <AdminLayout>
