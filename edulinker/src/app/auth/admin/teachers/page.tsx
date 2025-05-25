@@ -1,8 +1,10 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Plus, Trash2, X, Upload, Loader2, Save } from 'lucide-react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
+import { useSite } from '@/contexts/siteContext'
+import { fileToBase64 } from '@/lib/fileUtils' 
 
 interface Professor {
   nome: string
@@ -11,73 +13,41 @@ interface Professor {
 }
 
 export default function AdminTeachersPage() {
-  const [siteId, setSiteId] = useState<string>()
-  const [professores, setProfessores] = useState<Professor[]>([])
-  const [loading, setLoading] = useState(true)
+  const { configuracoes, slug: siteId } = useSite()
+  // inicializa já com o que veio do servidor
+  const [professores, setProfessores] = useState<Professor[]>(configuracoes.professores ?? [])
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string>()
+  const [error, setError] = useState<string>('')
 
-  // 1) Carrega siteId e professores
-  useEffect(() => {
-    async function load() {
-      try {
-        // siteId do onboarding
-        const st = await fetch('/api/onboarding/status', { credentials: 'include' })
-        const { siteId: id } = await st.json()
-        setSiteId(id)
-
-        // dados do site
-        const res = await fetch(`/api/site/${id}`, { credentials: 'include' })
-        const { configuracoes } = await res.json()
-        setProfessores(configuracoes.professores || [])
-      } catch (err: any) {
-        setError('Não foi possível carregar professores.')
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [])
-
-  // 2) Lida com mudança de imagem
-  const handleImageChange = async (file: File, index: number) => {
+  // troca apenas o item de índice `idx`
+  const handleImageChange = useCallback(async (file: File, idx: number) => {
     if (!file.type.startsWith('image/')) {
       setError('Apenas imagens são permitidas.')
       return
     }
-    const reader = new FileReader()
-    reader.onload = () => {
-      const copy = [...professores]
-      copy[index].imagem = reader.result as string
-      setProfessores(copy)
+    try {
+      const b64 = await fileToBase64(file)
+      setProfessores(p => p.map((x, i) => i === idx ? { ...x, imagem: b64 } : x))
+    } catch {
+      setError('Falha ao processar imagem.')
     }
-    reader.readAsDataURL(file)
-  }
+  }, [])
 
-  // 3) Adicionar novo professor
   const addProfessor = () => {
-    setProfessores([
-      ...professores,
-      { nome: '', descricao: '', imagem: '' }
-    ])
+    setProfessores(p => [...p, { nome: '', descricao: '', imagem: '' }])
   }
 
-  // 4) Remover professor
   const removeProfessor = (idx: number) => {
-    setProfessores(professores.filter((_, i) => i !== idx))
+    setProfessores(p => p.filter((_, i) => i !== idx))
   }
 
-  // 5) Atualizar campos texto
   const updateField = (idx: number, field: keyof Professor, value: string) => {
-    const copy = [...professores]
-    // @ts-ignore
-    copy[idx][field] = value
-    setProfessores(copy)
+    setProfessores(p =>
+      p.map((x, i) => i === idx ? { ...x, [field]: value } : x)
+    )
   }
 
-  // 6) Salvar tudo
   const handleSave = async () => {
-    if (!siteId) return
     setSaving(true)
     setError('')
     try {
@@ -85,9 +55,7 @@ export default function AdminTeachersPage() {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          configuracoes: { professores }
-        })
+        body: JSON.stringify({ configuracoes: { professores } }),
       })
       if (!res.ok) throw new Error()
     } catch {
@@ -97,15 +65,7 @@ export default function AdminTeachersPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <AdminLayout>
-        <p className="p-6 text-center">Carregando configurações…</p>
-      </AdminLayout>
-    )
-  }
-
-  return (
+ return (
     <AdminLayout>
       <div className="p-4 sm:p-8 max-w-4xl mx-auto">
         {/* Cabeçalho */}
