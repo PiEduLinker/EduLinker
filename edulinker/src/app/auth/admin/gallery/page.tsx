@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
-import { useSite } from '@/contexts/siteContext'
+import { useSite, useIsPremium } from '@/contexts/siteContext'
 import { fileToBase64 } from '@/lib/fileUtils'
 
 interface GalleryItem {
@@ -11,33 +11,30 @@ interface GalleryItem {
 }
 
 export default function AdminGalleryPage() {
-  // 1) Pegue siteId e galerias do contexto
   const { slug: siteId, configuracoes } = useSite()
-  const initialGalerias = configuracoes.galerias ?? []
+  const isPremium = useIsPremium()
 
-  // 2) Estados
+  // máximo de slots conforme plano
+  const maxSlots = isPremium ? 12 : 3
+
+  const initialGalerias = (configuracoes.galerias as GalleryItem[]) ?? []
   const [galerias, setGalerias] = useState<GalleryItem[]>(initialGalerias)
   const [saving, setSaving]     = useState(false)
   const [error, setError]       = useState('')
 
-  // 3) Adicionar slot
   const handleAdd = useCallback(() => {
-    if (galerias.length < 12) {
-      setGalerias(g => [...g, { imagem: '' }])
-    }
-  }, [galerias.length])
+    if (galerias.length >= maxSlots) return
+    setGalerias(g => [...g, { imagem: '' }])
+  }, [galerias.length, maxSlots])
 
-  // 4) Remover slot inteiro
   const handleRemove = useCallback((idx: number) => {
     setGalerias(g => g.filter((_, i) => i !== idx))
   }, [])
 
-  // 5) Limpar só a imagem num slot
   const handleRemoveImage = useCallback((idx: number) => {
     setGalerias(g => g.map((it, i) => i === idx ? { imagem: '' } : it))
   }, [])
 
-  // 6) Trocar imagem de um slot
   const handleFile = useCallback(async (idx: number, file: File | null) => {
     if (!file) return
     try {
@@ -48,7 +45,6 @@ export default function AdminGalleryPage() {
     }
   }, [])
 
-  // 7) Salvar tudo via PUT
   const handleSave = useCallback(async () => {
     setSaving(true)
     setError('')
@@ -133,7 +129,8 @@ export default function AdminGalleryPage() {
                           </button>
                         </div>
                         <p className="text-xs text-gray-500 text-center">
-                          Clique para alterar ou no ícone <Trash2 className="inline" size={10} /> para remover
+                          Clique para alterar ou no ícone{' '}
+                          <Trash2 className="inline" size={10} /> para remover
                         </p>
                       </div>
                     )}
@@ -141,7 +138,7 @@ export default function AdminGalleryPage() {
                 </div>
               ))}
 
-              {galerias.length < 12 && (
+              {galerias.length < maxSlots ? (
                 <button
                   onClick={handleAdd}
                   disabled={saving}
@@ -149,8 +146,18 @@ export default function AdminGalleryPage() {
                 >
                   <Plus size={24} className="text-gray-400 mb-2" />
                   <span className="text-gray-600 font-medium">Adicionar foto</span>
-                  <span className="text-xs text-gray-400 mt-1">{12 - galerias.length} slots disponíveis</span>
+                  {!isPremium && (
+                    <span className="text-xs text-gray-500 mt-1">
+                      Planos não-Premium limitam a 3 fotos
+                    </span>
+                  )}
                 </button>
+              ) : (
+                !isPremium && (
+                  <p className="col-span-full text-center text-sm text-gray-500 mt-4">
+                    Você atingiu o limite de 3 fotos. Faça upgrade para adicionar mais.
+                  </p>
+                )
               )}
             </div>
 

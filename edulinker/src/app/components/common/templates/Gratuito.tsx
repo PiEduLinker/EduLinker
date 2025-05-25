@@ -91,10 +91,11 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
     })
   ).slice(0, 2)
 
-  // Galeria (até 3)
-  const galleryItems = (
-    config.galerias?.map(g => g) ?? Array(3).fill({ imagem: DEFAULT_GALLERY_IMAGE })
-  ).slice(0, 3)
+// se for premium, mostra todas; senão, só 3 primeiras
+  const allGalerias = Array.isArray(config.galerias) ? config.galerias : []
+  const displayedGalerias = isPremium
+  ? allGalerias
+  : allGalerias.slice(0, 3)
 
   // Informações de contato
   const contato = config.contato || {}
@@ -200,20 +201,34 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Galeria */}
-        <section id="galeria">
-          <h2 className="text-4xl font-bold text-center mb-8">Galeria</h2>
+        <section id="galeria" className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-12">Galeria de Fotos</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {galleryItems.map((item, idx) => (
-              <div key={idx} className="relative aspect-square overflow-hidden rounded-lg shadow">
-                <Image
+            {displayedGalerias.map((item, idx) => (
+              <div
+                key={idx}
+                className="relative aspect-square overflow-hidden rounded-xl shadow-md hover:shadow-lg transition"
+              >
+                <img
                   src={item.imagem}
-                  alt={`Galeria ${idx + 1}`}
-                  fill
-                  className="object-cover"
+                  alt={`Foto ${idx + 1}`}
+                  className="object-cover w-full h-full"
                 />
               </div>
             ))}
           </div>
+
+          {/* dica de upgrade se tiver mais de 3 imagens e for free */}
+          {!isPremium && allGalerias.length > 3 && (
+            <p className="mt-6 text-center text-sm text-gray-500">
+              Você tem {allGalerias.length} fotos, mas conta gratuita exibe só 3.{' '}
+              <a href="/upgrade" className="text-pink-600 underline">
+                Faça upgrade para ver todas
+              </a>.
+            </p>
+          )}
+        </div>
         </section>
 
         {/* Aulas */}
