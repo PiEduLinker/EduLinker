@@ -1,8 +1,21 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
-import { Edit2, Save, Mail, Phone, MessageCircle, Clock, MapPin, Facebook, Instagram, Youtube, Loader2 } from 'lucide-react'
+import {
+  Edit2,
+  Save,
+  Mail,
+  Phone,
+  MessageCircle,
+  Clock,
+  MapPin,
+  Facebook,
+  Instagram,
+  Youtube,
+  Loader2,
+} from 'lucide-react'
+import { useSite } from '@/contexts/siteContext'
 
 type ContactConfig = {
   descricaoBreve?: string
@@ -22,37 +35,21 @@ type ContactConfig = {
 }
 
 export default function AdminContactPage() {
-  const [siteId, setSiteId] = useState<string | null>(null)
-  const [config, setConfig] = useState<ContactConfig>({})
-  const [isEditing, setIsEditing] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  // 1) Pegue siteId e contato do contexto
+  const { slug: siteId, configuracoes } = useSite()
+  const initialConfig = configuracoes.contato ?? {}
 
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const st = await fetch('/api/onboarding/status', { credentials: 'include' })
-        const { siteId: id } = await st.json()
-        if (!id) throw new Error('Nenhum site em andamento')
-        setSiteId(id)
+  // 2) Estados locais
+  const [config, setConfig]       = useState<ContactConfig>(initialConfig)
+  const [isEditing, setEditing]   = useState(false)
+  const [saving, setSaving]       = useState(false)
+  const [error, setError]         = useState('')
 
-        const res = await fetch(`/api/site/${id}`, { credentials: 'include' })
-        if (!res.ok) throw new Error('Falha ao carregar')
-        const { configuracoes } = await res.json()
-        setConfig(configuracoes.contato || {})
-      } catch (err: any) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }, [])
-
+  // 3) Atualiza campos (incluindo socialMedia.*)
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     if (name.startsWith('socialMedia.')) {
-      const key = name.split('.')[1]
+      const key = name.split('.')[1] as keyof ContactConfig['socialMedia']
       setConfig(c => ({
         ...c,
         socialMedia: {
@@ -65,45 +62,32 @@ export default function AdminContactPage() {
     }
   }, [])
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault()
-      if (!siteId) return
-      setSaving(true)
-      setError('')
+  // 4) Salvar via PUT
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    setError('')
 
-      try {
-        const res = await fetch(`/api/site/${siteId}`, {
-          method: 'PUT',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ configuracoes: { contato: config } })
-        })
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}))
-          throw new Error(body.erro || 'Falha ao salvar')
-        }
-        setIsEditing(false)
-      } catch (err: any) {
-        setError(err.message)
-      } finally {
-        setSaving(false)
+    try {
+      const res = await fetch(`/api/site/${siteId}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ configuracoes: { contato: config } })
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.erro || 'Falha ao salvar')
       }
-    },
-    [siteId, config]
-  )
+      setEditing(false)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setSaving(false)
+    }
+  }, [siteId, config])
 
-  if (loading) {
-    return (
-      <AdminLayout>
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="animate-spin text-indigo-600" size={32} />
-        </div>
-      </AdminLayout>
-    )
-  }
-
-  return (
+return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -112,7 +96,7 @@ export default function AdminContactPage() {
               <h1 className="text-2xl font-bold text-gray-900">Configurações de Contato</h1>
               {!isEditing ? (
                 <button
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => setEditing(true)}
                   className="flex items-center space-x-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                 >
                   <Edit2 size={18} />
@@ -120,7 +104,7 @@ export default function AdminContactPage() {
                 </button>
               ) : (
                 <button
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => setEditing(false)}
                   className="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Cancelar
