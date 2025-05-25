@@ -1,77 +1,44 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
+import { useSite } from '@/contexts/siteContext'
+import { fileToBase64 } from '@/lib/fileUtils'
 
-interface BannerItem {
-  imagem: string // base64 string
-}
-
-// Helper to convert file to base64
-async function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(new Error('Erro ao processar imagem'))
-  })
-}
+interface BannerItem { imagem: string }
 
 export default function AdminBannerPage() {
-  const [siteId, setSiteId] = useState<string | null>(null)
-  const [banners, setBanners] = useState<BannerItem[]>([])
-  const [loading, setLoading] = useState(true)
+  const { slug: siteId, configuracoes } = useSite()
+  const initial = configuracoes.carrossel as BannerItem[] | undefined
+
+  const [banners, setBanners] = useState<BannerItem[]>(initial ?? [])
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError]   = useState('')
 
-  // Carrega dados iniciais
-  useEffect(() => {
-    ; (async () => {
-      try {
-        const st = await fetch('/api/onboarding/status', { credentials: 'include' })
-        const { siteId: id } = await st.json()
-        if (!id) throw new Error('Nenhum site em andamento')
-        setSiteId(id)
-
-        const res = await fetch(`/api/site/${id}`, { credentials: 'include' })
-        if (!res.ok) throw new Error('Falha ao carregar banners')
-        const { configuracoes } = await res.json()
-        setBanners(configuracoes.carrossel ?? [])
-      } catch (err: any) {
-        setError(err.message || 'Erro desconhecido')
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }, [])
-
-  // Adiciona novo slot de banner
   const handleAdd = useCallback(() => {
     if (banners.length < 3) {
       setBanners(b => [...b, { imagem: '' }])
     }
   }, [banners.length])
 
-  // Remove banner pelo índice
   const handleRemove = useCallback((idx: number) => {
     setBanners(b => b.filter((_, i) => i !== idx))
   }, [])
 
-  // Processa upload de imagem
   const handleFile = useCallback(async (idx: number, file: File | null) => {
     if (!file) return
     try {
       const b64 = await fileToBase64(file)
-      setBanners(b => b.map((item, i) => i === idx ? { imagem: b64 } : item))
+      setBanners(b =>
+        b.map((item, i) => i === idx ? { imagem: b64 } : item)
+      )
     } catch {
       setError('Erro ao processar imagem')
     }
   }, [])
 
-  // Salva banners
   const handleSave = useCallback(async () => {
-    if (!siteId) return
     setSaving(true)
     setError('')
     try {
@@ -92,17 +59,8 @@ export default function AdminBannerPage() {
     }
   }, [siteId, banners])
 
-  if (loading) {
-    return (
-      <AdminLayout>
-        <p className="p-6 text-center">Carregando banners…</p>
-      </AdminLayout>
-    )
-  }
-
   return (
-    <AdminLayout>
-      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <AdminLayout> <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl overflow-hidden">
           <div className="p-6 sm:p-8">
             <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">Gerenciamento de Banners</h1>
@@ -196,7 +154,7 @@ export default function AdminBannerPage() {
             </div>
           </div>
         </div>
-      </div>
-    </AdminLayout>
-    )
+      </div>    
+      </AdminLayout>
+  )
 }
