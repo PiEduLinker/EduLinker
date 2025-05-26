@@ -10,6 +10,7 @@ import { useSite } from '@/contexts/siteContext'
 import CarouselPremium from '../premium/CarouselPremium'
 import ProfessorCardPremium from '../premium/ProfessorCardPremium'
 import DepoimentoCardPremium from '../premium/DepoimentoCardPremium'
+import { Clock, Mail, Phone, MessageCircle, MapPin, FacebookIcon, Instagram, Youtube } from 'lucide-react'
 
 // Imagens padrão
 const DEFAULT_LOGO = '/Logo/EduLinker.png'
@@ -75,12 +76,17 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
     : allGalerias.slice(0, 3)
 
   // Informações de contato
-  const contato = config.contato || {}
-  const whatsapp = contato.whatsapp
-  const email = contato.email
-  const telefone = contato.telefone
-  const endereco = contato.endereco
-  const cidade = contato.cidade
+  const {
+    descricaoBreve,
+    horarioSemana,
+    horarioSabado,
+    email,
+    telefone,
+    whatsapp,
+    endereco,
+    cidade,
+    socialMedia = {},
+  } = config.contato || {}
 
   return (
     <div
@@ -310,53 +316,126 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
     </section>
 
         {/* Contato */}
-        <section id="contato">
-          <h2 className="text-4xl font-bold text-center mb-8">Contato</h2>
-          <div className="max-w-2xl mx-auto space-y-4 text-center">
-            {whatsapp && (
-              <a
-                href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
-                className="block text-lg text-pink-600 hover:underline"
-              >
-                WhatsApp: {whatsapp}
-              </a>
-            )}
-            {email && <p>Email: {email}</p>}
-            {telefone && <p>Telefone: {telefone}</p>}
-            {(endereco || cidade) && (
-              <p>
-                {endereco} {cidade && `— ${cidade}`}
-              </p>
-            )}
-          </div>
-        </section>
-      </main>
+         <section id="contato" className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <h2 className="text-4xl font-bold text-center mb-12">Contato</h2>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white pt-16 pb-8">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-            <img
-              src={config.logo || DEFAULT_LOGO}
-              alt="Logo"
-              className="h-10 mb-6 md:mb-0"
-            />
-            <div className="flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-white transition">
-                Termos
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
-                Privacidade
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
-                FAQ
-              </a>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+          {/* Horários */}
+          <div className="flex items-start gap-4">
+            <Clock className="w-6 h-6 text-pink-600" />
+            <div>
+              <p className="font-semibold">Horário de Funcionamento</p>
+              <p className="text-gray-600">{horarioSemana || 'Seg–Sex: 09h–21h'}</p>
+              <p className="text-gray-600">{horarioSabado || 'Sáb: 09h–14h'}</p>
             </div>
           </div>
-          <p className="mb-2">© {new Date().getFullYear()} {siteTitle}. Todos os direitos reservados.</p>
-          <p className="text-sm">Versão Gratuita – Edulinker</p>
+
+          {/* E-mail */}
+          <div className="flex items-start gap-4">
+            <Mail className="w-6 h-6 text-blue-600" />
+            <div>
+              <p className="font-semibold">E-mail</p>
+              <p className="text-gray-600">{email || 'contato@seudominio.com'}</p>
+            </div>
+          </div>
+
+          {/* Telefone */}
+          <div className="flex items-start gap-4">
+            <Phone className="w-6 h-6 text-green-600" />
+            <div>
+              <p className="font-semibold">Telefone</p>
+              <p className="text-gray-600">{telefone || '(11) 99999-0000'}</p>
+            </div>
+          </div>
+
+          {/* WhatsApp */}
+          <div className="flex items-start gap-4">
+            <MessageCircle className="w-6 h-6 text-green-600" />
+            <div>
+              <p className="font-semibold">WhatsApp</p>
+              <p className="text-gray-600">{whatsapp || '(11) 98888-1111'}</p>
+            </div>
+          </div>
+
+          {/* Endereço */}
+          <div className="flex items-start gap-4 sm:col-span-2 lg:col-span-3">
+            <MapPin className="w-6 h-6 text-purple-600" />
+            <div>
+              <p className="font-semibold">Endereço</p>
+              <p className="text-gray-600">{endereco || 'Rua Exemplo, 123'}</p>
+              <p className="text-gray-600">{cidade || 'São Paulo - SP'}</p>
+            </div>
+          </div>
         </div>
-      </footer>
+      </div>
+    </section>
+      </main>
+
+      <footer className="bg-gray-900 text-white pt-16 pb-8">
+  <div className="container mx-auto px-4">
+    <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+      <img
+        src={config.logo || DEFAULT_LOGO}
+        alt="Logo"
+        className="h-10 mb-6 md:mb-0"
+      />
+      <div className="flex space-x-6">
+        <a href="#" className="text-gray-400 hover:text-white transition">
+          Termos
+        </a>
+        <a href="#" className="text-gray-400 hover:text-white transition">
+          Privacidade
+        </a>
+        <a href="#" className="text-gray-400 hover:text-white transition">
+          FAQ
+        </a>
+      </div>
+    </div>
+
+    {/* Redes Sociais */}
+    <div className="flex justify-center md:justify-start space-x-4 mb-4">
+      {config.contato?.socialMedia?.facebook && (
+        <a
+          href={config.contato.socialMedia.facebook}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-400 hover:text-white transition"
+        >
+          <FacebookIcon className="w-6 h-6" />
+        </a>
+      )}
+      {config.contato?.socialMedia?.instagram && (
+        <a
+          href={config.contato.socialMedia.instagram}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-400 hover:text-white transition"
+        >
+          <Instagram className="w-6 h-6" />
+        </a>
+      )}
+      {config.contato?.socialMedia?.youtube && (
+        <a
+          href={config.contato.socialMedia.youtube}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-400 hover:text-white transition"
+        >
+          <Youtube className="w-6 h-6" />
+        </a>
+      )}
+    </div>
+
+    <p className="mb-2 text-center md:text-left">
+      © {new Date().getFullYear()} {siteTitle}. Todos os direitos reservados.
+    </p>
+    <p className="text-sm text-center md:text-left">
+      Versão Gratuita – Edulinker
+    </p>
+  </div>
+</footer>
     </div>
   )
 }
