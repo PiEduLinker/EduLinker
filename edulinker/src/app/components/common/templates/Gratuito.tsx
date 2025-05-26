@@ -9,6 +9,7 @@ import DepoimentoCard from '@/app/components/common/gratuito/DepoimentoCard'
 import { useSite } from '@/contexts/siteContext'
 import CarouselPremium from '../premium/CarouselPremium'
 import ProfessorCardPremium from '../premium/ProfessorCardPremium'
+import DepoimentoCardPremium from '../premium/DepoimentoCardPremium'
 
 // Imagens padrão
 const DEFAULT_LOGO = '/Logo/EduLinker.png'
@@ -64,16 +65,8 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
   const displayed = isPremium ? allProfessores : allProfessores.slice(0,4)
 
   // Depoimentos (até 2)
-  const depoimentosItems = (
-    config.depoimentos?.map(d => ({
-      ...d,
-      foto: d.foto || DEFAULT_DEPOIMENTO_IMAGE,
-    })) ?? Array(2).fill({
-      foto: DEFAULT_DEPOIMENTO_IMAGE,
-      nome: 'Cliente Satisfeito',
-      texto: 'Ótima experiência!',
-    })
-  ).slice(0, 2)
+  const all = Array.isArray(config.depoimentos) ? config.depoimentos : []
+  const displayedDepoimentos = isPremium ? all : all.slice(0, 2)
 
   // se for premium, mostra todas; senão, só 3 primeiras
   const allGalerias = Array.isArray(config.galerias) ? config.galerias : []
@@ -280,19 +273,41 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
     </section>
 
         {/* Depoimentos */}
-        <section id="depoimentos">
-          <h2 className="text-4xl font-bold text-center mb-8">Depoimentos</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {depoimentosItems.map((d, i) => (
+        <section id="depoimentos" className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        <h2 className="text-4xl font-bold text-center mb-12">
+          Depoimentos
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {displayedDepoimentos.map((d, i) =>
+            isPremium ? (
+              <DepoimentoCardPremium
+                key={i}
+                foto={d.foto}
+                nome={d.nome}
+                texto={d.texto}
+                estrelas={d.estrelas}
+              />
+            ) : (
               <DepoimentoCard
                 key={i}
                 foto={d.foto}
                 nome={d.nome}
                 texto={d.texto}
               />
-            ))}
-          </div>
-        </section>
+            )
+          )}
+        </div>
+        {!isPremium && all.length > 4 && (
+          <p className="mt-6 text-center text-sm text-gray-500">
+            Você tem {all.length} depoimentos, mas no plano gratuito só são exibidos 4.{' '}
+            <a href="/upgrade" className="text-pink-600 underline">
+              Faça upgrade para ver todos
+            </a>.
+          </p>
+        )}
+      </div>
+    </section>
 
         {/* Contato */}
         <section id="contato">

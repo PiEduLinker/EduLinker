@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Star, Loader2, Save } from 'lucide-react'
-import { useSite } from '@/contexts/siteContext'
+import { useSite, useIsPremium } from '@/contexts/siteContext'
 import { fileToBase64 } from '@/lib/fileUtils'
 
 type Testimonial = {
@@ -15,28 +15,30 @@ type Testimonial = {
 
 export default function AdminTestimonialsPage() {
   const { configuracoes, slug: siteId } = useSite()
-  const [items, setItems] = useState<Testimonial[]>(
-    configuracoes.depoimentos ?? []
-  )
+  const isPremium = useIsPremium()
+  const maxItems = isPremium ? 8 : 2
+
+  const initial = (configuracoes.depoimentos as Testimonial[]) ?? []
+  const [items, setItems] = useState<Testimonial[]>(initial)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   const handleAdd = useCallback(() => {
-    if (items.length < 4) {
-      setItems(i => [
-        ...i,
-        { foto: '', nome: '', texto: '', estrelas: 5 }
-      ])
-    }
-  }, [items.length])
+    if (items.length >= maxItems) return
+    setItems(i => [
+      ...i,
+      { foto: '', nome: '', texto: '', estrelas: 5 }
+    ])
+  }, [items.length, maxItems])
 
- const handleRemove = useCallback((idx: number) => {
+  const handleRemove = useCallback((idx: number) => {
     setItems(i => i.filter((_, j) => j !== idx))
   }, [])
 
   const handleRemoveImage = useCallback((idx: number) => {
     setItems(i => i.map((it, j) => j === idx ? { ...it, foto: '' } : it))
   }, [])
+
   const handleFile = useCallback(async (idx: number, file: File | null) => {
     if (!file) return
     try {
@@ -81,12 +83,14 @@ export default function AdminTestimonialsPage() {
     }
   }, [siteId, items])
 
-   return (
+  return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="p-6 sm:p-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Gerenciamento de Depoimentos</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-6">
+              Gerenciamento de Depoimentos
+            </h1>
 
             {error && (
               <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
@@ -96,9 +100,14 @@ export default function AdminTestimonialsPage() {
 
             <div className="space-y-6">
               {items.map((item, idx) => (
-                <div key={idx} className="border border-gray-200 rounded-xl p-6 relative transition-all hover:shadow-sm">
+                <div
+                  key={idx}
+                  className="border border-gray-200 rounded-xl p-6 relative transition-all hover:shadow-sm"
+                >
                   <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg font-semibold text-gray-800">Depoimento #{idx + 1}</h3>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      Depoimento #{idx + 1}
+                    </h3>
                     <button
                       onClick={() => handleRemove(idx)}
                       disabled={saving}
@@ -109,40 +118,37 @@ export default function AdminTestimonialsPage() {
                   </div>
 
                   <div className="space-y-6">
-                    {/* Seção de Foto */}
+                    {/* Foto */}
                     <div className="space-y-4">
-                      <label className="block text-sm font-medium text-gray-700">Foto do Depoente</label>
-                      
+                      <label className="block text-sm font-medium text-gray-700">
+                        Foto do Depoente
+                      </label>
                       <div className="flex flex-col sm:flex-row gap-6 items-start">
                         <div className="relative">
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={e => handleFile(idx, e.target.files?.[0] ?? null)}
+                            onChange={e =>
+                              handleFile(idx, e.target.files?.[0] ?? null)
+                            }
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            id={`testimonial-upload-${idx}`}
                           />
-                          <label
-                            htmlFor={`testimonial-upload-${idx}`}
-                            className="block px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-gray-400 transition-colors"
-                          >
+                          <label className="block px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-gray-400 transition-colors">
                             <span className="text-gray-600">
                               {item.foto ? 'Alterar foto' : 'Selecione uma foto'}
                             </span>
                           </label>
                         </div>
-
                         {item.foto && (
                           <div className="relative group">
-                            <img 
-                              src={item.foto} 
-                              alt={`Foto ${idx+1}`} 
+                            <img
+                              src={item.foto}
+                              alt={`Foto ${idx + 1}`}
                               className="w-24 h-24 object-cover rounded-full border-2 border-gray-200"
                             />
                             <button
                               onClick={() => handleRemoveImage(idx)}
                               className="absolute top-0 right-0 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                              aria-label="Remover foto"
                             >
                               <Trash2 size={14} />
                             </button>
@@ -151,32 +157,42 @@ export default function AdminTestimonialsPage() {
                       </div>
                     </div>
 
-                    {/* Campos do formulário */}
+                    {/* Texto e estrelas */}
                     <div className="grid gap-6">
                       <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">Nome</label>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Nome
+                        </label>
                         <input
                           type="text"
                           value={item.nome}
-                          onChange={e => handleChange(idx, 'nome', e.target.value)}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                          onChange={e =>
+                            handleChange(idx, 'nome', e.target.value)
+                          }
+                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
                           placeholder="Nome completo"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">Depoimento</label>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Depoimento
+                        </label>
                         <textarea
                           rows={4}
                           value={item.texto}
-                          onChange={e => handleChange(idx, 'texto', e.target.value)}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                          onChange={e =>
+                            handleChange(idx, 'texto', e.target.value)
+                          }
+                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
                           placeholder="Texto do depoimento"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">Avaliação</label>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Avaliação
+                        </label>
                         <div className="flex items-center space-x-1">
                           {[1, 2, 3, 4, 5].map(n => (
                             <button
@@ -187,12 +203,17 @@ export default function AdminTestimonialsPage() {
                             >
                               <Star
                                 size={24}
-                                className={`${n <= item.estrelas ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'} transition-colors`}
+                                className={`${
+                                  n <= item.estrelas
+                                    ? 'text-yellow-400 fill-yellow-400'
+                                    : 'text-gray-300'
+                                } transition-colors`}
                               />
                             </button>
                           ))}
                           <span className="ml-2 text-sm text-gray-500">
-                            {item.estrelas} {item.estrelas === 1 ? 'estrela' : 'estrelas'}
+                            {item.estrelas}{' '}
+                            {item.estrelas === 1 ? 'estrela' : 'estrelas'}
                           </span>
                         </div>
                       </div>
@@ -203,7 +224,7 @@ export default function AdminTestimonialsPage() {
             </div>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-between items-center pt-6 border-t border-gray-200">
-              {items.length < 4 && (
+              {items.length < maxItems ? (
                 <button
                   onClick={handleAdd}
                   disabled={saving}
@@ -212,14 +233,21 @@ export default function AdminTestimonialsPage() {
                   <Plus size={18} />
                   <span>Adicionar Depoimento</span>
                 </button>
+              ) : (
+                !isPremium && (
+                  <p className="text-sm text-gray-500">
+                    Você atingiu o limite de 2 depoimentos. Faça upgrade para
+                    adicionar até 8.
+                  </p>
+                )
               )}
 
               <button
                 onClick={handleSave}
                 disabled={saving}
                 className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition-all ${
-                  saving 
-                    ? 'bg-gray-400 cursor-not-allowed' 
+                  saving
+                    ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
                 }`}
               >
