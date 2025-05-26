@@ -3,23 +3,27 @@
 import React, { useState, useCallback } from 'react'
 import { Plus, Trash2, X, Upload, Loader2, Save } from 'lucide-react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
-import { useSite } from '@/contexts/siteContext'
-import { fileToBase64 } from '@/lib/fileUtils' 
+import { useSite, useIsPremium } from '@/contexts/siteContext'
+import { fileToBase64 } from '@/lib/fileUtils'
 
 interface Professor {
   nome: string
   descricao: string
-  imagem?: string   // base64 ou URL
+  imagem?: string   
 }
 
 export default function AdminTeachersPage() {
   const { configuracoes, slug: siteId } = useSite()
-  // inicializa já com o que veio do servidor
-  const [professores, setProfessores] = useState<Professor[]>(configuracoes.professores ?? [])
+  const isPremium = useIsPremium()
+
+  // limita: free até 4, premium até 12
+  const maxProfessores = isPremium ? 12 : 4
+
+  const initial = (configuracoes.professores as Professor[]) ?? []
+  const [professores, setProfessores] = useState<Professor[]>(initial)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string>('')
 
-  // troca apenas o item de índice `idx`
   const handleImageChange = useCallback(async (file: File, idx: number) => {
     if (!file.type.startsWith('image/')) {
       setError('Apenas imagens são permitidas.')
@@ -27,27 +31,30 @@ export default function AdminTeachersPage() {
     }
     try {
       const b64 = await fileToBase64(file)
-      setProfessores(p => p.map((x, i) => i === idx ? { ...x, imagem: b64 } : x))
+      setProfessores(p =>
+        p.map((x, i) => (i === idx ? { ...x, imagem: b64 } : x))
+      )
     } catch {
       setError('Falha ao processar imagem.')
     }
   }, [])
 
-  const addProfessor = () => {
+  const addProfessor = useCallback(() => {
+    if (professores.length >= maxProfessores) return
     setProfessores(p => [...p, { nome: '', descricao: '', imagem: '' }])
-  }
+  }, [professores.length, maxProfessores])
 
-  const removeProfessor = (idx: number) => {
+  const removeProfessor = useCallback((idx: number) => {
     setProfessores(p => p.filter((_, i) => i !== idx))
-  }
+  }, [])
 
-  const updateField = (idx: number, field: keyof Professor, value: string) => {
+  const updateField = useCallback((idx: number, field: keyof Professor, value: string) => {
     setProfessores(p =>
-      p.map((x, i) => i === idx ? { ...x, [field]: value } : x)
+      p.map((x, i) => (i === idx ? { ...x, [field]: value } : x))
     )
-  }
+  }, [])
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     setSaving(true)
     setError('')
     try {
@@ -63,9 +70,9 @@ export default function AdminTeachersPage() {
     } finally {
       setSaving(false)
     }
-  }
+  }, [siteId, professores])
 
- return (
+  return (
     <AdminLayout>
       <div className="p-4 sm:p-8 max-w-4xl mx-auto">
         {/* Cabeçalho */}
@@ -80,13 +87,16 @@ export default function AdminTeachersPage() {
           )}
         </div>
 
-        {/* Lista de Professores */}
         <div className="space-y-6">
           {professores.map((prof, idx) => (
-            <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 relative transition-all hover:shadow-lg">
-              {/* Botão de Remover */}
+            <div
+              key={idx}
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 relative transition-all hover:shadow-lg"
+            >
+              {/* Remover */}
               <button
                 onClick={() => removeProfessor(idx)}
+                disabled={saving}
                 className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                 aria-label="Remover professor"
               >
@@ -95,30 +105,36 @@ export default function AdminTeachersPage() {
 
               {/* Nome */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 text-white mb-2">Nome</label>
+                <label className="block text-sm font-medium text-gray-700 text-white mb-2">
+                  Nome
+                </label>
                 <input
                   type="text"
                   value={prof.nome}
                   onChange={e => updateField(idx, 'nome', e.target.value)}
-                  className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all  placeholder:text-white text-white"
+                  className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition-all"
                   placeholder="Digite o nome do professor"
                 />
               </div>
 
               {/* Descrição */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 text-white mb-2">Descrição</label>
+                <label className="block text-sm font-medium text-gray-700 text-white mb-2">
+                  Descrição
+                </label>
                 <textarea
                   value={prof.descricao}
                   onChange={e => updateField(idx, 'descricao', e.target.value)}
-                  className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all min-h-[100px] placeholder:text-white text-white"
+                  className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition-all min-h-[100px]"
                   placeholder="Descrição sobre o professor"
                 />
               </div>
 
               {/* Imagem */}
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Imagem</label>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Imagem
+                </label>
                 <div className="flex items-center gap-4">
                   <label className="cursor-pointer">
                     <span className="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors">
@@ -155,31 +171,37 @@ export default function AdminTeachersPage() {
             </div>
           ))}
 
-          {/* Botão Adicionar */}
-          <button
-            onClick={addProfessor}
-            className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-all text-gray-600 dark:text-gray-400 font-medium cursor-pointer"
-          >
-            <Plus size={20} />
-            Adicionar professor
-          </button>
+          {/* Adicionar */}
+          {professores.length < maxProfessores ? (
+            <button
+              onClick={addProfessor}
+              disabled={saving}
+              className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-all text-gray-600 dark:text-gray-400 font-medium cursor-pointer"
+            >
+              <Plus size={20} />
+              Adicionar professor
+            </button>
+          ) : (
+            !isPremium && (
+              <p className="text-center text-sm text-gray-500">
+                Você atingiu o limite de 4 professores. Faça upgrade para adicionar até 12.
+              </p>
+            )
+          )}
 
-          {/* Botão Salvar */}
+          {/* Salvar */}
           <div className="flex justify-end mt-8">
             <button
               onClick={handleSave}
               disabled={saving}
               className="flex items-center gap-2 text-white py-2.5 px-6 rounded-lg transition-all shadow hover:shadow-md disabled:opacity-70 cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg"
             >
-              {saving ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <Save size={18} /> 
-              )}
+              {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
               {saving ? 'Salvando...' : 'Salvar professores'}
             </button>
           </div>
         </div>
       </div>
-    </AdminLayout>)
+    </AdminLayout>
+  )
 }

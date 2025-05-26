@@ -117,7 +117,6 @@ export default function CarouselPremium({
                 loader={({ src }) => src}
                 className="object-cover"
                 onError={handleImageError(idx)}
-                onLoadingComplete={() => handleImageLoad(idx)}
               />
             </div>
           )
@@ -148,9 +147,8 @@ export default function CarouselPremium({
               <button
                 key={i}
                 onClick={() => goTo(i)}
-                className={`w-3 h-3 rounded-full transition ${
-                  i === currentIndex ? 'bg-white' : 'bg-white/50 hover:bg-white/75'
-                }`}
+                className={`w-3 h-3 rounded-full transition ${i === currentIndex ? 'bg-white' : 'bg-white/50 hover:bg-white/75'
+                  }`}
                 aria-label={`Slide ${i + 1}`}
               />
             ))}

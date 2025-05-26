@@ -8,6 +8,7 @@ import ProfessorCard from '@/app/components/common/gratuito/ProfessorCard'
 import DepoimentoCard from '@/app/components/common/gratuito/DepoimentoCard'
 import { useSite } from '@/contexts/siteContext'
 import CarouselPremium from '../premium/CarouselPremium'
+import ProfessorCardPremium from '../premium/ProfessorCardPremium'
 
 // Imagens padrão
 const DEFAULT_LOGO = '/Logo/EduLinker.png'
@@ -53,22 +54,14 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
     : []
 
   // Aulas (até 4 cards)
-   const allAulas = Array.isArray(config.aulas) ? config.aulas : []
+  const allAulas = Array.isArray(config.aulas) ? config.aulas : []
   const displayedAulas = isPremium
     ? allAulas
     : allAulas.slice(0, 4)
 
-  // Professores (até 4)
-  const professoresItems = (
-    config.professores?.map(p => ({
-      ...p,
-      imagem: p.imagem || DEFAULT_PROFESSOR_IMAGE,
-    })) ?? Array(4).fill({
-      nome: 'Professor Experiente',
-      descricao: 'Especialista na área',
-      imagem: DEFAULT_PROFESSOR_IMAGE,
-    })
-  ).slice(0, 4)
+  // pega todos os professores configurados
+  const allProfessores = Array.isArray(config.professores) ? config.professores : []
+  const displayed = isPremium ? allProfessores : allProfessores.slice(0,4)
 
   // Depoimentos (até 2)
   const depoimentosItems = (
@@ -82,11 +75,11 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
     })
   ).slice(0, 2)
 
-// se for premium, mostra todas; senão, só 3 primeiras
+  // se for premium, mostra todas; senão, só 3 primeiras
   const allGalerias = Array.isArray(config.galerias) ? config.galerias : []
   const displayedGalerias = isPremium
-  ? allGalerias
-  : allGalerias.slice(0, 3)
+    ? allGalerias
+    : allGalerias.slice(0, 3)
 
   // Informações de contato
   const contato = config.contato || {}
@@ -193,37 +186,37 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
 
         {/* Galeria */}
         <section id="galeria" className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">Galeria de Fotos</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {displayedGalerias.map((item, idx) => (
-              <div
-                key={idx}
-                className="relative aspect-square overflow-hidden rounded-xl shadow-md hover:shadow-lg transition"
-              >
-                <img
-                  src={item.imagem}
-                  alt={`Foto ${idx + 1}`}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-            ))}
-          </div>
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-12">Galeria de Fotos</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {displayedGalerias.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="relative aspect-square overflow-hidden rounded-xl shadow-md hover:shadow-lg transition"
+                >
+                  <img
+                    src={item.imagem}
+                    alt={`Foto ${idx + 1}`}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              ))}
+            </div>
 
-          {/* dica de upgrade se tiver mais de 3 imagens e for free */}
-          {!isPremium && allGalerias.length > 3 && (
-            <p className="mt-6 text-center text-sm text-gray-500">
-              Você tem {allGalerias.length} fotos, mas conta gratuita exibe só 3.{' '}
-              <a href="/upgrade" className="text-pink-600 underline">
-                Faça upgrade para ver todas
-              </a>.
-            </p>
-          )}
-        </div>
+            {/* dica de upgrade se tiver mais de 3 imagens e for free */}
+            {!isPremium && allGalerias.length > 3 && (
+              <p className="mt-6 text-center text-sm text-gray-500">
+                Você tem {allGalerias.length} fotos, mas conta gratuita exibe só 3.{' '}
+                <a href="/upgrade" className="text-pink-600 underline">
+                  Faça upgrade para ver todas
+                </a>.
+              </p>
+            )}
+          </div>
         </section>
 
         {/* Aulas */}
-         <section id="aulas" className="py-20 bg-white">
+        <section id="aulas" className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-4xl font-bold text-center mb-12">Nossas Aulas</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -250,24 +243,41 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Professores */}
-        <section id="professores" className="py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold text-center mb-16">
-              Nossos Professores
-            </h2>
+          <section id="professores" className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <h2 className="text-4xl font-bold text-center mb-12">Nossa Equipe</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {professoresItems.map((p, i) => (
-                <ProfessorCard
-                  key={i}
-                  foto={p.imagem}
-                  nome={p.nome}
-                  descricao={p.descricao}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {displayed.map((prof, idx) =>
+            isPremium ? (
+              <ProfessorCardPremium
+                key={idx}
+                foto={prof.imagem}
+                nome={prof.nome}
+                texto={prof.descricao}
+              />
+            ) : (
+              <ProfessorCard
+                key={idx}
+                foto={prof.imagem}
+                nome={prof.nome}
+                descricao={prof.descricao}
+              />
+            )
+          )}
+        </div>
+
+        {!isPremium && allProfessores.length > 4 && (
+          <p className="mt-6 text-center text-sm text-gray-500">
+            Você cadastrou {allProfessores.length} professores, mas no plano gratuito
+            só mostramos 4.{' '}
+            <a href="/upgrade" className="text-pink-600 underline">
+              Faça upgrade para ver todos
+            </a>.
+          </p>
+        )}
+      </div>
+    </section>
 
         {/* Depoimentos */}
         <section id="depoimentos">

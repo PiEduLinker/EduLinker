@@ -24,18 +24,6 @@ export default function ProfessorCard({
       <div className="p-6">
         <h3 className="text-xl font-bold mb-2">{nome || 'Professor'}</h3>
         <p className="text-gray-600 mb-4">{descricao || 'Especialista em sua área'}</p>
-        
-        <div className="flex justify-center space-x-3">
-          {['facebook', 'twitter', 'instagram'].map((social) => (
-            <a 
-              key={social} 
-              href="#" 
-              className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-pink-100 transition"
-            >
-              <span className="sr-only">{social}</span>
-            </a>
-          ))}
-        </div>
       </div>
     </div>
   )
