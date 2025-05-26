@@ -3,9 +3,18 @@
 import React, { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import {
-  Upload,Plus,Trash2,Save,Loader2,Image as ImageIcon,Text,Award,} from 'lucide-react'
+  Upload,
+  Plus,
+  Trash2,
+  Save,
+  Loader2,
+  Image as ImageIcon,
+  Text,
+  Award,
+} from 'lucide-react'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
-import { fileToBase64 } from '@/lib/fileUtils'
+import { CldUploadWidget } from 'next-cloudinary'
+import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
 
 type Destaque = { number: string; label: string }
 
@@ -21,12 +30,11 @@ export default function AdminAboutPage() {
 
   const [descricao, setDescricao] = useState(initialDescricao)
   const [fotoSobre, setFotoSobre] = useState(initialFoto)
-  const [preview, setPreview] = useState(initialFoto)
   const [destaques, setDestaques] = useState<Destaque[]>(initialDestaques)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
-  // Bloqueia adicionar se não for premium
+  // Adiciona destaque apenas se for premium
   const handleAdd = useCallback(() => {
     if (!isPremium) return
     if (destaques.length < 3) {
@@ -43,29 +51,6 @@ export default function AdminAboutPage() {
       setDestaques(ds =>
         ds.map((d, i) => (i === idx ? { ...d, [field]: value } : d))
       )
-    },
-    []
-  )
-
-  const handleFileChange = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (!file) {
-        setFotoSobre('')
-        setPreview('')
-        return
-      }
-      if (!file.type.startsWith('image/')) {
-        setError('Apenas imagens são permitidas.')
-        return
-      }
-      try {
-        const b64 = await fileToBase64(file)
-        setFotoSobre(b64)
-        setPreview(URL.createObjectURL(file))
-      } catch {
-        setError('Não foi possível processar a imagem.')
-      }
     },
     []
   )
@@ -113,38 +98,45 @@ export default function AdminAboutPage() {
           <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
             <ImageIcon className="w-5 h-5" /> Imagem da Seção
           </h2>
-          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition p-4">
-            <Upload className="w-8 h-8 mb-2 text-white" />
-            <p className="mb-1 text-sm text-white text-center">
-              <span className="font-medium">Clique para enviar</span> ou arraste
-            </p>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-          </label>
-          {preview && (
-            <div className="mt-4 flex justify-center">
-              <div className="relative group">
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-48 h-auto rounded-lg shadow-md border-2 border-white dark:border-gray-700"
-                />
+
+          <div className="flex flex-col items-center space-y-4">
+            {fotoSobre && (
+              <img
+                src={fotoSobre}
+                alt="Preview Sobre"
+                className="w-48 h-auto rounded-lg shadow-md border-2 border-white dark:border-gray-700"
+              />
+            )}
+
+            <CldUploadWidget
+              uploadPreset="edulinker_unsigned"
+              options={{ folder: 'edulinker/about', maxFiles: 1 }}
+              onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                // só sucesso
+                if (result.event !== 'success') return
+                const info = result.info
+                if (typeof info === 'string' || !info) return
+                setFotoSobre(info.secure_url)
+              }}
+            >
+              {({ open }) => (
                 <button
-                  onClick={() => {
-                    setFotoSobre('')
-                    setPreview('')
-                  }}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  type="button"
+                  onClick={() => open()}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-lg transition"
                 >
-                  <Trash2 size={16} />
+                  <Upload />{' '}
+                  {fotoSobre ? 'Alterar imagem' : 'Selecionar imagem'}
                 </button>
-              </div>
-            </div>
-          )}
+              )}
+            </CldUploadWidget>
+
+            {!isPremium && (
+              <p className="text-sm text-gray-500">
+                Disponível somente para assinantes <strong>Premium</strong>.
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Texto descritivo */}
@@ -156,7 +148,7 @@ export default function AdminAboutPage() {
             rows={6}
             value={descricao}
             onChange={e => setDescricao(e.target.value)}
-            className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-white"
+            className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white"
             placeholder="Descreva sua escola, missão, valores e diferenciais..."
           />
         </div>
@@ -172,45 +164,42 @@ export default function AdminAboutPage() {
                 key={idx}
                 className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center"
               >
-                <div className="sm:col-span-3">
-                  <input
-                    type="text"
-                    value={d.number}
-                    onChange={e =>
-                      handleDestaqueChange(idx, 'number', e.target.value)
-                    }
-                    placeholder="Número"
-                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-gray-300 text-white"
-                  />
-                </div>
-                <div className="sm:col-span-8">
-                  <input
-                    type="text"
-                    value={d.label}
-                    onChange={e =>
-                      handleDestaqueChange(idx, 'label', e.target.value)
-                    }
-                    placeholder="Ex: Anos de experiência"
-                    className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder:text-gray-300 text-white"
-                  />
-                </div>
-                <div className="sm:col-span-1 flex justify-end">
-                  <button
-                    onClick={() => handleRemove(idx)}
-                    disabled={saving}
-                    className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                  </div>
-                </div>
+                <input
+                  type="text"
+                  value={d.number}
+                  onChange={e =>
+                    handleDestaqueChange(idx, 'number', e.target.value)
+                  }
+                  placeholder="Número"
+                  className="sm:col-span-3 w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition text-gray-900 dark:text-white"
+                  disabled={!isPremium}
+                />
+                <input
+                  type="text"
+                  value={d.label}
+                  onChange={e =>
+                    handleDestaqueChange(idx, 'label', e.target.value)
+                  }
+                  placeholder="Descrição do destaque"
+                  className="sm:col-span-8 w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition text-gray-900 dark:text-white"
+                  disabled={!isPremium}
+                />
+                <button
+                  onClick={() => handleRemove(idx)}
+                  disabled={saving}
+                  className="sm:col-span-1 flex justify-end text-red-500 hover:text-red-700 p-2 rounded-full transition"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
             ))}
+
             {isPremium ? (
               destaques.length < 3 && (
                 <button
                   onClick={handleAdd}
                   disabled={saving}
-                  className="flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 mt-4 cursor-pointer"
+                  className="flex items-center gap-2 text-purple-600 hover:text-purple-800 mt-4"
                 >
                   <Plus size={18} /> Adicionar Destaque
                 </button>
@@ -228,9 +217,9 @@ export default function AdminAboutPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 text-white py-3 px-8 rounded-lg transition-all shadow-lg hover:shadow-xl disabled:opacity-70 cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg"
+            className="flex items-center gap-2 text-white py-3 px-8 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition disabled:opacity-50"
           >
-            {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+            {saving ? <Loader2 className="animate-spin" /> : <Save />}
             {saving ? 'Salvando...' : 'Salvar Alterações'}
           </button>
         </div>
