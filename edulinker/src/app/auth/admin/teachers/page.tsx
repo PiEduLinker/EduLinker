@@ -1,43 +1,27 @@
 'use client'
 
 import React, { useState, useCallback } from 'react'
-import { Plus, Trash2, X, Upload, Loader2, Save } from 'lucide-react'
+import { Plus, Trash2, X, Loader2, Save, Upload } from 'lucide-react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
-import { fileToBase64 } from '@/lib/fileUtils'
+import { CldUploadWidget } from 'next-cloudinary'
+import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
 
 interface Professor {
   nome: string
   descricao: string
-  imagem?: string   
+  imagem?: string
 }
 
 export default function AdminTeachersPage() {
   const { configuracoes, slug: siteId } = useSite()
   const isPremium = useIsPremium()
-
-  // limita: free até 4, premium até 12
   const maxProfessores = isPremium ? 12 : 4
 
   const initial = (configuracoes.professores as Professor[]) ?? []
   const [professores, setProfessores] = useState<Professor[]>(initial)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string>('')
-
-  const handleImageChange = useCallback(async (file: File, idx: number) => {
-    if (!file.type.startsWith('image/')) {
-      setError('Apenas imagens são permitidas.')
-      return
-    }
-    try {
-      const b64 = await fileToBase64(file)
-      setProfessores(p =>
-        p.map((x, i) => (i === idx ? { ...x, imagem: b64 } : x))
-      )
-    } catch {
-      setError('Falha ao processar imagem.')
-    }
-  }, [])
+  const [saving, setSaving]           = useState(false)
+  const [error, setError]             = useState<string>('')
 
   const addProfessor = useCallback(() => {
     if (professores.length >= maxProfessores) return
@@ -64,9 +48,12 @@ export default function AdminTeachersPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ configuracoes: { professores } }),
       })
-      if (!res.ok) throw new Error()
-    } catch {
-      setError('Falha ao salvar professores.')
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.erro || 'Falha ao salvar professores.')
+      }
+    } catch (err: any) {
+      setError(err.message)
     } finally {
       setSaving(false)
     }
@@ -87,6 +74,7 @@ export default function AdminTeachersPage() {
           )}
         </div>
 
+        {/* Lista de Professores */}
         <div className="space-y-6">
           {professores.map((prof, idx) => (
             <div
@@ -105,7 +93,7 @@ export default function AdminTeachersPage() {
 
               {/* Nome */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 text-white mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nome
                 </label>
                 <input
@@ -113,13 +101,13 @@ export default function AdminTeachersPage() {
                   value={prof.nome}
                   onChange={e => updateField(idx, 'nome', e.target.value)}
                   className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition-all"
-                  placeholder="Digite o nome do professor"
+                  placeholder="Nome do professor"
                 />
               </div>
 
               {/* Descrição */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 text-white mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Descrição
                 </label>
                 <textarea
@@ -132,51 +120,62 @@ export default function AdminTeachersPage() {
 
               {/* Imagem */}
               <div>
-                <label className="block text-sm font-medium text-white mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Imagem
                 </label>
-                <div className="flex items-center gap-4">
-                  <label className="cursor-pointer">
-                    <span className="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors">
+                {prof.imagem && (
+                  <div className="relative group mb-2">
+                    <img
+                      src={prof.imagem}
+                      alt={`Professor ${idx + 1}`}
+                      className="w-24 h-24 object-cover rounded-full border-2 border-gray-200"
+                    />
+                    <button
+                      onClick={() => updateField(idx, 'imagem', '')}
+                      disabled={saving}
+                      className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Remover imagem"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                )}
+                <CldUploadWidget
+                  uploadPreset="edulinker_unsigned"
+                  options={{ folder: 'edulinker/professores', maxFiles: 1 }}
+                  onSuccess={(res: CloudinaryUploadWidgetResults) => {
+                    if (res.event !== 'success') return
+                    const info = res.info
+                    if (typeof info !== 'object' || !info.secure_url) return
+                    setProfessores(p =>
+                      p.map((x, i) =>
+                        i === idx ? { ...x, imagem: info.secure_url } : x
+                      )
+                    )
+                  }}
+                >
+                  {({ open }) => (
+                    <button
+                      type="button"
+                      onClick={() => open()}
+                      disabled={saving}
+                      className="inline-flex items-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition-colors"
+                    >
                       <Upload size={16} className="mr-2" />
                       {prof.imagem ? 'Alterar imagem' : 'Selecionar imagem'}
-                    </span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={e => {
-                        const f = e.target.files?.[0]
-                        if (f) handleImageChange(f, idx)
-                      }}
-                      className="hidden"
-                    />
-                  </label>
-                  {prof.imagem && (
-                    <div className="relative group">
-                      <img
-                        src={prof.imagem}
-                        alt="Preview"
-                        className="w-20 h-20 object-cover rounded-full border-2 border-white dark:border-gray-700 shadow-md"
-                      />
-                      <button
-                        onClick={() => updateField(idx, 'imagem', '')}
-                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
+                    </button>
                   )}
-                </div>
+                </CldUploadWidget>
               </div>
             </div>
           ))}
 
-          {/* Adicionar */}
+          {/* Botão Adicionar */}
           {professores.length < maxProfessores ? (
             <button
               onClick={addProfessor}
               disabled={saving}
-              className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-all text-gray-600 dark:text-gray-400 font-medium cursor-pointer"
+              className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-all text-gray-600 dark:text-gray-400 font-medium"
             >
               <Plus size={20} />
               Adicionar professor
@@ -184,19 +183,23 @@ export default function AdminTeachersPage() {
           ) : (
             !isPremium && (
               <p className="text-center text-sm text-gray-500">
-                Você atingiu o limite de 4 professores. Faça upgrade para adicionar até 12.
+                Limite de 4 professores no plano gratuito. Faça upgrade para até 12.
               </p>
             )
           )}
 
-          {/* Salvar */}
+          {/* Botão Salvar */}
           <div className="flex justify-end mt-8">
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 text-white py-2.5 px-6 rounded-lg transition-all shadow hover:shadow-md disabled:opacity-70 cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg"
+              className="flex items-center gap-2 text-white py-2.5 px-6 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-70"
             >
-              {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+              {saving ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <Save size={18} />
+              )}
               {saving ? 'Salvando...' : 'Salvar professores'}
             </button>
           </div>

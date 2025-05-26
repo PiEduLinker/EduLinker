@@ -4,7 +4,8 @@ import React, { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
-import { fileToBase64 } from '@/lib/fileUtils'
+import { CldUploadWidget } from 'next-cloudinary'
+import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
 
 interface Aula {
   foto: string
@@ -40,16 +41,6 @@ export default function AdminGradePage() {
     setAulas(a => a.map((u, i) => i === idx ? { ...u, foto: '' } : u))
   }, [])
 
-  const handleFile = useCallback(async (idx: number, file: File | null) => {
-    if (!file) return
-    try {
-      const b64 = await fileToBase64(file)
-      setAulas(a => a.map((u, i) => i === idx ? { ...u, foto: b64 } : u))
-    } catch {
-      setError('Erro ao processar imagem')
-    }
-  }, [])
-
   const handleChange = useCallback((idx: number, field: keyof Aula, v: string) => {
     setAulas(a => a.map((u, i) => i === idx ? { ...u, [field]: v } : u))
   }, [])
@@ -77,7 +68,7 @@ export default function AdminGradePage() {
     }
   }, [siteId, aulas])
 
-return (
+  return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -105,103 +96,107 @@ return (
                     </button>
                   </div>
 
-                  <div className="space-y-6">
-                    <div className="space-y-4">
-                      <label className="block text-sm font-medium text-gray-700">Imagem da Aula</label>
-
-                      <div className="relative">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={e => handleFile(idx, e.target.files?.[0] ?? null)}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                          id={`aula-upload-${idx}`}
+                  {/* Imagem */}
+                  <div className="space-y-4">
+                    <label className="block text-sm font-medium text-gray-700">Imagem da Aula</label>
+                    {u.foto && (
+                      <div className="relative group mb-2">
+                        <img
+                          src={u.foto}
+                          alt={`Aula ${idx + 1}`}
+                          className="w-full h-auto max-h-64 object-cover rounded-lg border border-gray-200"
                         />
-                        <label
-                          htmlFor={`aula-upload-${idx}`}
-                          className="block px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-gray-400 transition-colors"
+                        <button
+                          onClick={() => handleRemoveImage(idx)}
+                          disabled={saving}
+                          className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                          aria-label="Remover imagem"
                         >
-                          <span className="text-gray-600">
-                            {u.foto ? 'Alterar imagem' : 'Selecione uma imagem'}
-                          </span>
-                        </label>
+                          <Trash2 size={16} />
+                        </button>
                       </div>
+                    )}
 
-                      {u.foto && (
-                        <div className="mt-4 space-y-2">
-                          <div className="relative group">
-                            <img
-                              src={u.foto}
-                              alt={`Imagem da aula ${idx + 1}`}
-                              className="w-full h-auto max-h-64 object-contain rounded-lg border border-gray-200"
-                            />
-                            <button
-                              onClick={() => handleRemoveImage(idx)}
-                              className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                              aria-label="Remover imagem"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                          <p className="text-xs text-gray-500 text-center">
-                            Clique em "Alterar imagem" para substituir ou no ícone <Trash2 className="inline" size={12} /> para remover
-                          </p>
-                        </div>
+                    <CldUploadWidget
+                      uploadPreset="edulinker_unsigned"
+                      options={{ folder: 'edulinker/aulas', maxFiles: 1 }}
+                      onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                        if (result.event !== 'success') return
+                        const info = result.info
+                        if (typeof info === 'string' || !info) return
+                        const url = info.secure_url
+                        setAulas(a =>
+                          a.map((it, i) => (i === idx ? { ...it, foto: url } : it))
+                        )
+                      }}
+                    >
+                      {({ open }) => (
+                        <button
+                          type="button"
+                          onClick={() => open()}
+                          className="block w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-600 hover:border-gray-400 transition-colors"
+                          disabled={saving}
+                        >
+                          <Plus className="inline mr-1" />
+                          {u.foto ? 'Alterar imagem' : 'Selecione uma imagem'}
+                        </button>
                       )}
+                    </CldUploadWidget>
+                  </div>
+
+                  {/* Campos textuais */}
+                  <div className="grid gap-6 sm:grid-cols-2 mt-6">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">Título</label>
+                      <input
+                        type="text"
+                        value={u.titulo}
+                        onChange={e => handleChange(idx, 'titulo', e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition"
+                      />
                     </div>
 
-                    <div className="grid gap-6 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">Título</label>
-                        <input
-                          type="text"
-                          value={u.titulo}
-                          onChange={e => handleChange(idx, 'titulo', e.target.value)}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">Nível</label>
-                        <input
-                          type="text"
-                          value={u.nivel}
-                          onChange={e => handleChange(idx, 'nivel', e.target.value)}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                        />
-                      </div>
-
-                      <div className="space-y-2 sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700">Descrição</label>
-                        <textarea
-                          rows={4}
-                          value={u.descricao}
-                          onChange={e => handleChange(idx, 'descricao', e.target.value)}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">Duração</label>
-                        <input
-                          type="text"
-                          value={u.duracao}
-                          onChange={e => handleChange(idx, 'duracao', e.target.value)}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">Nível</label>
+                      <input
+                        type="text"
+                        value={u.nivel}
+                        onChange={e => handleChange(idx, 'nivel', e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition"
+                      />
                     </div>
-                 </div>
+
+                    <div className="space-y-2 sm:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700">Descrição</label>
+                      <textarea
+                        rows={4}
+                        value={u.descricao}
+                        onChange={e => handleChange(idx, 'descricao', e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">Duração</label>
+                      <input
+                        type="text"
+                        value={u.duracao}
+                        onChange={e => handleChange(idx, 'duracao', e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition"
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
 
+            {/* Adicionar / Limite */}
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-between items-center pt-6 border-t border-gray-200">
               {aulas.length < maxAulas ? (
                 <button
                   onClick={handleAdd}
                   disabled={saving}
-                  className="flex items-center justify-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto"
+                  className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition w-full sm:w-auto"
                 >
                   <Plus size={18} />
                   <span>Adicionar Aula</span>
@@ -209,7 +204,7 @@ return (
               ) : (
                 !isPremium && (
                   <p className="text-sm text-gray-500">
-                    Você atingiu o limite de 4 aulas. Faça upgrade para adicionar até 12.
+                    Limite de 4 aulas no plano gratuito. Faça upgrade para até 12.
                   </p>
                 )
               )}
@@ -217,16 +212,16 @@ return (
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition-all ${
+                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition ${
                   saving
                     ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
+                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
                 }`}
               >
                 {saving ? (
-                  <span className="flex items-center justify-center space-x-2">
+                  <span className="flex items-center gap-2">
                     <Loader2 size={20} className="animate-spin" />
-                    <span>Salvando...</span>
+                    Salvando...
                   </span>
                 ) : (
                   'Salvar Aulas'

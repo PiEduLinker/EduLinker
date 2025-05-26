@@ -4,7 +4,8 @@ import React, { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Star, Loader2, Save } from 'lucide-react'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
-import { fileToBase64 } from '@/lib/fileUtils'
+import { CldUploadWidget } from 'next-cloudinary'
+import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
 
 type Testimonial = {
   foto: string
@@ -19,44 +20,23 @@ export default function AdminTestimonialsPage() {
   const maxItems = isPremium ? 8 : 2
 
   const initial = (configuracoes.depoimentos as Testimonial[]) ?? []
-  const [items, setItems] = useState<Testimonial[]>(initial)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const [items, setItems]      = useState<Testimonial[]>(initial)
+  const [saving, setSaving]    = useState(false)
+  const [error, setError]      = useState('')
 
   const handleAdd = useCallback(() => {
     if (items.length >= maxItems) return
-    setItems(i => [
-      ...i,
-      { foto: '', nome: '', texto: '', estrelas: 5 }
-    ])
+    setItems(i => [...i, { foto: '', nome: '', texto: '', estrelas: 5 }])
   }, [items.length, maxItems])
 
   const handleRemove = useCallback((idx: number) => {
     setItems(i => i.filter((_, j) => j !== idx))
   }, [])
 
-  const handleRemoveImage = useCallback((idx: number) => {
-    setItems(i => i.map((it, j) => j === idx ? { ...it, foto: '' } : it))
-  }, [])
-
-  const handleFile = useCallback(async (idx: number, file: File | null) => {
-    if (!file) return
-    try {
-      const b64 = await fileToBase64(file)
-      setItems(i =>
-        i.map((it, j) => (j === idx ? { ...it, foto: b64 } : it))
-      )
-    } catch {
-      setError('Erro ao processar imagem')
-    }
-  }, [])
-
   const handleChange = useCallback(
     (idx: number, field: keyof Testimonial, value: string | number) => {
       setItems(i =>
-        i.map((it, j) =>
-          j === idx ? { ...it, [field]: value } : it
-        )
+        i.map((it, j) => (j === idx ? { ...it, [field]: value } : it))
       )
     },
     []
@@ -74,7 +54,7 @@ export default function AdminTestimonialsPage() {
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro || 'Falha ao salvar')
+        throw new Error(body.erro || 'Falha ao salvar depoimentos')
       }
     } catch (err: any) {
       setError(err.message)
@@ -118,27 +98,12 @@ export default function AdminTestimonialsPage() {
                   </div>
 
                   <div className="space-y-6">
-                    {/* Foto */}
+                    {/* Foto do depoente */}
                     <div className="space-y-4">
                       <label className="block text-sm font-medium text-gray-700">
                         Foto do Depoente
                       </label>
                       <div className="flex flex-col sm:flex-row gap-6 items-start">
-                        <div className="relative">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={e =>
-                              handleFile(idx, e.target.files?.[0] ?? null)
-                            }
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                          />
-                          <label className="block px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-gray-400 transition-colors">
-                            <span className="text-gray-600">
-                              {item.foto ? 'Alterar foto' : 'Selecione uma foto'}
-                            </span>
-                          </label>
-                        </div>
                         {item.foto && (
                           <div className="relative group">
                             <img
@@ -147,75 +112,95 @@ export default function AdminTestimonialsPage() {
                               className="w-24 h-24 object-cover rounded-full border-2 border-gray-200"
                             />
                             <button
-                              onClick={() => handleRemoveImage(idx)}
-                              className="absolute top-0 right-0 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                              onClick={() => handleChange(idx, 'foto', '')}
+                              disabled={saving}
+                              className="absolute top-0 right-0 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-opacity"
+                              aria-label="Remover foto"
                             >
                               <Trash2 size={14} />
                             </button>
                           </div>
                         )}
+
+                        <CldUploadWidget
+                          uploadPreset="edulinker_unsigned"
+                          options={{ folder: 'edulinker/testimonials', maxFiles: 1 }}
+                          onSuccess={(res: CloudinaryUploadWidgetResults) => {
+                            if (res.event !== 'success') return
+                            const info = res.info
+                            if (typeof info === 'object' && info.secure_url) {
+                              handleChange(idx, 'foto', info.secure_url)
+                            }
+                          }}
+                        >
+                          {({ open }) => (
+                            <button
+                              type="button"
+                              onClick={() => open()}
+                              disabled={saving}
+                              className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition-colors"
+                            >
+                              {item.foto ? 'Alterar foto' : 'Selecionar foto'}
+                            </button>
+                          )}
+                        </CldUploadWidget>
                       </div>
                     </div>
 
-                    {/* Texto e estrelas */}
-                    <div className="grid gap-6">
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
-                          Nome
-                        </label>
-                        <input
-                          type="text"
-                          value={item.nome}
-                          onChange={e =>
-                            handleChange(idx, 'nome', e.target.value)
-                          }
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
-                          placeholder="Nome completo"
-                        />
-                      </div>
+                    {/* Nome */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Nome
+                      </label>
+                      <input
+                        type="text"
+                        value={item.nome}
+                        onChange={e => handleChange(idx, 'nome', e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
+                        placeholder="Nome completo"
+                      />
+                    </div>
 
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
-                          Depoimento
-                        </label>
-                        <textarea
-                          rows={4}
-                          value={item.texto}
-                          onChange={e =>
-                            handleChange(idx, 'texto', e.target.value)
-                          }
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
-                          placeholder="Texto do depoimento"
-                        />
-                      </div>
+                    {/* Texto */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Depoimento
+                      </label>
+                      <textarea
+                        rows={4}
+                        value={item.texto}
+                        onChange={e => handleChange(idx, 'texto', e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
+                        placeholder="Texto do depoimento"
+                      />
+                    </div>
 
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
-                          Avaliação
-                        </label>
-                        <div className="flex items-center space-x-1">
-                          {[1, 2, 3, 4, 5].map(n => (
-                            <button
-                              key={n}
-                              type="button"
-                              onClick={() => handleChange(idx, 'estrelas', n)}
-                              className="focus:outline-none"
-                            >
-                              <Star
-                                size={24}
-                                className={`${
-                                  n <= item.estrelas
-                                    ? 'text-yellow-400 fill-yellow-400'
-                                    : 'text-gray-300'
-                                } transition-colors`}
-                              />
-                            </button>
-                          ))}
-                          <span className="ml-2 text-sm text-gray-500">
-                            {item.estrelas}{' '}
-                            {item.estrelas === 1 ? 'estrela' : 'estrelas'}
-                          </span>
-                        </div>
+                    {/* Estrelas */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Avaliação
+                      </label>
+                      <div className="flex items-center space-x-1">
+                        {[1, 2, 3, 4, 5].map(n => (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() => handleChange(idx, 'estrelas', n)}
+                            className="focus:outline-none"
+                          >
+                            <Star
+                              size={24}
+                              className={`${
+                                n <= item.estrelas
+                                  ? 'text-yellow-400 fill-yellow-400'
+                                  : 'text-gray-300'
+                              } transition-colors`}
+                            />
+                          </button>
+                        ))}
+                        <span className="ml-2 text-sm text-gray-500">
+                          {item.estrelas} {item.estrelas === 1 ? 'estrela' : 'estrelas'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -223,6 +208,7 @@ export default function AdminTestimonialsPage() {
               ))}
             </div>
 
+            {/* Botão Adicionar */}
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-between items-center pt-6 border-t border-gray-200">
               {items.length < maxItems ? (
                 <button
@@ -235,13 +221,13 @@ export default function AdminTestimonialsPage() {
                 </button>
               ) : (
                 !isPremium && (
-                  <p className="text-sm text-gray-500">
-                    Você atingiu o limite de 2 depoimentos. Faça upgrade para
-                    adicionar até 8.
+                  <p className="text-sm text-gray-500 col-span-full">
+                    Limite de 2 depoimentos no plano gratuito. Faça upgrade para até 8.
                   </p>
                 )
               )}
 
+              {/* Botão Salvar */}
               <button
                 onClick={handleSave}
                 disabled={saving}
