@@ -2,16 +2,7 @@
 
 import React, { useState, useCallback } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
-import {
-  Upload,
-  Plus,
-  Trash2,
-  Save,
-  Loader2,
-  Image as ImageIcon,
-  Text,
-  Award,
-} from 'lucide-react'
+import {Upload,Plus,Trash2,Save,Loader2,Image as ImageIcon,Text,Award,} from 'lucide-react'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
 import { CldUploadWidget } from 'next-cloudinary'
 import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
@@ -19,7 +10,7 @@ import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
 type Destaque = { number: string; label: string }
 
 export default function AdminAboutPage() {
-  const { slug: siteId, configuracoes } = useSite()
+const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
 
   const {
@@ -56,27 +47,33 @@ export default function AdminAboutPage() {
   )
 
   const handleSave = useCallback(async () => {
-    setSaving(true)
-    setError('')
-    try {
-      const res = await fetch(`/api/site/${siteId}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          configuracoes: { descricao, fotoSobre, destaques },
-        }),
-      })
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro || 'Falha ao salvar.')
-      }
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setSaving(false)
-    }
-  }, [siteId, descricao, fotoSobre, destaques])
+  setSaving(true)
+  setError('')
+  try {
+    const res = await fetch(`/api/site/${siteId}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        configuracoes: { descricao, fotoSobre, destaques },
+      }),
+    })
+    const body = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(body.erro || 'Falha ao salvar.')
+
+    // atualiza o contexto para refletir a mudança na UI sem reload
+    setConfiguracoes({
+      ...configuracoes,
+      descricao,
+      fotoSobre,
+      destaques,
+    })
+  } catch (err: any) {
+    setError(err.message)
+  } finally {
+    setSaving(false)
+  }
+}, [siteId, descricao, fotoSobre, destaques, configuracoes, setConfiguracoes])
 
   return (
     <AdminLayout>

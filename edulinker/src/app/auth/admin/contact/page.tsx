@@ -36,7 +36,7 @@ type ContactConfig = {
 
 export default function AdminContactPage() {
   // 1) Pegue siteId e contato do contexto
-  const { slug: siteId, configuracoes } = useSite()
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const initialConfig = configuracoes.contato ?? {}
 
   // 2) Estados locais
@@ -68,24 +68,33 @@ export default function AdminContactPage() {
     setSaving(true)
     setError('')
 
-    try {
+   try {
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type':'application/json' },
         body: JSON.stringify({ configuracoes: { contato: config } })
       })
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro || 'Falha ao salvar')
-      }
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(body.erro || 'Falha ao salvar')
+
+      setConfiguracoes({
+        ...configuracoes,
+        contato: config
+      })
+
       setEditing(false)
     } catch (err: any) {
       setError(err.message)
     } finally {
       setSaving(false)
     }
-  }, [siteId, config])
+  }, [
+    siteId,
+    config,
+    configuracoes,
+    setConfiguracoes
+  ])
 
 return (
     <AdminLayout>

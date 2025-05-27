@@ -16,7 +16,7 @@ interface Aula {
 }
 
 export default function AdminGradePage() {
-  const { slug: siteId, configuracoes } = useSite()
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
   const maxAulas = isPremium ? 12 : 4
 
@@ -61,12 +61,22 @@ export default function AdminGradePage() {
         const body = await res.json().catch(() => ({}))
         throw new Error(body.erro || 'Falha ao salvar')
       }
+      setConfiguracoes({
+        ...configuracoes,
+        aulas,
+      })
+
     } catch (err: any) {
       setError(err.message)
     } finally {
       setSaving(false)
     }
-  }, [siteId, aulas])
+  }, [
+    siteId,
+    aulas,
+    configuracoes,
+    setConfiguracoes,
+  ])
 
   return (
     <AdminLayout>

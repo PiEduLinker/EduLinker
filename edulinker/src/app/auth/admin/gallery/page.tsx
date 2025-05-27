@@ -12,7 +12,7 @@ interface GalleryItem {
 }
 
 export default function AdminGalleryPage() {
-  const { slug: siteId, configuracoes } = useSite()
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
 
   const maxSlots = isPremium ? 12 : 3
@@ -49,12 +49,21 @@ export default function AdminGalleryPage() {
         const body = await res.json().catch(() => ({}))
         throw new Error(body.erro || 'Falha ao salvar')
       }
+      setConfiguracoes({
+        ...configuracoes,
+        galerias,
+      })
     } catch (err: any) {
       setError(err.message)
     } finally {
       setSaving(false)
     }
-  }, [siteId, galerias])
+  }, [
+    siteId,
+    galerias,
+    configuracoes,
+    setConfiguracoes,
+  ])
 
   return (
     <AdminLayout>

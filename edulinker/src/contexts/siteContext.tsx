@@ -1,9 +1,8 @@
 'use client'
 
-import { createContext, useContext, ReactNode } from 'react'
+import React, { createContext, useContext, useState, ReactNode } from 'react'
 
 export type Plan = 'gratuito' | 'premium'
-
 export interface SiteConfig {
   slug: string
   descricao: string
@@ -12,17 +11,17 @@ export interface SiteConfig {
   plano: Plan
 }
 
-const SiteContext = createContext<SiteConfig | null>(null)
+interface SiteContextValue extends SiteConfig {
+  setConfiguracoes: (c: any) => void
+}
 
-export function SiteProvider({
-  site,
-  children,
-}: {
-  site: SiteConfig
-  children: ReactNode
-}) {
+const SiteContext = createContext<SiteContextValue | null>(null)
+
+export function SiteProvider({ site, children }: { site: SiteConfig; children: ReactNode }) {
+  const [configuracoes, setConfiguracoes] = useState(site.configuracoes)
+
   return (
-    <SiteContext.Provider value={site}>
+    <SiteContext.Provider value={{ ...site, configuracoes, setConfiguracoes }}>
       {children}
     </SiteContext.Provider>
   )
@@ -30,9 +29,7 @@ export function SiteProvider({
 
 export function useSite() {
   const ctx = useContext(SiteContext)
-  if (!ctx) {
-    throw new Error('useSite precisa estar dentro de SiteProvider')
-  }
+  if (!ctx) throw new Error('useSite precisa estar dentro de SiteProvider')
   return ctx
 }
 

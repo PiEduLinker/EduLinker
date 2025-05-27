@@ -8,21 +8,21 @@ import { CldUploadWidget } from 'next-cloudinary'
 import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
 
 export default function AdminStylePage() {
-  const { slug: siteId, configuracoes } = useSite()
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
 
-  const [bgColor, setBgColor]         = useState(configuracoes.corFundo  ?? '#ffffff')
-  const [textColor, setTextColor]     = useState(configuracoes.corTexto  ?? '#000000')
-  const [fonte, setFonte]             = useState(configuracoes.fonte      ?? 'montserrat')
-  const [logo, setLogo]               = useState<string>(configuracoes.logo ?? '')
-  const [saving, setSaving]           = useState(false)
-  const [error, setError]             = useState('')
+  const [bgColor, setBgColor] = useState(configuracoes.corFundo ?? '#ffffff')
+  const [textColor, setTextColor] = useState(configuracoes.corTexto ?? '#000000')
+  const [fonte, setFonte] = useState(configuracoes.fonte ?? 'montserrat')
+  const [logo, setLogo] = useState<string>(configuracoes.logo ?? '')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
-  const fontFamilyMap: Record<string,string> = {
+  const fontFamilyMap: Record<string, string> = {
     montserrat: 'var(--font-montserrat)',
-    geist:      'var(--font-geist-sans)',
-    'geist-mono':'var(--font-geist-mono)',
-    roboto:     'var(--font-roboto)',
-    poppins:    'var(--font-poppins)',
+    geist: 'var(--font-geist-sans)',
+    'geist-mono': 'var(--font-geist-mono)',
+    roboto: 'var(--font-roboto)',
+    poppins: 'var(--font-poppins)',
   }
 
   const handleSave = useCallback(async () => {
@@ -43,12 +43,29 @@ export default function AdminStylePage() {
         }),
       })
       if (!res.ok) throw new Error('Falha ao salvar')
+
+      setConfiguracoes({
+        ...configuracoes,
+        corFundo: bgColor,
+        corTexto: textColor,
+        fonte,
+        logo,
+      })
+
     } catch (err: any) {
       setError(err.message || 'Erro ao salvar configurações.')
     } finally {
       setSaving(false)
     }
-  }, [siteId, bgColor, textColor, fonte, logo])
+  }, [
+    siteId,
+    bgColor,
+    textColor,
+    fonte,
+    logo,
+    configuracoes,
+    setConfiguracoes,
+  ])
 
   return (
     <AdminLayout>
@@ -170,11 +187,10 @@ export default function AdminStylePage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className={`w-full py-3 rounded-lg text-white font-medium transition ${
-                saving
+              className={`w-full py-3 rounded-lg text-white font-medium transition ${saving
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
-              }`}
+                }`}
             >
               {saving ? (
                 <span className="flex items-center justify-center gap-2">

@@ -11,7 +11,7 @@ import type { CloudinaryUploadWidgetError, CloudinaryUploadWidgetResults, } from
 interface BannerItem { imagem: string }
 
 export default function AdminBannerPage() {
-  const { slug: siteId, configuracoes } = useSite()
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
 
   // carrega o estado inicial
@@ -34,31 +34,37 @@ export default function AdminBannerPage() {
   }, [])
 
   // salvar no backend
-  const handleSave = useCallback(async () => {
+ const handleSave = useCallback(async () => {
     setSaving(true)
     setError('')
     try {
-      const payload = {
-        configuracoes: {
-          carrossel: isPremium ? banners : banners.slice(0, 1)
-        }
-      }
+      const newCarousel = isPremium ? banners : banners.slice(0, 1)
+      const payload = { configuracoes: { carrossel: newCarousel } }
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro || 'Falha ao salvar')
-      }
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(body.erro || 'Falha ao salvar')
+
+      setConfiguracoes({
+        ...configuracoes,
+        carrossel: newCarousel
+      })
     } catch (err: any) {
       setError(err.message)
     } finally {
       setSaving(false)
     }
-  }, [siteId, banners, isPremium])
+  }, [
+    siteId,
+    banners,
+    isPremium,
+    configuracoes,
+    setConfiguracoes
+  ])
 
   return (
     <AdminLayout>

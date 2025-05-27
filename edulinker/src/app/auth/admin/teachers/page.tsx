@@ -14,7 +14,7 @@ interface Professor {
 }
 
 export default function AdminTeachersPage() {
-  const { configuracoes, slug: siteId } = useSite()
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
   const maxProfessores = isPremium ? 12 : 4
 
@@ -52,12 +52,17 @@ export default function AdminTeachersPage() {
         const body = await res.json().catch(() => ({}))
         throw new Error(body.erro || 'Falha ao salvar professores.')
       }
+      setConfiguracoes({
+        ...configuracoes,
+        professores,
+      })
+
     } catch (err: any) {
       setError(err.message)
     } finally {
       setSaving(false)
     }
-  }, [siteId, professores])
+  }, [siteId, professores, configuracoes, setConfiguracoes])
 
   return (
     <AdminLayout>

@@ -15,7 +15,7 @@ type Testimonial = {
 }
 
 export default function AdminTestimonialsPage() {
-  const { configuracoes, slug: siteId } = useSite()
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
   const maxItems = isPremium ? 8 : 2
 
@@ -56,12 +56,17 @@ export default function AdminTestimonialsPage() {
         const body = await res.json().catch(() => ({}))
         throw new Error(body.erro || 'Falha ao salvar depoimentos')
       }
+      setConfiguracoes({
+        ...configuracoes,
+        depoimentos: items,
+      })
+
     } catch (err: any) {
       setError(err.message)
     } finally {
       setSaving(false)
     }
-  }, [siteId, items])
+  }, [siteId, items, configuracoes, setConfiguracoes])
 
   return (
     <AdminLayout>
