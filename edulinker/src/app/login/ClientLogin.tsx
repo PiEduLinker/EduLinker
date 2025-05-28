@@ -11,13 +11,13 @@ interface Props {
 }
 
 export default function ClientLogin({ from }: Props) {
-  const router      = useRouter()
-  const params      = useSearchParams()
-  const fromParam   = from ?? params.get('from') ?? ''
+  const router = useRouter()
+  const params = useSearchParams()
+  const fromParam = from ?? params.get('from') ?? ''
 
-  const [email, setEmail]       = useState('')
-  const [senha, setSenha]       = useState('')
-  const [erro, setErro]         = useState('')
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [erro, setErro] = useState('')
   const [showPassword, setShow] = useState(false)
 
   const toggleShow = () => setShow(s => !s)
@@ -100,6 +100,8 @@ export default function ClientLogin({ from }: Props) {
                 </p>
               )}
 
+            
+
               {/* Formulário */}
               <form className="space-y-4 md:space-y-5" onSubmit={handleSubmit}>
                 <div>
@@ -141,6 +143,59 @@ export default function ClientLogin({ from }: Props) {
                   Entrar
                 </button>
               </form>
+
+              <div  className='flex justify-center'>
+              <p>ou</p>
+              </div>
+
+                {/* Login google */}
+              <button
+                onClick={() => window.location.href = '/api/auth/google'}
+                className="flex items-center justify-center w-full max-w-sm px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition"
+              >
+                {/* SVG do “G” do Google */}
+                <svg
+                  className="w-5 h-5"
+                  viewBox="0 0 533.5 544.3"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M533.5 278.4c0-17.4-1.5-34.3-4.3-50.6H272v95.9h146.9
+         c-6.3 34.1-25 63-53.4 82.3v68h86.3
+         c50.5-46.5 80.7-115.1 80.7-195.6z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M272 544.3c72.5 0 133.3-23.9 177.8-64.8
+         l-86.3-68
+         c-24.1 16.2-55 25.7-91.5 25.7
+         c-70.3 0-129.9-47.4-151.2-111
+         l-89.9 69.4
+         c43.7 87.3 133.7 148.7 241.1 148.7z"
+                    fill="#34A853"
+                  />
+                  <path
+                    d="M120.8 323.4
+         c-9.7-28.7-9.7-59.6 0-88.3
+         l-89.9-69.4
+         c-39.3 78.3-39.3 167.3 0 245.6
+         l89.9-69.4z"
+                    fill="#FBBC05"
+                  />
+                  <path
+                    d="M272 107.7
+         c39.5 0 75 13.6 102.8 40.3
+         l77.1-77.1
+         C399.3 24 336.1 0 272 0
+         C164.6 0 74.6 61.4 30.9 148.7
+         l89.9 69.4
+         c21.2-63.6 80.8-111 151.2-111z"
+                    fill="#EA4335"
+                  />
+                </svg>
+
+                <span className="ml-2">Entrar com Google</span>
+              </button>
 
               <div className="mt-4 md:mt-6 text-center text-sm text-gray-800">
                 <p>
