@@ -59,7 +59,7 @@ export default function ClientCongrats({ siteId }: Props) {
       <div className="flex flex-col sm:flex-row gap-4 w-full">
         <button
           onClick={() => router.push('/auth/admin')}
-          className="flex-1 bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-full transition"
+          className="flex-1 bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-full transition cursor-pointer"
         >
           Ir para o Painel
         </button>

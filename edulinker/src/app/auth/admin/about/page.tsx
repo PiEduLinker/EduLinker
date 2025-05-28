@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
-import {Upload,Plus,Trash2,Save,Loader2,Image as ImageIcon,Text,Award,} from 'lucide-react'
+import { Upload, Plus, Trash2, Save, Loader2, Image as ImageIcon, Text, Award, } from 'lucide-react'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
 import { CldUploadWidget } from 'next-cloudinary'
 import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
@@ -10,7 +10,7 @@ import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
 type Destaque = { number: string; label: string }
 
 export default function AdminAboutPage() {
-const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
 
   const {
@@ -24,6 +24,7 @@ const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const [destaques, setDestaques] = useState<Destaque[]>(initialDestaques)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('');
 
   // Adiciona destaque apenas se for premium
   const handleAdd = useCallback(() => {
@@ -47,33 +48,44 @@ const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   )
 
   const handleSave = useCallback(async () => {
-  setSaving(true)
-  setError('')
-  try {
-    const res = await fetch(`/api/site/${siteId}`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        configuracoes: { descricao, fotoSobre, destaques },
-      }),
-    })
-    const body = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(body.erro || 'Falha ao salvar.')
+    setSaving(true)
+    setError('')
+    setSuccess('');
+    try {
+      const res = await fetch(`/api/site/${siteId}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          configuracoes: { descricao, fotoSobre, destaques },
+        }),
+      })
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(body.erro || 'Falha ao salvar.')
 
-    // atualiza o contexto para refletir a mudança na UI sem reload
-    setConfiguracoes({
-      ...configuracoes,
-      descricao,
-      fotoSobre,
-      destaques,
-    })
-  } catch (err: any) {
-    setError(err.message)
-  } finally {
-    setSaving(false)
-  }
-}, [siteId, descricao, fotoSobre, destaques, configuracoes, setConfiguracoes])
+      // atualiza o contexto para refletir a mudança na UI sem reload
+      setConfiguracoes({
+        ...configuracoes,
+        descricao,
+        fotoSobre,
+        destaques,
+      })
+
+      setSuccess('Dados atualizados com sucesso!');
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setSaving(false)
+    }
+  }, [siteId, descricao, fotoSobre, destaques, configuracoes, setConfiguracoes])
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
 
   return (
     <AdminLayout>
@@ -88,6 +100,13 @@ const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
               {error}
             </div>
           )}
+
+          {success && (
+            <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm">
+              {success}
+            </div>
+          )}
+
         </div>
 
         {/* Upload da imagem */}
@@ -120,7 +139,7 @@ const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
                 <button
                   type="button"
                   onClick={() => open()}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-lg transition"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-lg transition cursor-pointer"
                 >
                   <Upload />{' '}
                   {fotoSobre ? 'Alterar imagem' : 'Selecionar imagem'}
@@ -196,7 +215,7 @@ const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
                 <button
                   onClick={handleAdd}
                   disabled={saving}
-                  className="flex items-center gap-2 text-purple-600 hover:text-purple-800 mt-4"
+                  className="flex items-center gap-2 text-purple-600 hover:text-purple-800 mt-4 cursor-pointer"
                 >
                   <Plus size={18} /> Adicionar Destaque
                 </button>
@@ -214,7 +233,7 @@ const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 text-white py-3 px-8 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition disabled:opacity-50"
+            className="flex items-center gap-2 text-white py-3 px-8 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition disabled:opacity-50 cursor-pointer"
           >
             {saving ? <Loader2 className="animate-spin" /> : <Save />}
             {saving ? 'Salvando...' : 'Salvar Alterações'}

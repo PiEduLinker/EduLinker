@@ -2,7 +2,6 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { X } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useSite } from '@/contexts/siteContext'
 

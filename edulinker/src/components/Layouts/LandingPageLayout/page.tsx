@@ -46,7 +46,7 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
                         <div className="mb-8 md:mb-0">
                             <div className="flex items-center space-x-2 mb-4">
                                 <Image
-                                    src="/Logo/EduLinkerWhite.png"
+                                    src="/logo/EduLinkerWhite.png"
                                     alt="Logo"
                                     width={120}
                                     height={120}
@@ -61,15 +61,27 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
                             {[
                                 {
                                     title: "Produto",
-                                    links: ["Recursos", "Planos", "Exemplos"]
+                                    links: [
+                                        { name: "Recursos", href: "/features" },
+                                        { name: "Planos", href: "/pricing" },
+                                        { name: "Exemplos", href: "/examples" }
+                                    ]
                                 },
                                 {
                                     title: "Suporte",
-                                    links: ["FAQ", "Contato", "Tutoriais"]
+                                    links: [
+                                        { name: "FAQ", href: "/faq" },
+                                        { name: "Contato", href: "/contact" },
+                                        { name: "Tutoriais", href: "/tutorials" }
+                                    ]
                                 },
                                 {
                                     title: "Legal",
-                                    links: ["Termos", "Privacidade", "Cookies"]
+                                    links: [
+                                        { name: "Termos", href: "/terms" },
+                                        { name: "Privacidade", href: "/privacy-policy" }, // Link para a página que criamos
+                                        { name: "Cookies", href: "/cookie-policy" }
+                                    ]
                                 }
                             ].map((section, index) => (
                                 <div key={index}>
@@ -77,8 +89,11 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
                                     <ul className="space-y-2">
                                         {section.links.map((link, linkIndex) => (
                                             <li key={linkIndex}>
-                                                <Link href="#" className="text-gray-400 hover:text-white text-sm sm:text-base">
-                                                    {link}
+                                                <Link
+                                                    href={link.href}
+                                                    className="text-gray-400 hover:text-white text-sm sm:text-base transition-colors duration-200"
+                                                >
+                                                    {link.name}
                                                 </Link>
                                             </li>
                                         ))}

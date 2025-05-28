@@ -134,7 +134,7 @@ export default function ClientThemeChoice({ siteId }: Props) {
       </div>
       <button
         type="submit"
-        className="w-full max-w-md bg-purple-700 text-white py-3 rounded-full hover:bg-purple-800 transition"
+        className="w-full max-w-md bg-purple-700 text-white py-3 rounded-full hover:bg-purple-800 transition cursor-pointer"
       >
         Finalizar
       </button>

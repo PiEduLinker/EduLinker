@@ -13,7 +13,7 @@ import DepoimentoCardPremium from '../premium/DepoimentoCardPremium'
 import { Clock, Mail, Phone, MessageCircle, MapPin, FacebookIcon, Instagram, Youtube } from 'lucide-react'
 
 // Imagens padrão
-const DEFAULT_LOGO = '/Logo/EduLinker.png'
+const DEFAULT_LOGO = '/logo/EduLinker.png'
 const DEFAULT_HERO_IMAGE = '/templates/free/banner1.jpg'
 const DEFAULT_PROFESSOR_IMAGE = '/teachers/teacher1.jpg'
 const DEFAULT_DEPOIMENTO_IMAGE = '/teachers/teacher2.jpg'
@@ -63,7 +63,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
 
   // pega todos os professores configurados
   const allProfessores = Array.isArray(config.professores) ? config.professores : []
-  const displayed = isPremium ? allProfessores : allProfessores.slice(0,4)
+  const displayed = isPremium ? allProfessores : allProfessores.slice(0, 4)
 
   // Depoimentos (até 2)
   const all = Array.isArray(config.depoimentos) ? config.depoimentos : []
@@ -188,18 +188,27 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
           <div className="container mx-auto px-4">
             <h2 className="text-4xl font-bold text-center mb-12">Galeria de Fotos</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {displayedGalerias.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="relative aspect-square overflow-hidden rounded-xl shadow-md hover:shadow-lg transition"
-                >
-                  <img
-                    src={item.imagem}
-                    alt={`Foto ${idx + 1}`}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-              ))}
+              {displayedGalerias.map((item, idx) => {
+                const imagemValida = item.imagem && item.imagem.trim() !== ''
+                  ? item.imagem
+                  : '/images/fallback.jpg'; // fallback no /public/images/
+
+                return (
+                  <div
+                    key={idx}
+                    className="relative aspect-square overflow-hidden rounded-xl shadow-md hover:shadow-lg transition"
+                  >
+                    <img
+                      src={imagemValida}
+                      alt={`Foto ${idx + 1}`}
+                      className="object-cover w-full h-full"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
 
             {/* dica de upgrade se tiver mais de 3 imagens e for free */}
@@ -213,6 +222,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
             )}
           </div>
         </section>
+
 
         {/* Aulas */}
         <section id="aulas" className="py-20 bg-white">
@@ -242,200 +252,200 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Professores */}
-          <section id="professores" className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-12">Nossa Equipe</h2>
+        <section id="professores" className="py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-12">Nossa Equipe</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {displayed.map((prof, idx) =>
-            isPremium ? (
-              <ProfessorCardPremium
-                key={idx}
-                foto={prof.imagem}
-                nome={prof.nome}
-                texto={prof.descricao}
-              />
-            ) : (
-              <ProfessorCard
-                key={idx}
-                foto={prof.imagem}
-                nome={prof.nome}
-                descricao={prof.descricao}
-              />
-            )
-          )}
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {displayed.map((prof, idx) =>
+                isPremium ? (
+                  <ProfessorCardPremium
+                    key={idx}
+                    foto={prof.imagem}
+                    nome={prof.nome}
+                    texto={prof.descricao}
+                  />
+                ) : (
+                  <ProfessorCard
+                    key={idx}
+                    foto={prof.imagem}
+                    nome={prof.nome}
+                    descricao={prof.descricao}
+                  />
+                )
+              )}
+            </div>
 
-        {!isPremium && allProfessores.length > 4 && (
-          <p className="mt-6 text-center text-sm text-gray-500">
-            Você cadastrou {allProfessores.length} professores, mas no plano gratuito
-            só mostramos 4.{' '}
-            <a href="/upgrade" className="text-pink-600 underline">
-              Faça upgrade para ver todos
-            </a>.
-          </p>
-        )}
-      </div>
-    </section>
+            {!isPremium && allProfessores.length > 4 && (
+              <p className="mt-6 text-center text-sm text-gray-500">
+                Você cadastrou {allProfessores.length} professores, mas no plano gratuito
+                só mostramos 4.{' '}
+                <a href="/upgrade" className="text-pink-600 underline">
+                  Faça upgrade para ver todos
+                </a>.
+              </p>
+            )}
+          </div>
+        </section>
 
         {/* Depoimentos */}
         <section id="depoimentos" className="py-20 bg-white">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-12">
-          Depoimentos
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {displayedDepoimentos.map((d, i) =>
-            isPremium ? (
-              <DepoimentoCardPremium
-                key={i}
-                foto={d.foto}
-                nome={d.nome}
-                texto={d.texto}
-                estrelas={d.estrelas}
-              />
-            ) : (
-              <DepoimentoCard
-                key={i}
-                foto={d.foto}
-                nome={d.nome}
-                texto={d.texto}
-              />
-            )
-          )}
-        </div>
-        {!isPremium && all.length > 4 && (
-          <p className="mt-6 text-center text-sm text-gray-500">
-            Você tem {all.length} depoimentos, mas no plano gratuito só são exibidos 4.{' '}
-            <a href="/upgrade" className="text-pink-600 underline">
-              Faça upgrade para ver todos
-            </a>.
-          </p>
-        )}
-      </div>
-    </section>
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-12">
+              Depoimentos
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {displayedDepoimentos.map((d, i) =>
+                isPremium ? (
+                  <DepoimentoCardPremium
+                    key={i}
+                    foto={d.foto}
+                    nome={d.nome}
+                    texto={d.texto}
+                    estrelas={d.estrelas}
+                  />
+                ) : (
+                  <DepoimentoCard
+                    key={i}
+                    foto={d.foto}
+                    nome={d.nome}
+                    texto={d.texto}
+                  />
+                )
+              )}
+            </div>
+            {!isPremium && all.length > 4 && (
+              <p className="mt-6 text-center text-sm text-gray-500">
+                Você tem {all.length} depoimentos, mas no plano gratuito só são exibidos 4.{' '}
+                <a href="/upgrade" className="text-pink-600 underline">
+                  Faça upgrade para ver todos
+                </a>.
+              </p>
+            )}
+          </div>
+        </section>
 
         {/* Contato */}
-         <section id="contato" className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-12">Contato</h2>
+        <section id="contato" className="py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-12">Contato</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
-          {/* Horários */}
-          <div className="flex items-start gap-4">
-            <Clock className="w-6 h-6 text-pink-600" />
-            <div>
-              <p className="font-semibold">Horário de Funcionamento</p>
-              <p className="text-gray-600">{horarioSemana || 'Seg–Sex: 09h–21h'}</p>
-              <p className="text-gray-600">{horarioSabado || 'Sáb: 09h–14h'}</p>
+              {/* Horários */}
+              <div className="flex items-start gap-4">
+                <Clock className="w-6 h-6 text-pink-600" />
+                <div>
+                  <p className="font-semibold">Horário de Funcionamento</p>
+                  <p className="text-gray-600">{horarioSemana || 'Seg–Sex: 09h–21h'}</p>
+                  <p className="text-gray-600">{horarioSabado || 'Sáb: 09h–14h'}</p>
+                </div>
+              </div>
+
+              {/* E-mail */}
+              <div className="flex items-start gap-4">
+                <Mail className="w-6 h-6 text-blue-600" />
+                <div>
+                  <p className="font-semibold">E-mail</p>
+                  <p className="text-gray-600">{email || 'contato@seudominio.com'}</p>
+                </div>
+              </div>
+
+              {/* Telefone */}
+              <div className="flex items-start gap-4">
+                <Phone className="w-6 h-6 text-green-600" />
+                <div>
+                  <p className="font-semibold">Telefone</p>
+                  <p className="text-gray-600">{telefone || '(11) 99999-0000'}</p>
+                </div>
+              </div>
+
+              {/* WhatsApp */}
+              <div className="flex items-start gap-4">
+                <MessageCircle className="w-6 h-6 text-green-600" />
+                <div>
+                  <p className="font-semibold">WhatsApp</p>
+                  <p className="text-gray-600">{whatsapp || '(11) 98888-1111'}</p>
+                </div>
+              </div>
+
+              {/* Endereço */}
+              <div className="flex items-start gap-4 sm:col-span-2 lg:col-span-3">
+                <MapPin className="w-6 h-6 text-purple-600" />
+                <div>
+                  <p className="font-semibold">Endereço</p>
+                  <p className="text-gray-600">{endereco || 'Rua Exemplo, 123'}</p>
+                  <p className="text-gray-600">{cidade || 'São Paulo - SP'}</p>
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* E-mail */}
-          <div className="flex items-start gap-4">
-            <Mail className="w-6 h-6 text-blue-600" />
-            <div>
-              <p className="font-semibold">E-mail</p>
-              <p className="text-gray-600">{email || 'contato@seudominio.com'}</p>
-            </div>
-          </div>
-
-          {/* Telefone */}
-          <div className="flex items-start gap-4">
-            <Phone className="w-6 h-6 text-green-600" />
-            <div>
-              <p className="font-semibold">Telefone</p>
-              <p className="text-gray-600">{telefone || '(11) 99999-0000'}</p>
-            </div>
-          </div>
-
-          {/* WhatsApp */}
-          <div className="flex items-start gap-4">
-            <MessageCircle className="w-6 h-6 text-green-600" />
-            <div>
-              <p className="font-semibold">WhatsApp</p>
-              <p className="text-gray-600">{whatsapp || '(11) 98888-1111'}</p>
-            </div>
-          </div>
-
-          {/* Endereço */}
-          <div className="flex items-start gap-4 sm:col-span-2 lg:col-span-3">
-            <MapPin className="w-6 h-6 text-purple-600" />
-            <div>
-              <p className="font-semibold">Endereço</p>
-              <p className="text-gray-600">{endereco || 'Rua Exemplo, 123'}</p>
-              <p className="text-gray-600">{cidade || 'São Paulo - SP'}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+        </section>
       </main>
 
       <footer className="bg-gray-900 text-white pt-16 pb-8">
-  <div className="container mx-auto px-4">
-    <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-      <img
-        src={config.logo || DEFAULT_LOGO}
-        alt="Logo"
-        className="h-10 mb-6 md:mb-0"
-      />
-      <div className="flex space-x-6">
-        <a href="#" className="text-gray-400 hover:text-white transition">
-          Termos
-        </a>
-        <a href="#" className="text-gray-400 hover:text-white transition">
-          Privacidade
-        </a>
-        <a href="#" className="text-gray-400 hover:text-white transition">
-          FAQ
-        </a>
-      </div>
-    </div>
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <img
+              src={config.logo || DEFAULT_LOGO}
+              alt="Logo"
+              className="h-10 mb-6 md:mb-0"
+            />
+            <div className="flex space-x-6">
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                Termos
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                Privacidade
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition">
+                FAQ
+              </a>
+            </div>
+          </div>
 
-    {/* Redes Sociais */}
-    <div className="flex justify-center md:justify-start space-x-4 mb-4">
-      {config.contato?.socialMedia?.facebook && (
-        <a
-          href={config.contato.socialMedia.facebook}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-gray-400 hover:text-white transition"
-        >
-          <FacebookIcon className="w-6 h-6" />
-        </a>
-      )}
-      {config.contato?.socialMedia?.instagram && (
-        <a
-          href={config.contato.socialMedia.instagram}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-gray-400 hover:text-white transition"
-        >
-          <Instagram className="w-6 h-6" />
-        </a>
-      )}
-      {config.contato?.socialMedia?.youtube && (
-        <a
-          href={config.contato.socialMedia.youtube}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-gray-400 hover:text-white transition"
-        >
-          <Youtube className="w-6 h-6" />
-        </a>
-      )}
-    </div>
+          {/* Redes Sociais */}
+          <div className="flex justify-center md:justify-start space-x-4 mb-4">
+            {config.contato?.socialMedia?.facebook && (
+              <a
+                href={config.contato.socialMedia.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition"
+              >
+                <FacebookIcon className="w-6 h-6" />
+              </a>
+            )}
+            {config.contato?.socialMedia?.instagram && (
+              <a
+                href={config.contato.socialMedia.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition"
+              >
+                <Instagram className="w-6 h-6" />
+              </a>
+            )}
+            {config.contato?.socialMedia?.youtube && (
+              <a
+                href={config.contato.socialMedia.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition"
+              >
+                <Youtube className="w-6 h-6" />
+              </a>
+            )}
+          </div>
 
-    <p className="mb-2 text-center md:text-left">
-      © {new Date().getFullYear()} {siteTitle}. Todos os direitos reservados.
-    </p>
-    <p className="text-sm text-center md:text-left">
-      Versão Gratuita – Edulinker
-    </p>
-  </div>
-</footer>
+          <p className="mb-2 text-center md:text-left">
+            © {new Date().getFullYear()} {siteTitle}. Todos os direitos reservados.
+          </p>
+          <p className="text-sm text-center md:text-left">
+            Versão Gratuita – Edulinker
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }
