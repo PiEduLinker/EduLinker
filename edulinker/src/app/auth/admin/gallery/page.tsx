@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
@@ -14,12 +14,14 @@ interface GalleryItem {
 export default function AdminGalleryPage() {
   const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
+  const [success, setSuccess] = useState('');
+
 
   const maxSlots = isPremium ? 12 : 3
   const initialGalerias = (configuracoes.galerias as GalleryItem[]) ?? []
   const [galerias, setGalerias] = useState<GalleryItem[]>(initialGalerias)
-  const [saving, setSaving]     = useState(false)
-  const [error, setError]       = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   const handleAdd = useCallback(() => {
     if (galerias.length < maxSlots) {
@@ -38,6 +40,7 @@ export default function AdminGalleryPage() {
   const handleSave = useCallback(async () => {
     setSaving(true)
     setError('')
+    setSuccess('');
     try {
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
@@ -53,6 +56,8 @@ export default function AdminGalleryPage() {
         ...configuracoes,
         galerias,
       })
+
+      setSuccess('Galeria atualizada com sucesso!');
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -65,16 +70,29 @@ export default function AdminGalleryPage() {
     setConfiguracoes,
   ])
 
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
   return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 sm:p-8">
+          <div className="p-6 sm:p-8 text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-6">Gerenciamento da Galeria</h1>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
+              <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200 mb-6">
                 <p className="text-red-600 text-center font-medium">{error}</p>
+              </div>
+            )}
+
+            {success && (
+              <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm mb-6">
+                {success}
               </div>
             )}
 
@@ -86,7 +104,7 @@ export default function AdminGalleryPage() {
                     <button
                       onClick={() => handleRemove(idx)}
                       disabled={saving}
-                      className="p-1.5 text-gray-400 hover:text-red-500 rounded-full transition hover:bg-red-50"
+                      className="p-1.5 text-gray-400 hover:text-red-500 rounded-full transition hover:bg-red-50 cursor-pointer"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -119,7 +137,7 @@ export default function AdminGalleryPage() {
                       <button
                         type="button"
                         onClick={() => open()}
-                        className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition"
+                        className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition cursor-pointer"
                         disabled={saving}
                       >
                         <Plus className="inline mr-1" />{' '}
@@ -132,7 +150,7 @@ export default function AdminGalleryPage() {
                     <button
                       onClick={() => handleRemoveImage(idx)}
                       disabled={saving}
-                      className="mt-2 flex items-center gap-1 text-red-500 hover:text-red-700 transition"
+                      className="mt-2 flex items-center gap-1 text-red-500 hover:text-red-700 transition cursor-pointer"
                     >
                       <Trash2 size={14} /> Remover Imagem
                     </button>
@@ -145,7 +163,7 @@ export default function AdminGalleryPage() {
                   <button
                     onClick={handleAdd}
                     disabled={saving}
-                    className="flex items-center gap-2 text-gray-600"
+                    className="flex items-center gap-2 text-gray-600 cursor-pointer"
                   >
                     <Plus size={24} /> Adicionar Foto
                   </button>
@@ -170,11 +188,10 @@ export default function AdminGalleryPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition ${
-                  saving
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
-                }`}
+                className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition cursor-pointer ${saving
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
+                  }`}
               >
                 {saving ? (
                   <span className="flex items-center justify-center gap-2">

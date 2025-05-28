@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
 import { CldUploadWidget } from 'next-cloudinary'
 import type { CloudinaryUploadWidgetError, CloudinaryUploadWidgetResults, } from 'next-cloudinary'
+import { set } from 'mongoose'
 
 
 interface BannerItem { imagem: string }
@@ -19,6 +20,7 @@ export default function AdminBannerPage() {
   const [banners, setBanners] = useState<BannerItem[]>(initial)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('');
 
   // limites por plano
   const maxBanners = isPremium ? 3 : 1
@@ -34,9 +36,10 @@ export default function AdminBannerPage() {
   }, [])
 
   // salvar no backend
- const handleSave = useCallback(async () => {
+  const handleSave = useCallback(async () => {
     setSaving(true)
     setError('')
+    setSuccess('')
     try {
       const newCarousel = isPremium ? banners : banners.slice(0, 1)
       const payload = { configuracoes: { carrossel: newCarousel } }
@@ -53,6 +56,9 @@ export default function AdminBannerPage() {
         ...configuracoes,
         carrossel: newCarousel
       })
+
+      setSuccess('Banners atualizados com sucesso!');
+
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -66,18 +72,31 @@ export default function AdminBannerPage() {
     setConfiguracoes
   ])
 
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
   return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl overflow-hidden">
-          <div className="p-6 sm:p-8">
+          <div className="p-6 sm:p-8 text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
               Gerenciamento de Banners
             </h1>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
+              <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200 mb-6">
                 <p className="text-red-600 text-center font-medium">{error}</p>
+              </div>
+            )}
+
+            {success && (
+              <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm mb-6">
+                {success}
               </div>
             )}
 
@@ -135,7 +154,7 @@ export default function AdminBannerPage() {
                         <button
                           type="button"
                           onClick={() => open()}
-                          className="mt-2 px-4 py-2 border border-dashed rounded text-gray-600 hover:border-gray-400"
+                          className="mt-2 px-4 py-2 border border-dashed rounded text-gray-600 hover:border-gray-400 cursor-pointer"
                         >
                           <Plus className="inline mr-1" />{' '}
                           {item.imagem ? 'Alterar imagem' : 'Selecione uma imagem'}
@@ -151,7 +170,7 @@ export default function AdminBannerPage() {
               <button
                 onClick={handleAdd}
                 disabled={saving}
-                className="mt-6 flex items-center justify-center space-x-2 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto"
+                className="mt-6 flex items-center justify-center space-x-2 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto cursor-pointer"
               >
                 <Plus size={18} />
                 <span>Adicionar Banner</span>
@@ -169,7 +188,7 @@ export default function AdminBannerPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition-all ${saving
+                className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition-all cursor-pointer ${saving
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
                   }`}

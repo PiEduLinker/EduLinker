@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { Palette, Type, Image as ImageIcon, Upload, Loader2, Save, Eye } from 'lucide-react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { useSite } from '@/contexts/siteContext'
@@ -16,6 +16,7 @@ export default function AdminStylePage() {
   const [logo, setLogo] = useState<string>(configuracoes.logo ?? '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('');
 
   const fontFamilyMap: Record<string, string> = {
     montserrat: 'var(--font-montserrat)',
@@ -26,8 +27,9 @@ export default function AdminStylePage() {
   }
 
   const handleSave = useCallback(async () => {
-    setSaving(true)
-    setError('')
+    setSaving(true);
+    setError('');
+    setSuccess('');
     try {
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
@@ -41,8 +43,8 @@ export default function AdminStylePage() {
             logo,
           },
         }),
-      })
-      if (!res.ok) throw new Error('Falha ao salvar')
+      });
+      if (!res.ok) throw new Error('Falha ao salvar');
 
       setConfiguracoes({
         ...configuracoes,
@@ -50,12 +52,13 @@ export default function AdminStylePage() {
         corTexto: textColor,
         fonte,
         logo,
-      })
+      });
 
+      setSuccess('Estilização salva com sucesso!');
     } catch (err: any) {
-      setError(err.message || 'Erro ao salvar configurações.')
+      setError(err.message || 'Erro ao salvar configurações.');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }, [
     siteId,
@@ -65,7 +68,15 @@ export default function AdminStylePage() {
     logo,
     configuracoes,
     setConfiguracoes,
-  ])
+  ]);
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
 
   return (
     <AdminLayout>
@@ -80,6 +91,13 @@ export default function AdminStylePage() {
               {error}
             </div>
           )}
+
+          {success && (
+            <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm">
+              {success}
+            </div>
+          )}
+
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
@@ -175,7 +193,7 @@ export default function AdminStylePage() {
                     type="button"
                     onClick={() => open()}
                     disabled={saving}
-                    className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 transition"
+                    className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 transition cursor-pointer"
                   >
                     <Upload /> {logo ? 'Alterar logo' : 'Selecionar logo'}
                   </button>
@@ -188,8 +206,8 @@ export default function AdminStylePage() {
               onClick={handleSave}
               disabled={saving}
               className={`w-full py-3 rounded-lg text-white font-medium transition ${saving
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 cursor-pointer'
                 }`}
             >
               {saving ? (
