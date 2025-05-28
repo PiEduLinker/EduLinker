@@ -42,7 +42,7 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
                         <div className="mb-8 md:mb-0">
                             <div className="flex items-center space-x-2 mb-4">
                                 <Image
-                                    src="/Logo/EduLinkerWhite.png"
+                                    src="/logo/EduLinkerWhite.png"
                                     alt="Logo"
                                     width={120}
                                     height={120}

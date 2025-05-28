@@ -13,7 +13,7 @@ import DepoimentoCardPremium from '../premium/DepoimentoCardPremium'
 import { Clock, Mail, Phone, MessageCircle, MapPin, FacebookIcon, Instagram, Youtube } from 'lucide-react'
 
 // Imagens padrão
-const DEFAULT_LOGO = '/Logo/EduLinker.png'
+const DEFAULT_LOGO = '/logo/EduLinker.png'
 const DEFAULT_HERO_IMAGE = '/templates/free/banner1.jpg'
 const DEFAULT_PROFESSOR_IMAGE = '/teachers/teacher1.jpg'
 const DEFAULT_DEPOIMENTO_IMAGE = '/teachers/teacher2.jpg'
