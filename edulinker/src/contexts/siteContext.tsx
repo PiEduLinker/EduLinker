@@ -9,19 +9,33 @@ export interface SiteConfig {
   configuracoes: any
   status: 'BASIC_INFO' | 'PLAN_SELECTION' | 'TEMPLATE_SELECTION' | 'COMPLETED'
   plano: Plan
+  templateOriginalId?: string
 }
 
 interface SiteContextValue extends SiteConfig {
   setConfiguracoes: (c: any) => void
+  setTemplateOriginalId: (id: string) => void
 }
 
 const SiteContext = createContext<SiteContextValue | null>(null)
 
 export function SiteProvider({ site, children }: { site: SiteConfig; children: ReactNode }) {
   const [configuracoes, setConfiguracoes] = useState(site.configuracoes)
+  const [templateOriginalId, setTemplateOriginalId] = useState(site.templateOriginalId)
 
   return (
-    <SiteContext.Provider value={{ ...site, configuracoes, setConfiguracoes }}>
+    <SiteContext.Provider
+      value={{
+        slug: site.slug,
+        descricao: site.descricao,
+        configuracoes,
+        status: site.status,
+        plano: site.plano,
+        templateOriginalId,
+        setConfiguracoes,
+        setTemplateOriginalId,
+      }}
+    >
       {children}
     </SiteContext.Provider>
   )
@@ -34,6 +48,6 @@ export function useSite() {
 }
 
 export function useIsPremium() {
-  const { plano } = useSite();
-  return plano === 'premium';
+  const { plano } = useSite()
+  return plano === 'premium'
 }
