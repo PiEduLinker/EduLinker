@@ -1,74 +1,73 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import Image from 'next/image'
-import Link from 'next/link'
-import { Eye, EyeOff } from 'lucide-react'
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 interface Props {
-  from?: string
+  from?: string;
 }
 
 export default function ClientLogin({ from }: Props) {
-  const router = useRouter()
-  const params = useSearchParams()
-  const fromParam = from ?? params.get('from') ?? ''
+  const router = useRouter();
+  const params = useSearchParams();
+  const fromParam = from ?? params.get("from") ?? "";
 
-  const [email, setEmail] = useState('')
-  const [senha, setSenha] = useState('')
-  const [erro, setErro] = useState('')
-  const [showPassword, setShow] = useState(false)
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const [showPassword, setShow] = useState(false);
 
-  const toggleShow = () => setShow(s => !s)
+  const toggleShow = () => setShow((s) => !s);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErro('')
+    e.preventDefault();
+    setErro("");
 
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ email, senha }),
-    })
-    const data = await res.json()
+    });
+    const data = await res.json();
 
     if (!res.ok) {
-      setErro(data.erro || 'Usuário ou senha inválidos.')
-      return
+      setErro(data.erro || "Usuário ou senha inválidos.");
+      return;
     }
 
     if (fromParam) {
-      router.push(fromParam)
-      return
+      router.push(fromParam);
+      return;
     }
 
-    // se não vier “from”, redireciona conforme etapa de onboarding
-    const statusRes = await fetch('/api/onboarding/status', {
-      credentials: 'include',
-    })
+    const statusRes = await fetch("/api/onboarding/status", {
+      credentials: "include",
+    });
     if (!statusRes.ok) {
-      router.push('/auth/admin')
-      return
+      router.push("/auth/admin");
+      return;
     }
-    const { etapa, siteId } = await statusRes.json()
+    const { etapa, siteId } = await statusRes.json();
 
     switch (etapa) {
-      case 'BASIC_INFO':
-        router.push(`/account/school_description?siteId=${siteId}`)
-        break
-      case 'PLAN_SELECTION':
-        router.push(`/account/plan_selection?siteId=${siteId}`)
-        break
-      case 'TEMPLATE_SELECTION':
-        router.push(`/account/theme_choice?siteId=${siteId}`)
-        break
-      case 'COMPLETED':
+      case "BASIC_INFO":
+        router.push(`/account/school_description?siteId=${siteId}`);
+        break;
+      case "PLAN_SELECTION":
+        router.push(`/account/plan_selection?siteId=${siteId}`);
+        break;
+      case "TEMPLATE_SELECTION":
+        router.push(`/account/theme_choice?siteId=${siteId}`);
+        break;
+      case "COMPLETED":
       default:
-        router.push('/auth/admin')
+        router.push("/auth/admin");
     }
-  }
+  };
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -93,14 +92,11 @@ export default function ClientLogin({ from }: Props) {
                 FAÇA SEU LOGIN
               </h1>
 
-              {/* Mensagem de erro, se houver */}
               {erro && (
                 <p className="text-red-600 font-medium text-sm text-center mb-4">
                   {erro}
                 </p>
               )}
-
-            
 
               {/* Formulário */}
               <form className="space-y-4 md:space-y-5" onSubmit={handleSubmit}>
@@ -130,30 +126,30 @@ export default function ClientLogin({ from }: Props) {
                     type="button"
                     onClick={toggleShow}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                    aria-label={
+                      showPassword ? "Ocultar senha" : "Mostrar senha"
+                    }
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-
                 <button
                   type="submit"
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 md:py-3 px-4 rounded-full transition duration-200 cursor-pointer"
+                  className="w-full bg-[#E60076] hover:bg-[#cc0064] text-white font-bold py-2 md:py-3 px-4 rounded-full transition duration-200 cursor-pointer"
                 >
                   Entrar
                 </button>
               </form>
 
-              <div  className='flex justify-center'>
-              <p>ou</p>
+              <div className="flex justify-center">
+                <p>ou</p>
               </div>
 
-                {/* Login google */}
+              {/* Login Google */}
               <button
                 onClick={() => window.location.href = '/api/auth/google'}
                 className="flex items-center justify-center w-full max-w-sm px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition cursor-pointer"
               >
-                {/* SVG do “G” do Google */}
                 <svg
                   className="w-5 h-5"
                   viewBox="0 0 533.5 544.3"
@@ -193,14 +189,16 @@ export default function ClientLogin({ from }: Props) {
                     fill="#EA4335"
                   />
                 </svg>
-
                 <span className="ml-2">Entrar com Google</span>
               </button>
 
               <div className="mt-4 md:mt-6 text-center text-sm text-gray-800">
                 <p>
                   Ainda não tem uma conta?{" "}
-                  <Link href={"./register/"} className="font-semibold text-purple-600 hover:text-purple-500">
+                  <Link
+                    href={"./register/"}
+                    className="font-semibold text[#E60076] hover:text[#E60076]"
+                  >
                     Cadastre-se aqui!
                   </Link>
                 </p>
@@ -221,5 +219,5 @@ export default function ClientLogin({ from }: Props) {
         />
       </div>
     </main>
-  )
+  );
 }
