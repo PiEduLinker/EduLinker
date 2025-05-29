@@ -12,16 +12,14 @@ export async function POST(req: NextRequest) {
   try {
     await connectToDB()
 
-    const authHeader = req.headers.get('authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ erro: 'Token ausente ou inválido' }, { status: 401 })
+     const token = req.cookies.get('token')?.value
+    if (!token) {
+      return NextResponse.json({ erro: 'Token ausente ou inválido.' }, { status: 401 })
     }
 
-    const token = authHeader.split(' ')[1]
     const payload = verifyToken(token) as JWTPayload
-
     if (!payload?.id) {
-      return NextResponse.json({ erro: 'Token inválido' }, { status: 401 })
+      return NextResponse.json({ erro: 'Token inválido.' }, { status: 401 })
     }
 
     const dados = await req.json()
@@ -80,8 +78,10 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest){
   try {
     await connectToDB()
-    const token = req.headers.get('authorization')?.replace('Bearer ', '')
-    if (!token) return NextResponse.json({ erro: 'Token ausente' }, { status: 401 })
+    const token = req.cookies.get('token')?.value
+    if (!token) {
+      return NextResponse.json({ erro: 'Token ausente ou inválido.' }, { status: 401 })
+    }
 
     const { id: usuarioId } = verifyToken(token)
     const assinatura = await Assinatura.findOne({ usuarioId }).sort({ dataInicio: -1 })
