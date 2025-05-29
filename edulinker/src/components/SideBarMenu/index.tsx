@@ -35,6 +35,7 @@ export default function SideBarMenu({ onClose }: { onClose?: () => void }) {
     { label: "Contato",          path: "/auth/admin/contact" },
     { label: "Relatórios (Pro)", path: "/auth/admin/reports", isPro: true },
     { label: "Alterar template (Pro)",           path: "/auth/admin/templateChange"},
+    { label: "configurações",            path: "/auth/admin/settings"},
   ]
 
   return (
