@@ -74,7 +74,7 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
                                 {
                                     title: "Legal",
                                     links: [
-                                        { name: "Termos", href: "/terms" },
+                                        { name: "Termos", href: "/termsOfUse" },
                                         { name: "Privacidade", href: "/privacy-policy" }, // Link para a página que criamos
                                         { name: "Cookies", href: "/cookie-policy" }
                                     ]
