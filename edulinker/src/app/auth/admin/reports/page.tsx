@@ -109,22 +109,6 @@ export default function AdminReportsPage() {
                   </div>
                 </div>
               </div>
-
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all hover:shadow-md">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-lg bg-emerald-50">
-                    <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">Tempo Médio</p>
-                    <p className="text-2xl font-semibold text-gray-800">
-                      {data ? `${Math.floor(data.avgSessionSeconds / 60)}m ${data.avgSessionSeconds % 60}s` : '--'}
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Gráficos */}
