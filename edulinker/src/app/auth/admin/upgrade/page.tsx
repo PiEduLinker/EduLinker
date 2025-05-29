@@ -4,6 +4,7 @@ import { useState } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { useSite } from '@/contexts/siteContext'
 import { useRouter } from 'next/navigation'
+import { CheckCircle2, Crown, Zap, Star, BadgeCheck, ShieldCheck } from 'lucide-react'
 
 export default function UpgradePage() {
     const { plano } = useSite()
@@ -12,13 +13,28 @@ export default function UpgradePage() {
     const [success, setSuccess] = useState(false)
     const router = useRouter()
 
-
     if (plano === 'premium') {
         return (
             <AdminLayout>
-                <div className="max-w-xl mx-auto p-6 text-center">
-                    <h1 className="text-2xl font-bold mb-4">Você já é Premium! 🎉</h1>
-                    <p className="text-gray-700">Obrigado por apoiar o EduLinker.</p>
+                <div className="max-w-2xl mx-auto p-6 text-center">
+                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl p-8 shadow-lg">
+                        <div className="flex justify-center mb-4">
+                            <Crown className="h-12 w-12 text-yellow-300" fill="currentColor" />
+                        </div>
+                        <h1 className="text-3xl font-bold mb-3">Você é Premium! 🎉</h1>
+                        <p className="text-purple-100 text-lg mb-6">Obrigado por fazer parte dos nossos usuários exclusivos.</p>
+                        
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-left max-w-md mx-auto">
+                            <h2 className="font-semibold text-white mb-2 flex items-center gap-2">
+                                <BadgeCheck className="text-yellow-300" /> Seus benefícios:
+                            </h2>
+                            <ul className="space-y-2 text-purple-50">
+                                <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Acesso ilimitado a todos os recursos</li>
+                                <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Suporte prioritário 24/7</li>
+                                <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Atualizações exclusivas</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </AdminLayout>
         )
@@ -37,9 +53,7 @@ export default function UpgradePage() {
             const data = await res.json()
             if (!res.ok) throw new Error(data.erro || 'Falha ao assinar.')
             setSuccess(true)
-
             router.refresh()
-
         } catch (err: any) {
             setError(err.message)
         } finally {
@@ -49,32 +63,96 @@ export default function UpgradePage() {
 
     return (
         <AdminLayout>
-            <div className="max-w-3xl mx-auto p-6 space-y-8">
-                <h1 className="text-3xl font-bold">Upgrade para Premium</h1>
+            <div className="max-w-4xl mx-auto p-6 space-y-8">
+                <div className="text-center">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                        Upgrade para Premium
+                    </h1>
+                    <p className="text-gray-600 max-w-2xl mx-auto">
+                        Desbloqueie todo o potencial da nossa plataforma com recursos exclusivos
+                    </p>
+                </div>
 
-                <div className="bg-white rounded-lg shadow p-6">
-                    <h2 className="text-2xl font-semibold mb-2">Plano Premium — R$ 29/mês</h2>
-                    <ul className="list-disc list-inside space-y-1 text-gray-700 mb-6">
-                        <li>✔ Cadastro ilimitado de imóveis</li>
-                        <li>✔ Temas personalizados</li>
-                        <li>✔ Integração com WhatsApp</li>
-                        <li>✔ Estatísticas avançadas</li>
-                        <li>✔ Suporte prioritário</li>
-                        <li>✔ Exclusividade regional de anúncios</li>
-                    </ul>
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 text-white">
+                        <h2 className="text-2xl font-semibold flex items-center gap-2">
+                            <Zap className="text-yellow-300" fill="currentColor" /> Plano Premium
+                        </h2>
+                        <div className="flex items-end gap-2 mt-2">
+                            <span className="text-3xl font-bold">R$29</span>
+                            <span className="text-purple-200 mb-1">/mês</span>
+                        </div>
+                    </div>
+                    
+                    <div className="p-6">
+                        <ul className="space-y-3 mb-8">
+                            <li className="flex items-start gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                <span>Cadastro ilimitado de imóveis</span>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                <span>Temas personalizados e exclusivos</span>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                <span>Integração direta com WhatsApp Business</span>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                <span>Estatísticas avançadas e relatórios detalhados</span>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                <span>Suporte prioritário com resposta em até 1 hora</span>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                <span>Exclusividade regional nos anúncios</span>
+                            </li>
+                        </ul>
 
-                    {error && <p className="text-red-600 mb-4">{error}</p>}
-                    {success ? (
-                        <p className="text-green-600 font-medium">Assinatura realizada com sucesso!</p>
-                    ) : (
-                        <button
-                            onClick={handleUpgrade}
-                            disabled={loading}
-                            className="w-full bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-full transition disabled:opacity-60"
-                        >
-                            {loading ? 'Carregando…' : 'Assinar Premium'}
-                        </button>
-                    )}
+                        {error && (
+                            <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
+                                <p className="text-red-600 text-center font-medium">{error}</p>
+                            </div>
+                        )}
+
+                        {success ? (
+                            <div className="text-center py-4">
+                                <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-6 py-3 rounded-full">
+                                    <CheckCircle2 className="h-5 w-5" />
+                                    <span className="font-medium">Assinatura realizada com sucesso!</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={handleUpgrade}
+                                disabled={loading}
+                                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-4 rounded-xl transition-all disabled:opacity-80 cursor-pointer flex items-center justify-center gap-2 shadow-lg hover:shadow-purple-200"
+                            >
+                                {loading ? (
+                                    <>
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Processando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Star className="h-5 w-5" fill="currentColor" />
+                                        Assinar Plano Premium
+                                    </>
+                                )}
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                <div className="text-center text-sm text-gray-500 mt-4">
+                    <ShieldCheck className="inline mr-1 h-4 w-4 text-gray-400" />
+                    Pagamento seguro • Cancelamento a qualquer momento
                 </div>
             </div>
         </AdminLayout>

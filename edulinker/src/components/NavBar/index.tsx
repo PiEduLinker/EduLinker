@@ -10,7 +10,7 @@ type Props = {
 
 export default function NavBar({ onMenuClick, isMenuOpen }: Props) {
 
-    const { plano } = useSite()
+  const { plano } = useSite()
   return (
     <nav className="w-screen h-14 flex justify-center bg-[#1E2330]">
       <div className="w-[90%] flex justify-between items-center">
@@ -25,12 +25,18 @@ export default function NavBar({ onMenuClick, isMenuOpen }: Props) {
           />
         </a>
 
-        {/* Texto central - visível APENAS em xl (1280px+) */}
-        <p className="hidden xl:inline text-white text-sm whitespace-nowrap mx-4">
-          Experimente a versão pro e tenha <b>maior controle e crescimento da sua escola!</b>
-        </p>
+        {plano === 'gratuito' ? (
+          <p className="hidden xl:inline text-white text-sm whitespace-nowrap mx-4">
+            Experimente a versão Pro e tenha <b>maior controle e crescimento da sua escola!</b>
+          </p>
+        ) : (
+          <p className="hidden xl:inline text-white text-sm whitespace-nowrap mx-4">
+            Você está na versão <b>Premium</b>. Aproveite todos os recursos para crescer ainda mais!
+          </p>
+        )}
 
-         {/* Botões */}
+
+        {/* Botões */}
         <div className="flex items-center gap-4">
           {/* Só aparece para usuários GRATUITOS */}
           {plano === 'gratuito' && (

@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Clock, FacebookIcon, Instagram, Mail, Phone, Youtube } from 'lucide-react';
 
 // Imagens padrão (você pode importar de seus assets ou usar URLs externas)
-const DEFAULT_LOGO = '/default-logo.png'
+const DEFAULT_LOGO = '/logo/EduLinkerWhite.png'
 const DEFAULT_CAROUSEL_IMAGE = '/templates/free/banner1.jpg'
 const DEFAULT_PROFESSOR_IMAGE = '/default-professor.jpg'
 
@@ -72,7 +72,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
                   <img
                     src={config.logo || DEFAULT_LOGO}
                     alt="Logo da Escola"
-                    className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+                    className="transition-transform duration-300 group-hover:scale-105 max-w-[150px] h-auto"
                   />
                 </a>
               </div>
