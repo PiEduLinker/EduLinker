@@ -102,8 +102,10 @@ export default function AdminAboutPage() {
           )}
 
           {success && (
-            <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm">
-              {success}
+            <div className="fixed top-20 z-50 left-1/2 xl:translate-x-[50%]">
+              <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center animate-fade-in-down">
+                <span>{success}</span>
+              </div>
             </div>
           )}
 
@@ -117,18 +119,27 @@ export default function AdminAboutPage() {
 
           <div className="flex flex-col items-center space-y-4">
             {fotoSobre && (
-              <img
-                src={fotoSobre}
-                alt="Preview Sobre"
-                className="w-48 h-auto rounded-lg shadow-md border-2 border-white dark:border-gray-700"
-              />
+              <div className="relative">
+                <img
+                  src={fotoSobre}
+                  alt="Preview Sobre"
+                  className="w-48 h-auto rounded-lg shadow-md border-2 border-white dark:border-gray-700"
+                />
+                <button
+                  type="button"
+                  onClick={() => setFotoSobre('')}
+                  className="absolute -top-2 -right-2 p-1 bg-red-500 hover:bg-red-600 rounded-full text-white shadow-lg cursor-pointer"
+                  aria-label="Remover imagem"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             )}
 
             <CldUploadWidget
               uploadPreset="edulinker_unsigned"
               options={{ folder: 'edulinker/about', maxFiles: 1 }}
               onSuccess={(result: CloudinaryUploadWidgetResults) => {
-                // só sucesso
                 if (result.event !== 'success') return
                 const info = result.info
                 if (typeof info === 'string' || !info) return
@@ -207,7 +218,7 @@ export default function AdminAboutPage() {
                 >
                   <Trash2 size={18} />
                 </button>
-              </div> 
+              </div>
             ))}
 
             {isPremium ? (

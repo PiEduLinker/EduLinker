@@ -88,8 +88,10 @@ export default function AdminTeachersPage() {
           )}
 
           {success && (
-            <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm">
-              {success}
+            <div className="fixed top-20 z-50 left-1/2 xl:translate-x-[50%]">
+              <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center animate-fade-in-down">
+                <span>{success}</span>
+              </div>
             </div>
           )}
 

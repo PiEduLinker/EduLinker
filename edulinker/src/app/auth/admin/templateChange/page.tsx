@@ -182,6 +182,7 @@ export default function ThemeSwitcher() {
     const [selected, setSelected] = useState<string | undefined>(templateOriginalId)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+    const [success, setSuccess] = useState('');
 
     useEffect(() => {
         const fetchTemplates = async () => {
@@ -202,6 +203,7 @@ export default function ThemeSwitcher() {
         if (!selected) return
         setLoading(true)
         setError('')
+        setSuccess('');
 
         try {
             const res = await fetch('/api/site/theme', {
@@ -215,7 +217,7 @@ export default function ThemeSwitcher() {
                 const body = await res.json()
                 throw new Error(body.erro || 'Erro ao trocar tema')
             }
-
+            setSuccess('Template alterado com sucesso!');
             setTemplateOriginalId(selected)
         } catch (err: any) {
             setError(err.message)
@@ -223,6 +225,14 @@ export default function ThemeSwitcher() {
             setLoading(false)
         }
     }
+
+
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => setSuccess(''), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [success]);
 
     const selectedTemplate = templates.find(t => t.id === selected)
 
@@ -247,6 +257,15 @@ export default function ThemeSwitcher() {
                         <AlertCircle className="w-5 h-5 text-red-500 mr-3 mt-0.5" />
                         <div>
                             <p className="text-red-700 font-medium">{error}</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Success message */}
+                {success && (
+                    <div className="fixed top-20 z-50 left-1/2 xl:translate-x-[50%]">
+                        <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center animate-fade-in-down">
+                            <span>{success}</span>
                         </div>
                     </div>
                 )}

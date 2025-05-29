@@ -87,8 +87,10 @@ export default function AdminGalleryPage() {
             )}
 
             {success && (
-              <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm mb-6">
-                {success}
+              <div className="fixed top-20 z-50 left-1/2 xl:translate-x-[50%]">
+                <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center animate-fade-in-down">
+                  <span>{success}</span>
+                </div>
               </div>
             )}
 
@@ -194,11 +196,10 @@ export default function AdminGalleryPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition cursor-pointer ${
-                  saving
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-                }`}
+                className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition cursor-pointer ${saving
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                  }`}
               >
                 {saving ? (
                   <span className="flex items-center justify-center gap-2">
