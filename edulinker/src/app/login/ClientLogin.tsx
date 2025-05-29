@@ -151,7 +151,7 @@ export default function ClientLogin({ from }: Props) {
                 {/* Login google */}
               <button
                 onClick={() => window.location.href = '/api/auth/google'}
-                className="flex items-center justify-center w-full max-w-sm px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition"
+                className="flex items-center justify-center w-full max-w-sm px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition cursor-pointer"
               >
                 {/* SVG do “G” do Google */}
                 <svg

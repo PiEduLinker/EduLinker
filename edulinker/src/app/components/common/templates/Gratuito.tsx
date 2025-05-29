@@ -10,6 +10,7 @@ import { useSite } from '@/contexts/siteContext'
 import CarouselPremium from '../premium/CarouselPremium'
 import ProfessorCardPremium from '../premium/ProfessorCardPremium'
 import DepoimentoCardPremium from '../premium/DepoimentoCardPremium'
+import Link from 'next/link'
 import { Clock, Mail, Phone, MessageCircle, MapPin, FacebookIcon, Instagram, Youtube } from 'lucide-react'
 
 // Imagens padrão
@@ -96,11 +97,14 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
       {/* Header */}
       <header className="py-4 px-6 bg-white shadow-sm sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between">
-          <img
-            src={config.logo || DEFAULT_LOGO}
-            alt="Logo"
-            className="h-12"
-          />
+          <Link
+            href="#home">
+            <img
+              src={config.logo || DEFAULT_LOGO}
+              alt="Logo"
+              className="h-12"
+            />
+          </Link>
           <nav className="hidden md:flex space-x-8">
             {['Home', 'Sobre', 'Aulas', 'Professores', 'Contato'].map(label => (
               <a
@@ -113,7 +117,8 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
             ))}
           </nav>
           <a
-            href="#contato"
+            href={`https://wa.me/${whatsapp ? whatsapp.replace(/\D/g, '') : ''}`}
+            target="_blank"
             className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full font-medium transition"
           >
             Contato
@@ -237,6 +242,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
                   descricao={item.descricao}
                   nivel={item.nivel}
                   duracao={item.duracao}
+                  whatsapp={whatsapp}
                 />
               ))}
             </div>

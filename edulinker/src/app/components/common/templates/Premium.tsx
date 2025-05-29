@@ -329,7 +329,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
                   descricao={item.descricao}
                   nivel={item.nivel}
                   duracao={item.duracao}
-                  contato={whatsapp}
+                  whatsapp={whatsapp}
                 />
               ))}
             </div>
