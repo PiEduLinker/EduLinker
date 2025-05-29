@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CreateAccountLayout from "@/components/Layouts/CreateAccountLayout";
-import { Eye, EyeOff } from "lucide-react"; // Adicione esses ícones ou use outro método de sua preferência
+import { Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     nome: "",
@@ -77,14 +78,17 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro("");
+    setIsLoading(true);
 
     if (formData.senha !== formData.confirmarSenha) {
       setErro("As senhas não coincidem.");
+      setIsLoading(false);
       return;
     }
 
     if (!passwordStrength.isValid) {
       setErro("A senha não atende aos requisitos mínimos de segurança.");
+      setIsLoading(false);
       return;
     }
 
@@ -104,11 +108,13 @@ export default function RegisterPage() {
 
       if (res.status === 409) {
         setErro(data.erro || "E-mail já cadastrado. Por favor, faça login.");
+        setIsLoading(false);
         return;
       }
 
       if (!res.ok) {
         setErro(data.erro || "Erro ao cadastrar.");
+        setIsLoading(false);
         return;
       }
 
@@ -118,6 +124,7 @@ export default function RegisterPage() {
 
       if (!siteId || !etapa) {
         setErro("Não foi possível iniciar o onboarding.");
+        setIsLoading(false);
         return;
       }
 
@@ -130,6 +137,7 @@ export default function RegisterPage() {
       }
     } catch {
       setErro("Erro de conexão com o servidor.");
+      setIsLoading(false);
     }
   };
 
@@ -268,10 +276,38 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            className="w-full mt-6 bg-[#E60076] text-white font-semibold py-3
-    rounded-full hover:bg-[#cc0063] cursor-pointer transition"
+            disabled={isLoading}
+            className={`w-full mt-6 bg-[#E60076] text-white font-semibold py-3
+              rounded-full hover:bg-[#cc0063] cursor-pointer transition
+              ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
           >
-            Continuar
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Processando...
+              </div>
+            ) : (
+              "Continuar"
+            )}
           </button>
         </form>
 

@@ -18,28 +18,29 @@ export default function ClientSchoolDescription({ siteId }: Props) {
 
   const [schoolName, setSchoolName] = useState('')
   const [description, setDescription] = useState('')
-  const [logoPreview, setLogoPreview] = useState('')  
+  const [logoPreview, setLogoPreview] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true) // Loading inicial
+  const [isSubmitting, setIsSubmitting] = useState(false) // Loading do submit
 
   useEffect(() => {
     if (!siteId) {
       setError('ID do site não encontrado.')
-      setLoading(false)
+      setIsLoading(false)
       return
     }
-    ;(async () => {
+    ; (async () => {
       try {
         const res = await fetch(`/api/site/${siteId}`, { credentials: 'include' })
         if (!res.ok) throw new Error('Falha ao carregar dados do site')
         const data = await res.json()
         if (data.configuracoes?.nomeEscola) setSchoolName(data.configuracoes.nomeEscola)
         if (data.descricao) setDescription(data.descricao)
-        if (data.logo) setLogoPreview(data.logo)  
+        if (data.logo) setLogoPreview(data.logo)
       } catch (err: any) {
         setError(err.message)
       } finally {
-        setLoading(false)
+        setIsLoading(false)
       }
     })()
   }, [siteId])
@@ -49,12 +50,14 @@ export default function ClientSchoolDescription({ siteId }: Props) {
     setError(null)
     if (!siteId) return
 
+    setIsSubmitting(true) // Ativa o loading do submit
+
     try {
       const payload = {
         siteId,
         siteNome: schoolName,
         descricao: description,
-        logo: logoPreview,     
+        logo: logoPreview,
         status: 'PLAN_SELECTION',
       }
 
@@ -74,10 +77,15 @@ export default function ClientSchoolDescription({ siteId }: Props) {
       router.push(`/account/plan_selection?siteId=${siteId}`)
     } catch (err: any) {
       setError(err.message || 'Erro inesperado. Tente novamente.')
+    } finally {
+      setIsSubmitting(false) // Desativa o loading do submit
     }
   }
 
-  if (loading) return <p className="text-center p-6">Carregando dados da escola...</p>
+  // Verifica se os campos obrigatórios estão preenchidos
+  const isFormValid = schoolName.trim() !== ''
+
+  if (isLoading && !schoolName) return <p className="text-center p-6">Carregando dados da escola...</p>
 
   return (
     <form
@@ -108,7 +116,6 @@ export default function ClientSchoolDescription({ siteId }: Props) {
           rows={4}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          required
           className="w-full px-4 py-2 border rounded resize-none"
         />
 
@@ -148,9 +155,38 @@ export default function ClientSchoolDescription({ siteId }: Props) {
 
       <button
         type="submit"
-        className="w-full mt-6 bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 transition cursor-pointer"
+        disabled={isSubmitting || !isFormValid}
+        className={`w-full mt-6 bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 transition cursor-pointer
+          ${isSubmitting ? "opacity-70 cursor-not-allowed hover:bg-purple-700" : ""}
+          ${!isFormValid ? "opacity-50 cursor-not-allowed hover:bg-purple-700" : ""}`}
       >
-        Continuar
+        {isSubmitting ? (
+          <div className="flex items-center justify-center">
+            <svg
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Processando...
+          </div>
+        ) : (
+          "Continuar"
+        )}
       </button>
     </form>
   )
