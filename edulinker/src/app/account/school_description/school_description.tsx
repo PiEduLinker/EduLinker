@@ -3,6 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
+import { CldUploadWidget } from 'next-cloudinary'
+import type {
+  CloudinaryUploadWidgetError,
+  CloudinaryUploadWidgetResults
+} from 'next-cloudinary'
 
 interface Props {
   siteId?: string
@@ -13,8 +18,7 @@ export default function ClientSchoolDescription({ siteId }: Props) {
 
   const [schoolName, setSchoolName] = useState('')
   const [description, setDescription] = useState('')
-  const [logoFile, setLogoFile] = useState<File | null>(null)
-  const [logoPreview, setLogoPreview] = useState('')
+  const [logoPreview, setLogoPreview] = useState('')  
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -24,15 +28,14 @@ export default function ClientSchoolDescription({ siteId }: Props) {
       setLoading(false)
       return
     }
-    ; (async () => {
+    ;(async () => {
       try {
         const res = await fetch(`/api/site/${siteId}`, { credentials: 'include' })
         if (!res.ok) throw new Error('Falha ao carregar dados do site')
         const data = await res.json()
-
         if (data.configuracoes?.nomeEscola) setSchoolName(data.configuracoes.nomeEscola)
         if (data.descricao) setDescription(data.descricao)
-        if (data.logo) setLogoPreview(data.logo)
+        if (data.logo) setLogoPreview(data.logo)  
       } catch (err: any) {
         setError(err.message)
       } finally {
@@ -41,58 +44,28 @@ export default function ClientSchoolDescription({ siteId }: Props) {
     })()
   }, [siteId])
 
-  function fileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = reject
-      reader.readAsDataURL(file)
-    })
-  }
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        setError('Apenas imagens são permitidas.')
-        setLogoFile(null)
-        setLogoPreview('')
-        return
-      }
-      setLogoFile(file)
-      setLogoPreview(URL.createObjectURL(file))
-    } else {
-      setLogoFile(null)
-      setLogoPreview('')
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     if (!siteId) return
 
     try {
-      let logoBase64 = ''
-      if (logoFile) {
-        logoBase64 = await fileToBase64(logoFile)
+      const payload = {
+        siteId,
+        siteNome: schoolName,
+        descricao: description,
+        logo: logoPreview,     
+        status: 'PLAN_SELECTION',
       }
 
       const res = await fetch('/api/onboarding/basic', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          siteId,
-          siteNome: schoolName,
-          descricao: description,
-          logo: logoBase64,
-          status: 'PLAN_SELECTION',
-        }),
+        body: JSON.stringify(payload),
       })
 
       const data = await res.json()
-
       if (!res.ok) {
         setError(data.erro || 'Falha ao salvar dados básicos.')
         return
@@ -140,22 +113,33 @@ export default function ClientSchoolDescription({ siteId }: Props) {
         />
 
         <div className="flex items-center gap-4">
-          <label className="w-14 h-14 border rounded-full flex items-center justify-center cursor-pointer hover:border-purple-500 transition">
-            <Plus size={24} />
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-          </label>
-          {logoPreview && (
-            <img
-              src={logoPreview}
-              alt="Preview do logo"
-              className="w-14 h-14 rounded-full object-cover"
-            />
-          )}
+          <CldUploadWidget
+            uploadPreset="edulinker_unsigned"
+            options={{ folder: 'edulinker/logos', maxFiles: 1 }}
+            onError={(err: CloudinaryUploadWidgetError) => {
+              console.error(err)
+              setError('Falha ao enviar logo.')
+            }}
+            onSuccess={(result: CloudinaryUploadWidgetResults) => {
+              const info = result.info
+              if (typeof info !== 'string' && info) {
+                setLogoPreview(info.secure_url)
+              }
+            }}
+          >
+            {({ open }) => (
+              <button
+                type="button"
+                onClick={() => open()}
+                className="w-14 h-14 border rounded-full flex items-center justify-center cursor-pointer hover:border-purple-500 transition"
+              >
+                {logoPreview
+                  ? <img src={logoPreview} alt="Logo atual" className="w-full h-full rounded-full object-cover" />
+                  : <Plus size={24} />}
+              </button>
+            )}
+          </CldUploadWidget>
+
           <p className="text-sm text-gray-700">
             Adicione um logo (opcional)
           </p>
