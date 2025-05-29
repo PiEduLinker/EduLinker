@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { BadgeCheck, ShieldCheck } from 'lucide-react'
+import { BadgeCheck, ShieldCheck, Star } from 'lucide-react'
 
 interface Props {
   siteId?: string
@@ -12,13 +12,12 @@ interface Props {
 export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
   const router = useRouter()
   const params = useSearchParams()
-  // fallback ao query param, caso precise:
-  const id = siteId ?? params.get('siteId')  
+  const id = siteId ?? params.get('siteId')
 
   const [selectedPlan, setSelectedPlan] = useState<'gratuito' | 'premium' | ''>('')
-  const [error, setError]     = useState('')
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
-  const [status, setStatus]   = useState(initialStatus)
+  const [status, setStatus] = useState(initialStatus)
 
   useEffect(() => {
     if (!id) {
@@ -77,17 +76,18 @@ export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-5xl flex flex-col items-center pb-12 px-4">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">ESCOLHA SEU PLANO</h1>
+    <form onSubmit={handleSubmit} className="w-full max-w-4xl flex flex-col items-center pb-12 px-4">
+      <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Escolha seu plano</h1>
+      <p className="text-gray-600 mb-6 text-center">Selecione a opção que melhor atende suas necessidades</p>
+
       {error && <p className="text-red-600 font-medium text-sm text-center mb-4">{error}</p>}
 
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Gratuito */}
-        <label className={`border rounded-xl p-6 cursor-pointer transition ${
-          selectedPlan === 'gratuito'
-            ? 'border-purple-600 bg-purple-50'
-            : 'border-gray-300 hover:border-purple-400'
-        }`}>
+        <label className={`border rounded-lg p-6 cursor-pointer transition-all bg-white ${selectedPlan === 'gratuito'
+            ? 'border-purple-500 ring-2 ring-purple-200'
+            : 'border-gray-200 hover:border-purple-300'
+          }`}>
           <input
             type="radio"
             name="plan"
@@ -97,29 +97,35 @@ export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
             className="hidden"
           />
           <div className="flex items-center gap-3 mb-3">
-            <BadgeCheck className="text-purple-600" size={24} />
-            <h2 className="font-semibold text-xl text-gray-800">Plano Gratuito</h2>
+            <BadgeCheck className="text-purple-500" size={20} />
+            <h2 className="font-semibold text-lg text-gray-800">Gratuito</h2>
           </div>
-          <p className="text-gray-600 text-sm mb-4">Ideal para começar de forma simples e sem custo.</p>
-          <ul className="text-sm text-gray-700 space-y-1">
-            <li>✔ Cadastro de até 5 imóveis</li>
-            <li>✔ Tema básico</li>
-            <li>✔ Suporte via email</li>
-            <li className="line-through text-gray-400">✘ Integração com WhatsApp</li>
-            <li className="line-through text-gray-400">✘ Exclusividade de anúncios</li>
-            <li className="line-through text-gray-400">✘ Estatísticas avançadas</li>
+          <p className="text-gray-600 text-sm mb-4">Para começar sem custos</p>
+          <ul className="text-sm text-gray-700 space-y-2 mb-2">
+            <li className="flex items-start gap-2">✔ <span>Até 5 imóveis</span></li>
+            <li className="flex items-start gap-2">✔ <span>Tema básico</span></li>
+            <li className="flex items-start gap-2">✔ <span>Suporte por email</span></li>
+            <li className="flex items-start gap-2 text-gray-400">✘ <span>WhatsApp</span></li>
+            <li className="flex items-start gap-2 text-gray-400">✘ <span>Exclusividade</span></li>
+            <li className="flex items-start gap-2 text-gray-400">✘ <span>Estatísticas</span></li>
           </ul>
+          <div className="mt-4 pt-3 border-t border-gray-100">
+            <span className="text-gray-700 font-medium">Grátis</span>
+          </div>
         </label>
 
         {/* Premium */}
-        <label className={`relative border-2 rounded-xl p-6 cursor-pointer transition shadow-md ${
-          selectedPlan === 'premium'
-            ? 'border-purple-700 bg-purple-50'
-            : 'border-purple-400 hover:border-purple-600'
-        }`}>
-          <div className="absolute top-0 right-0 -mt-3 mr-3 bg-purple-700 text-white text-xs font-semibold px-2 py-1 rounded-full shadow">
-            Recomendado
+        <label className={`border rounded-lg p-6 cursor-pointer transition-all bg-white relative ${selectedPlan === 'premium'
+            ? 'border-purple-600 ring-2 ring-purple-200'
+            : 'border-gray-200 hover:border-purple-500'
+          }`}>
+          <div className="absolute top-0 right-0 -mt-3 -mr-1">
+            <div className="bg-purple-600 text-white text-xs font-medium px-3 py-1 rounded-full flex items-center">
+              <Star className="mr-1" size={12} />
+              <span>Recomendado</span>
+            </div>
           </div>
+
           <input
             type="radio"
             name="plan"
@@ -128,27 +134,35 @@ export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
             onChange={() => setSelectedPlan('premium')}
             className="hidden"
           />
+
           <div className="flex items-center gap-3 mb-3">
-            <ShieldCheck className="text-purple-700" size={26} />
-            <h2 className="font-bold text-xl text-purple-800">Plano Premium</h2>
+            <ShieldCheck className="text-purple-600" size={20} />
+            <h2 className="font-semibold text-lg text-purple-800">Premium</h2>
           </div>
-          <p className="text-gray-700 text-sm mb-2">Tudo do gratuito + recursos profissionais.</p>
-          <div className="text-purple-700 font-bold text-lg mb-4">R$ 29/mês</div>
-          <ul className="text-sm text-gray-800 space-y-1">
-            <li>✔ Cadastro ilimitado de imóveis</li>
-            <li>✔ Temas personalizados</li>
-            <li>✔ Integração com WhatsApp</li>
-            <li>✔ Estatísticas de visualização</li>
-            <li>✔ Destaque nas buscas</li>
-            <li>✔ Suporte prioritário</li>
-            <li>✔ Exclusividade regional</li>
+
+          <p className="text-gray-700 text-sm mb-4">Recursos completos para melhores resultados</p>
+
+          <ul className="text-sm text-gray-800 space-y-2 mb-2">
+            <li className="flex items-start gap-2">✔ <span>Imóveis ilimitados</span></li>
+            <li className="flex items-start gap-2">✔ <span>Temas personalizados</span></li>
+            <li className="flex items-start gap-2">✔ <span>Integração WhatsApp</span></li>
+            <li className="flex items-start gap-2">✔ <span>Estatísticas detalhadas</span></li>
+            <li className="flex items-start gap-2">✔ <span>Destaque nas buscas</span></li>
+            <li className="flex items-start gap-2">✔ <span>Suporte prioritário</span></li>
           </ul>
+
+          <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+            <span className="text-purple-700 font-bold">R$ 29/mês</span>
+            <span className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded">
+              Mais escolhido
+            </span>
+          </div>
         </label>
       </div>
 
       <button
         type="submit"
-        className="w-full max-w-md mt-8 bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 transition cursor-pointer"
+        className="w-full max-w-md mt-8 bg-purple-600 text-white font-medium py-3 rounded-lg hover:bg-purple-700 transition-all cursor-pointer"
       >
         Continuar
       </button>
