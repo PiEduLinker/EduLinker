@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Montserrat, Geist, Geist_Mono, Roboto, Poppins } from "next/font/google";
 import "../styles/globals.css";
+import CookieConsent from "@/components/CookieConsent";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,7 +21,7 @@ const montserrat = Montserrat({
 
 const roboto = Roboto({ variable: '--font-roboto', subsets: ['latin'] });
 
-const poppins = Poppins({ variable: '--font-poppins', subsets: ['latin'], weight: ['400','700'], });
+const poppins = Poppins({ variable: '--font-poppins', subsets: ['latin'], weight: ['400', '700'], });
 
 export const metadata: Metadata = {
   title: "EduLinker",
@@ -41,6 +43,7 @@ export default function RootLayout({
         ${poppins.variable} 
         antialiased
       `}>
+        <CookieConsent />
         {children}
       </body>
     </html>
