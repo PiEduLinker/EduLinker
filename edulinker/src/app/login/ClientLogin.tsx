@@ -77,7 +77,7 @@ export default function ClientLogin({ from }: Props) {
         {/* Logo */}
         <div className="absolute top-4 md:top-8 left-4 md:left-8">
           <Image
-            src="/Logo/EduLinker.png"
+            src="/logo/edulinker.png"
             alt="Logo"
             width={120}
             height={120}

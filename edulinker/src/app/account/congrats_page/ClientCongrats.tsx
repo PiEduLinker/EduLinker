@@ -48,7 +48,7 @@ export default function ClientCongrats({ siteId }: Props) {
       {/* imagem, botões, mensagem de erro e publicLink */}
       <div className="w-64 aspect-[4/5] relative">
         <Image
-          src="/Backgrounds/happySmartPhone.png"
+          src="/backgrounds/happysmartphone.png"
           alt="Celular comemorando"
           fill
           className="object-contain"
