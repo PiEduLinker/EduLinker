@@ -207,7 +207,7 @@ export default function AdminAboutPage() {
                 >
                   <Trash2 size={18} />
                 </button>
-              </div>
+              </div> 
             ))}
 
             {isPremium ? (

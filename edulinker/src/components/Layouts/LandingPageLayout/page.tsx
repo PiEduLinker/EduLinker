@@ -13,7 +13,7 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
             <nav className="px-4 sm:px-6 py-4 flex justify-between items-center">
                 <Link href="/" className="flex items-center space-x-2">
                     <Image
-                        src="/logo/EduLinker.png"
+                        src="/Logo/EduLinker.png"
                         alt="Logo"
                         width={120}
                         height={120}
@@ -22,10 +22,14 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
                 </Link>
                 <div className="hidden md:flex space-x-6">
                     <Link href="#features" className="text-gray-600 hover:text-indigo-600">Recursos</Link>
+                    <Link href="#toturial" className="text-gray-600 hover:text-indigo-600">Tutorial</Link>
                     <Link href="#pricing" className="text-gray-600 hover:text-indigo-600">Planos</Link>
                     <Link href="#faq" className="text-gray-600 hover:text-indigo-600">FAQ</Link>
                 </div>
-                <Link href="/login" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm sm:text-base">
+                <Link 
+                    href="/login" 
+                    className="bg-[#E60076] text-white px-4 py-2 rounded-lg hover:bg-[#C50068] transition-colors text-sm sm:text-base"
+                >
                     Entrar
                 </Link>
             </nav>
