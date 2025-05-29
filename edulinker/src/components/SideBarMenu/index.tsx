@@ -34,6 +34,7 @@ export default function SideBarMenu({ onClose }: { onClose?: () => void }) {
     { label: "Depoimentos",      path: "/auth/admin/testimonials" },
     { label: "Contato",          path: "/auth/admin/contact" },
     { label: "Relatórios (Pro)", path: "/auth/admin/reports", isPro: true },
+    { label: "Alterar template (Pro)",           path: "/auth/admin/templateChange"},
   ]
 
   return (
