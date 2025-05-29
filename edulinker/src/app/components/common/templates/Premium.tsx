@@ -72,7 +72,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
                   <img
                     src={config.logo || DEFAULT_LOGO}
                     alt="Logo da Escola"
-                    className="transition-transform duration-300 group-hover:scale-105 max-w-[150px] h-auto"
+                    className="transition-transform duration-300 group-hover:scale-105 max-w-[110px] h-auto"
                   />
                 </a>
               </div>
@@ -269,36 +269,49 @@ export default function Premium({ config }: { config: SiteConfig }) {
           </div>
         </section>
 
-        {config.galerias && config.galerias.length > 0 && (
-          <section className="relative py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
-            {/* Elementos decorativos de fundo */}
-            <div className="absolute top-0 left-0 w-full h-full opacity-10">
-              <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-20"></div>
-              <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-purple-500 filter blur-3xl opacity-15"></div>
-            </div>
+        <section className="relative py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
+          {/* Elementos decorativos de fundo */}
+          <div className="absolute top-0 left-0 w-full h-full opacity-10">
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-20"></div>
+            <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-purple-500 filter blur-3xl opacity-15"></div>
+          </div>
 
-            <div className="container mx-auto px-4 lg:px-8 relative z-10">
-              {/* Cabeçalho elegante */}
-              <div className="text-center mb-16">
-                <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
-                  Momentos Especiais
+          <div className="container mx-auto px-4 lg:px-8 relative z-10">
+            {/* Cabeçalho elegante */}
+            <div className="text-center mb-16">
+              <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
+                Momentos Especiais
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                <span className="relative inline-block pb-2">
+                  Nossa Galeria
+                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
                 </span>
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                  <span className="relative inline-block pb-2">
-                    Nossa Galeria
-                    <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
-                  </span>
-                </h2>
-                <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
-                  Registros dos momentos que fazem da nossa escola um lugar especial
-                </p>
-              </div>
-
-              <GalleryPremium items={config.galerias} />
+              </h2>
+              <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+                Registros dos momentos que fazem da nossa escola um lugar especial
+              </p>
             </div>
-          </section>
-        )}
 
+            {/* Container flex para centralizar toda a galeria */}
+            <div className="flex justify-center">
+              <div className="w-full max-w-7xl"> {/* Ajuste max-w conforme necessário */}
+                {/* Lógica com placeholder */}
+                <GalleryPremium
+                  items={
+                    config.galerias && config.galerias.length > 0
+                      ? config.galerias
+                      : [
+                        { imagem: '/templates/premium/placeholderGallery.webp' },
+                        { imagem: '/templates/premium/placeholderGallery.webp' },
+                        { imagem: '/templates/premium/placeholderGallery.webp' }
+                      ]
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Aulas Premium */}
         <section id="aulas" className="py-20 bg-white dark:bg-gray-900">

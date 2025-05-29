@@ -18,47 +18,49 @@ export default function GalleryPremium({ items = [] }: { items?: Array<{ imagem:
 
   const navigate = (direction: 'prev' | 'next') => {
     if (selectedIndex === null) return;
-    
-    const newIndex = direction === 'prev' 
+
+    const newIndex = direction === 'prev'
       ? (selectedIndex === 0 ? items.length - 1 : selectedIndex - 1)
       : (selectedIndex === items.length - 1 ? 0 : selectedIndex + 1);
-    
+
     setSelectedIndex(newIndex);
     setIsZoomed(false);
   };
 
   return (
     <div className="relative">
-      {/* Grid da Galeria */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-        {items.map((item, index) => (
-          <div 
-            key={index}
-            className="relative group overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 aspect-square"
-            onClick={() => openImage(index)}
-          >
-            <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800">
-              <img
-                src={item.imagem}
-                alt={`Imagem da galeria ${index + 1}`}
-                className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
-                loading="lazy"
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-              <div className="text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex flex-col items-center">
-                <ZoomIn className="w-8 h-8 mb-2" />
-                <p className="text-sm font-medium">Visualizar</p>
+      {/* Grid da Galeria - Versão corrigida */}
+      <div className="flex justify-center px-4">
+        <div className="flex flex-wrap justify-center gap-4 md:gap-6 max-w-[1800px]">
+          {items.map((item, index) => (
+            <div
+              key={index}
+              className="relative group overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 aspect-square w-[300px]"
+              onClick={() => openImage(index)}
+            >
+              <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800">
+                <img
+                  src={item.imagem}
+                  alt={`Imagem da galeria ${index + 1}`}
+                  className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+                  loading="lazy"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <div className="text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex flex-col items-center">
+                  <ZoomIn className="w-8 h-8 mb-2" />
+                  <p className="text-sm font-medium">Visualizar</p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      {/* Lightbox Premium */}
+      {/* Lightbox Premium (mantido igual) */}
       {selectedIndex !== null && (
         <div className={`fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}>
-          <button 
+          <button
             onClick={closeImage}
             className="absolute top-6 right-6 text-white hover:text-pink-400 transition-colors duration-300 z-10"
             aria-label="Fechar"

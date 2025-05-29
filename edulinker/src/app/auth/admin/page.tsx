@@ -36,7 +36,7 @@ export default async function AdminPanelPage() {
         </h1>
         <div className="p-5 bg-purple-200 rounded-full">
           <p className="text-center sm:text-start">
-            🔥 Seu site já está disponível no link:{' '}
+            Seu site já está disponível no link:{' '}
             {slug ? (
               <a
                 href={linkPublico}
