@@ -16,7 +16,6 @@ export default function AdminGalleryPage() {
   const isPremium = useIsPremium()
   const [success, setSuccess] = useState('');
 
-
   const maxSlots = isPremium ? 12 : 3
   const initialGalerias = (configuracoes.galerias as GalleryItem[]) ?? []
   const [galerias, setGalerias] = useState<GalleryItem[]>(initialGalerias)

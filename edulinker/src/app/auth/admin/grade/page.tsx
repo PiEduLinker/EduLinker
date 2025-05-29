@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
@@ -19,11 +19,12 @@ export default function AdminGradePage() {
   const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
   const maxAulas = isPremium ? 12 : 4
+  const [success, setSuccess] = useState('');
 
   const initialAulas = (configuracoes.aulas as Aula[]) ?? []
-  const [aulas, setAulas]   = useState<Aula[]>(initialAulas)
+  const [aulas, setAulas] = useState<Aula[]>(initialAulas)
   const [saving, setSaving] = useState(false)
-  const [error, setError]   = useState('')
+  const [error, setError] = useState('')
 
   const handleAdd = useCallback(() => {
     if (aulas.length >= maxAulas) return
@@ -49,6 +50,7 @@ export default function AdminGradePage() {
     if (!siteId) return
     setSaving(true)
     setError('')
+    setSuccess('');
 
     try {
       const res = await fetch(`/api/site/${siteId}`, {
@@ -65,7 +67,7 @@ export default function AdminGradePage() {
         ...configuracoes,
         aulas,
       })
-
+      setSuccess('Aulas atualizadas!');
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -78,16 +80,30 @@ export default function AdminGradePage() {
     setConfiguracoes,
   ])
 
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
+
   return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 sm:p-8">
+          <div className="p-6 sm:p-8 text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-6">Gerenciamento de Aulas</h1>
 
             {error && (
               <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
                 <p className="text-red-600 text-center font-medium">{error}</p>
+              </div>
+            )}
+
+            {success && (
+              <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm mb-6">
+                {success}
               </div>
             )}
 
@@ -99,7 +115,7 @@ export default function AdminGradePage() {
                     <button
                       onClick={() => handleRemove(idx)}
                       disabled={saving}
-                      className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
+                      className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50 cursor-pointer"
                       aria-label="Remover aula"
                     >
                       <Trash2 size={18} />
@@ -119,7 +135,7 @@ export default function AdminGradePage() {
                         <button
                           onClick={() => handleRemoveImage(idx)}
                           disabled={saving}
-                          className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                          className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors cursor-pointer"
                           aria-label="Remover imagem"
                         >
                           <Trash2 size={16} />
@@ -144,7 +160,7 @@ export default function AdminGradePage() {
                         <button
                           type="button"
                           onClick={() => open()}
-                          className="block w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-600 hover:border-gray-400 transition-colors"
+                          className="block w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-600 hover:border-gray-400 transition-colors cursor-pointer"
                           disabled={saving}
                         >
                           <Plus className="inline mr-1" />
@@ -206,7 +222,7 @@ export default function AdminGradePage() {
                 <button
                   onClick={handleAdd}
                   disabled={saving}
-                  className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition w-full sm:w-auto"
+                  className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition w-full sm:w-auto cursor-pointer"
                 >
                   <Plus size={18} />
                   <span>Adicionar Aula</span>
@@ -222,11 +238,10 @@ export default function AdminGradePage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition ${
-                  saving
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
-                }`}
+                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition cursor-pointer ${saving
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
+                  }`}
               >
                 {saving ? (
                   <span className="flex items-center gap-2">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import {
   Edit2,
@@ -40,10 +40,11 @@ export default function AdminContactPage() {
   const initialConfig = configuracoes.contato ?? {}
 
   // 2) Estados locais
-  const [config, setConfig]       = useState<ContactConfig>(initialConfig)
-  const [isEditing, setEditing]   = useState(false)
-  const [saving, setSaving]       = useState(false)
-  const [error, setError]         = useState('')
+  const [config, setConfig] = useState<ContactConfig>(initialConfig)
+  const [isEditing, setEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('');
 
   // 3) Atualiza campos (incluindo socialMedia.*)
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,12 +68,12 @@ export default function AdminContactPage() {
     e.preventDefault()
     setSaving(true)
     setError('')
-
-   try {
+    setSuccess('');
+    try {
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
         credentials: 'include',
-        headers: { 'Content-Type':'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ configuracoes: { contato: config } })
       })
       const body = await res.json().catch(() => ({}))
@@ -82,7 +83,7 @@ export default function AdminContactPage() {
         ...configuracoes,
         contato: config
       })
-
+      setSuccess('Contato atualizado com sucesso!');
       setEditing(false)
     } catch (err: any) {
       setError(err.message)
@@ -96,7 +97,14 @@ export default function AdminContactPage() {
     setConfiguracoes
   ])
 
-return (
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
+  return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -106,7 +114,7 @@ return (
               {!isEditing ? (
                 <button
                   onClick={() => setEditing(true)}
-                  className="flex items-center space-x-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="flex items-center space-x-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
                 >
                   <Edit2 size={18} />
                   <span>Editar</span>
@@ -120,39 +128,24 @@ return (
                 </button>
               )}
             </div>
+            <div className='text-center'>
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
+                  <p className="text-red-600 text-center font-medium">{error}</p>
+                </div>
+              )}
 
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
-                <p className="text-red-600 text-center font-medium">{error}</p>
-              </div>
-            )}
+              {success && (
+                <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto mb-6">
+                  {success}
+                </div>
+              )}
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Informações Básicas */}
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-gray-800 pb-2 border-b border-gray-200">Informações Básicas</h2>
-                
-                {/* Descrição */}
-                <div className="flex items-start gap-4">
-                  <div className="p-2 bg-yellow-50 rounded-lg text-yellow-600">
-                    <Edit2 size={20} />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
-                    {isEditing ? (
-                      <input
-                        name="descricaoBreve"
-                        type="text"
-                        value={config.descricaoBreve || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                        placeholder="Texto introdutório da seção Contato"
-                      />
-                    ) : (
-                      <p className="text-gray-700">{config.descricaoBreve || 'Bem-vindo à nossa seção de contato. Fale conosco!'}</p>
-                    )}
-                  </div>
-                </div>
 
                 {/* Horários */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -203,7 +196,7 @@ return (
               {/* Contatos */}
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-gray-800 pb-2 border-b border-gray-200">Contatos</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* E-mail */}
                   <div className="flex items-start gap-4">
@@ -276,7 +269,7 @@ return (
               {/* Endereço */}
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-gray-800 pb-2 border-b border-gray-200">Localização</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Endereço */}
                   <div className="flex items-start gap-4">
@@ -339,9 +332,9 @@ return (
                           placeholder="URL embed do Google Maps"
                         />
                       ) : config.mapEmbedUrl ? (
-                        <a 
-                          href={config.mapEmbedUrl} 
-                          target="_blank" 
+                        <a
+                          href={config.mapEmbedUrl}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-indigo-600 hover:underline break-all"
                         >
@@ -358,7 +351,7 @@ return (
               {/* Redes Sociais */}
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-gray-800 pb-2 border-b border-gray-200">Redes Sociais</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Facebook */}
                   <div className="flex items-start gap-4">
@@ -377,9 +370,9 @@ return (
                           placeholder="https://facebook.com/usuario"
                         />
                       ) : config.socialMedia?.facebook ? (
-                        <a 
-                          href={config.socialMedia.facebook} 
-                          target="_blank" 
+                        <a
+                          href={config.socialMedia.facebook}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-indigo-600 hover:underline break-all"
                         >
@@ -408,9 +401,9 @@ return (
                           placeholder="https://instagram.com/usuario"
                         />
                       ) : config.socialMedia?.instagram ? (
-                        <a 
-                          href={config.socialMedia.instagram} 
-                          target="_blank" 
+                        <a
+                          href={config.socialMedia.instagram}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-indigo-600 hover:underline break-all"
                         >
@@ -439,9 +432,9 @@ return (
                           placeholder="https://youtube.com/c/usuario"
                         />
                       ) : config.socialMedia?.youtube ? (
-                        <a 
-                          href={config.socialMedia.youtube} 
-                          target="_blank" 
+                        <a
+                          href={config.socialMedia.youtube}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-indigo-600 hover:underline break-all"
                         >
@@ -461,11 +454,10 @@ return (
                   <button
                     type="submit"
                     disabled={saving}
-                    className={`px-6 py-3 rounded-xl text-white font-medium transition-all ${
-                      saving
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
-                    }`}
+                    className={`px-6 py-3 rounded-xl text-white font-medium transition-all cursor-pointer ${saving
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
+                      }`}
                   >
                     {saving ? (
                       <span className="flex items-center justify-center space-x-2">

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { Plus, Trash2, Star, Loader2, Save } from 'lucide-react'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
@@ -18,11 +18,12 @@ export default function AdminTestimonialsPage() {
   const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
   const maxItems = isPremium ? 8 : 2
+  const [success, setSuccess] = useState('');
 
   const initial = (configuracoes.depoimentos as Testimonial[]) ?? []
-  const [items, setItems]      = useState<Testimonial[]>(initial)
-  const [saving, setSaving]    = useState(false)
-  const [error, setError]      = useState('')
+  const [items, setItems] = useState<Testimonial[]>(initial)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   const handleAdd = useCallback(() => {
     if (items.length >= maxItems) return
@@ -45,6 +46,7 @@ export default function AdminTestimonialsPage() {
   const handleSave = useCallback(async () => {
     setSaving(true)
     setError('')
+    setSuccess('');
     try {
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
@@ -60,7 +62,7 @@ export default function AdminTestimonialsPage() {
         ...configuracoes,
         depoimentos: items,
       })
-
+      setSuccess('Depoimento atualizado com sucesso!');
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -68,11 +70,18 @@ export default function AdminTestimonialsPage() {
     }
   }, [siteId, items, configuracoes, setConfiguracoes])
 
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
   return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 sm:p-8">
+          <div className="p-6 sm:p-8 text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-6">
               Gerenciamento de Depoimentos
             </h1>
@@ -80,6 +89,12 @@ export default function AdminTestimonialsPage() {
             {error && (
               <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
                 <p className="text-red-600 text-center font-medium">{error}</p>
+              </div>
+            )}
+
+            {success && (
+              <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm mb-6">
+                {success}
               </div>
             )}
 
@@ -96,7 +111,7 @@ export default function AdminTestimonialsPage() {
                     <button
                       onClick={() => handleRemove(idx)}
                       disabled={saving}
-                      className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
+                      className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50 cursor-pointer"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -143,7 +158,7 @@ export default function AdminTestimonialsPage() {
                               type="button"
                               onClick={() => open()}
                               disabled={saving}
-                              className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition-colors"
+                              className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition-colors cursor-pointer"
                             >
                               {item.foto ? 'Alterar foto' : 'Selecionar foto'}
                             </button>
@@ -195,11 +210,10 @@ export default function AdminTestimonialsPage() {
                           >
                             <Star
                               size={24}
-                              className={`${
-                                n <= item.estrelas
-                                  ? 'text-yellow-400 fill-yellow-400'
-                                  : 'text-gray-300'
-                              } transition-colors`}
+                              className={`${n <= item.estrelas
+                                ? 'text-yellow-400 fill-yellow-400'
+                                : 'text-gray-300'
+                                } transition-colors cursor-pointer`}
                             />
                           </button>
                         ))}
@@ -219,7 +233,7 @@ export default function AdminTestimonialsPage() {
                 <button
                   onClick={handleAdd}
                   disabled={saving}
-                  className="flex items-center justify-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto"
+                  className="flex items-center justify-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors w-full sm:w-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus size={18} />
                   <span>Adicionar Depoimento</span>
@@ -236,11 +250,10 @@ export default function AdminTestimonialsPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition-all ${
-                  saving
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
-                }`}
+                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition-all cursor-pointer ${saving
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
+                  }`}
               >
                 {saving ? (
                   <span className="flex items-center justify-center space-x-2">

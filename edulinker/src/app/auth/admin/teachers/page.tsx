@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { Plus, Trash2, X, Loader2, Save, Upload } from 'lucide-react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { useSite, useIsPremium } from '@/contexts/siteContext'
@@ -17,11 +17,12 @@ export default function AdminTeachersPage() {
   const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
   const maxProfessores = isPremium ? 12 : 4
+  const [success, setSuccess] = useState('');
 
   const initial = (configuracoes.professores as Professor[]) ?? []
   const [professores, setProfessores] = useState<Professor[]>(initial)
-  const [saving, setSaving]           = useState(false)
-  const [error, setError]             = useState<string>('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string>('')
 
   const addProfessor = useCallback(() => {
     if (professores.length >= maxProfessores) return
@@ -41,6 +42,7 @@ export default function AdminTeachersPage() {
   const handleSave = useCallback(async () => {
     setSaving(true)
     setError('')
+    setSuccess('');
     try {
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
@@ -56,13 +58,20 @@ export default function AdminTeachersPage() {
         ...configuracoes,
         professores,
       })
-
+      setSuccess('Professores atualizados com sucesso!');
     } catch (err: any) {
       setError(err.message)
     } finally {
       setSaving(false)
     }
   }, [siteId, professores, configuracoes, setConfiguracoes])
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   return (
     <AdminLayout>
@@ -77,6 +86,13 @@ export default function AdminTeachersPage() {
               {error}
             </div>
           )}
+
+          {success && (
+            <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm">
+              {success}
+            </div>
+          )}
+
         </div>
 
         {/* Lista de Professores */}
@@ -90,7 +106,7 @@ export default function AdminTeachersPage() {
               <button
                 onClick={() => removeProfessor(idx)}
                 disabled={saving}
-                className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                 aria-label="Remover professor"
               >
                 <Trash2 size={18} />
@@ -164,7 +180,7 @@ export default function AdminTeachersPage() {
                       type="button"
                       onClick={() => open()}
                       disabled={saving}
-                      className="inline-flex items-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition-colors"
+                      className="inline-flex items-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition-colors cursor-pointer disabled:opacity-70"
                     >
                       <Upload size={16} className="mr-2" />
                       {prof.imagem ? 'Alterar imagem' : 'Selecionar imagem'}
@@ -180,7 +196,7 @@ export default function AdminTeachersPage() {
             <button
               onClick={addProfessor}
               disabled={saving}
-              className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-all text-gray-600 dark:text-gray-400 font-medium"
+              className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-all text-gray-600 dark:text-gray-400 font-medium cursor-pointer disabled:opacity-70"
             >
               <Plus size={20} />
               Adicionar professor
@@ -198,7 +214,7 @@ export default function AdminTeachersPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 text-white py-2.5 px-6 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-70"
+              className="flex items-center gap-2 text-white py-2.5 px-6 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-70 cursor-pointer"
             >
               {saving ? (
                 <Loader2 size={18} className="animate-spin" />
