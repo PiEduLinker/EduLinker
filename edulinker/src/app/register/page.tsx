@@ -161,8 +161,7 @@ export default function RegisterPage() {
             placeholder="Seu nome"
             required
             onChange={handleChange}
-            className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg
-              focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+            className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg focus:border-[#E60076] outline-none transition"
           />
           <input
             type="email"
@@ -170,8 +169,7 @@ export default function RegisterPage() {
             placeholder="Email"
             required
             onChange={handleChange}
-            className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg
-              focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+            className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg focus:border-[#E60076] outline-none transition"
           />
 
           <div className="relative">
@@ -181,8 +179,7 @@ export default function RegisterPage() {
               placeholder="Senha"
               required
               onChange={handleChange}
-              className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg
-                focus:ring-purple-500 focus:border-purple-500 outline-none transition pr-10"
+              className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg focus:border-[#E60076] outline-none transition"
             />
             <button
               type="button"
@@ -259,8 +256,7 @@ export default function RegisterPage() {
               placeholder="Repita sua senha"
               required
               onChange={handleChange}
-              className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg
-                focus:ring-purple-500 focus:border-purple-500 outline-none transition pr-10"
+              className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg focus:border-[#E60076] outline-none transition"
             />
             <button
               type="button"
