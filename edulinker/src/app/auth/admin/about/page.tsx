@@ -206,7 +206,7 @@ export default function AdminAboutPage() {
                     handleDestaqueChange(idx, "number", e.target.value)
                   }
                   placeholder="Número"
-                  className="sm:col-span-3 w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition text-gray-900 dark:text-white"
+                  className="sm:col-span-3 w-full bg-white border border-gray-200 border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#E60076] transition text-gray-900 text-dark"
                   disabled={!isPremium}
                 />
                 <input
@@ -216,7 +216,7 @@ export default function AdminAboutPage() {
                     handleDestaqueChange(idx, "label", e.target.value)
                   }
                   placeholder="Descrição do destaque"
-                  className="sm:col-span-8 w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition text-gray-900 dark:text-white"
+                  className="sm:col-span-8 w-full bg-white border border-gray-200 border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#E60076] transition text-gray-900 text-dark"
                   disabled={!isPremium}
                 />
                 <button
@@ -234,7 +234,7 @@ export default function AdminAboutPage() {
                 <button
                   onClick={handleAdd}
                   disabled={saving}
-                  className="flex items-center gap-2 text-purple-600 hover:text-purple-800 mt-4 cursor-pointer"
+                  className="flex items-center gap-2 text-[#E60076] hover:text-[#FF66A3]  mt-4 cursor-pointer"
                 >
                   <Plus size={18} /> Adicionar Destaque
                 </button>
