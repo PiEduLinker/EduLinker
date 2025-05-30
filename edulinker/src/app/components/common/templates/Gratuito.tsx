@@ -423,7 +423,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               </div>
             ) : (
               <div className="flex flex-wrap justify-center gap-8">
-                {displayedDepoimentos.slice(0, 2).map((d, index) => (
+                {displayedDepoimentos.map((d, index) => (
                   <div key={index} className="w-full sm:w-[350px]">
                     <div className="bg-white rounded-lg shadow-inner p-6 h-full border border-gray-100 relative">
                       <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
