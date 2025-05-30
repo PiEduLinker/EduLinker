@@ -1,80 +1,77 @@
-'use client'
+"use client";
 
-import { useState, useCallback, useEffect } from 'react'
-import AdminLayout from '@/components/Layouts/AdminLayout'
-import { Plus, Trash2, Loader2 } from 'lucide-react'
-import { useSite, useIsPremium } from '@/contexts/siteContext'
-import { CldUploadWidget } from 'next-cloudinary'
-import type { CloudinaryUploadWidgetError, CloudinaryUploadWidgetResults, } from 'next-cloudinary'
-import { set } from 'mongoose'
+import { useState, useCallback, useEffect } from "react";
+import AdminLayout from "@/components/Layouts/AdminLayout";
+import { Plus, Trash2, Loader2 } from "lucide-react";
+import { useSite, useIsPremium } from "@/contexts/siteContext";
+import { CldUploadWidget } from "next-cloudinary";
+import type {
+  CloudinaryUploadWidgetError,
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
+import { set } from "mongoose";
 
-
-interface BannerItem { imagem: string }
+interface BannerItem {
+  imagem: string;
+}
 
 export default function AdminBannerPage() {
-  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
-  const isPremium = useIsPremium()
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite();
+  const isPremium = useIsPremium();
 
   // carrega o estado inicial
-  const initial = (configuracoes.carrossel as BannerItem[]) ?? []
-  const [banners, setBanners] = useState<BannerItem[]>(initial)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('');
+  const initial = (configuracoes.carrossel as BannerItem[]) ?? [];
+  const [banners, setBanners] = useState<BannerItem[]>(initial);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // limites por plano
-  const maxBanners = isPremium ? 3 : 1
+  const maxBanners = isPremium ? 3 : 1;
 
   const handleAdd = useCallback(() => {
     if (banners.length < maxBanners) {
-      setBanners(b => [...b, { imagem: '' }])
+      setBanners((b) => [...b, { imagem: "" }]);
     }
-  }, [banners.length, maxBanners])
+  }, [banners.length, maxBanners]);
 
   const handleRemove = useCallback((idx: number) => {
-    setBanners(b => b.filter((_, i) => i !== idx))
-  }, [])
+    setBanners((b) => b.filter((_, i) => i !== idx));
+  }, []);
 
   // salvar no backend
   const handleSave = useCallback(async () => {
-    setSaving(true)
-    setError('')
-    setSuccess('')
+    setSaving(true);
+    setError("");
+    setSuccess("");
     try {
-      const newCarousel = isPremium ? banners : banners.slice(0, 1)
-      const payload = { configuracoes: { carrossel: newCarousel } }
+      const newCarousel = isPremium ? banners : banners.slice(0, 1);
+      const payload = { configuracoes: { carrossel: newCarousel } };
       const res = await fetch(`/api/site/${siteId}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
-      const body = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(body.erro || 'Falha ao salvar')
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.erro || "Falha ao salvar");
 
       setConfiguracoes({
         ...configuracoes,
-        carrossel: newCarousel
-      })
+        carrossel: newCarousel,
+      });
 
-      setSuccess('Banners atualizados com sucesso!');
-
+      setSuccess("Banners atualizados com sucesso!");
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [
-    siteId,
-    banners,
-    isPremium,
-    configuracoes,
-    setConfiguracoes
-  ])
+  }, [siteId, banners, isPremium, configuracoes, setConfiguracoes]);
 
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => setSuccess(''), 3000);
+      const timer = setTimeout(() => setSuccess(""), 3000);
       return () => clearTimeout(timer);
     }
   }, [success]);
@@ -135,21 +132,19 @@ export default function AdminBannerPage() {
 
                     <CldUploadWidget
                       uploadPreset="edulinker_unsigned"
-                      options={{ folder: 'edulinker/banners', maxFiles: 1 }}
+                      options={{ folder: "edulinker/banners", maxFiles: 1 }}
                       onSuccess={(result: CloudinaryUploadWidgetResults) => {
                         // result.info pode ser string ou objeto, então garantimos que é objeto:
-                        const info = result.info
-                        if (typeof info === 'string' || !info) return
+                        const info = result.info;
+                        if (typeof info === "string" || !info) return;
 
                         // agora TS sabe que info é CloudinaryUploadWidgetInfo:
-                        const url = info.secure_url
-                        if (!url) return
+                        const url = info.secure_url;
+                        if (!url) return;
 
-                        setBanners(bs =>
-                          bs.map((b, i) =>
-                            i === idx ? { imagem: url } : b
-                          )
-                        )
+                        setBanners((bs) =>
+                          bs.map((b, i) => (i === idx ? { imagem: url } : b))
+                        );
                       }}
                     >
                       {({ open }) => (
@@ -158,8 +153,10 @@ export default function AdminBannerPage() {
                           onClick={() => open()}
                           className="mt-2 px-4 py-2 border border-dashed rounded text-gray-600 hover:border-gray-400 cursor-pointer"
                         >
-                          <Plus className="inline mr-1" />{' '}
-                          {item.imagem ? 'Alterar imagem' : 'Selecione uma imagem'}
+                          <Plus className="inline mr-1" />{" "}
+                          {item.imagem
+                            ? "Alterar imagem"
+                            : "Selecione uma imagem"}
                         </button>
                       )}
                     </CldUploadWidget>
@@ -181,7 +178,7 @@ export default function AdminBannerPage() {
 
             {!isPremium && (
               <p className="mt-4 text-sm text-gray-500">
-                No plano gratuito, apenas <strong>1 banner estático</strong>.{' '}
+                No plano gratuito, apenas <strong>1 banner estático</strong>.{" "}
                 Faça upgrade para Premium e gerencie até 3 banners rotativos.
               </p>
             )}
@@ -190,10 +187,11 @@ export default function AdminBannerPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition-all cursor-pointer ${saving
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
-                  }`}
+                className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition-all cursor-pointer ${
+                  saving
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-[#E60076] to-[#FF66A3] hover:from-[#cc0066] hover:to-[#ff80b2] shadow-md hover:shadow-lg"
+                }`}
               >
                 {saving ? (
                   <span className="flex items-center justify-center space-x-2">
@@ -201,7 +199,7 @@ export default function AdminBannerPage() {
                     <span>Salvando...</span>
                   </span>
                 ) : (
-                  'Salvar Alterações'
+                  "Salvar Alterações"
                 )}
               </button>
             </div>
@@ -209,5 +207,5 @@ export default function AdminBannerPage() {
         </div>
       </div>
     </AdminLayout>
-  )
+  );
 }

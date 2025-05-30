@@ -201,7 +201,7 @@ export default function AdminTeachersPage() {
             <button
               onClick={addProfessor}
               disabled={saving}
-              className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-all text-gray-600 dark:text-gray-400 font-medium cursor-pointer disabled:opacity-70"
+              className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-[#E60076] hover:bg-[#FFE6F1] dark:hover:bg-[#E60076]/10 transition-all text-gray-600 dark:text-gray-400 font-medium cursor-pointer disabled:opacity-70"
             >
               <Plus size={20} />
               Adicionar professor

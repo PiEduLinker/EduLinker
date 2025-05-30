@@ -183,7 +183,7 @@ export default function AdminTestimonialsPage() {
                         onChange={(e) =>
                           handleChange(idx, "nome", e.target.value)
                         }
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
+                        className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#E60076] focus:border-[#E60076] transition-all text-gray-900"
                         placeholder="Nome completo"
                       />
                     </div>
@@ -199,7 +199,7 @@ export default function AdminTestimonialsPage() {
                         onChange={(e) =>
                           handleChange(idx, "texto", e.target.value)
                         }
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
+                        className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#E60076] focus:border-[#E60076] transition-all text-gray-900"
                         placeholder="Texto do depoimento"
                       />
                     </div>
