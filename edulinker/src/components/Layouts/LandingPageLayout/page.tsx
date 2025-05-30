@@ -14,18 +14,12 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
                 <Link href="/" className="flex items-center space-x-2">
                     <Image
                         src="/Logo/EduLinker.png"
-                        alt="Logo"
+                        alt="Logo" 
                         width={120}
                         height={120}
                         className="object-contain"
                     />
                 </Link>
-                <div className="hidden md:flex space-x-6">
-                    <Link href="#features" className="text-gray-600 hover:text-indigo-600">Recursos</Link>
-                    <Link href="#toturial" className="text-gray-600 hover:text-indigo-600">Tutorial</Link>
-                    <Link href="#pricing" className="text-gray-600 hover:text-indigo-600">Planos</Link>
-                    <Link href="#faq" className="text-gray-600 hover:text-indigo-600">FAQ</Link>
-                </div>
                 <Link 
                     href="/login" 
                     className="bg-[#E60076] text-white px-4 py-2 rounded-lg hover:bg-[#C50068] transition-colors text-sm sm:text-base"
@@ -58,29 +52,12 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
                             </p>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
-                            {[
-                                {
-                                    title: "Produto",
-                                    links: [
-                                        { name: "Recursos", href: "/features" },
-                                        { name: "Planos", href: "/pricing" },
-                                        { name: "Exemplos", href: "/examples" }
-                                    ]
-                                },
-                                {
-                                    title: "Suporte",
-                                    links: [
-                                        { name: "FAQ", href: "/faq" },
-                                        { name: "Contato", href: "/contact" },
-                                        { name: "Tutoriais", href: "/tutorials" }
-                                    ]
-                                },
+                            {[                               
                                 {
                                     title: "Legal",
                                     links: [
                                         { name: "Termos", href: "/termsOfUse" },
                                         { name: "Privacidade", href: "/privacy-policy" }, // Link para a página que criamos
-                                        { name: "Cookies", href: "/cookie-policy" }
                                     ]
                                 }
                             ].map((section, index) => (
