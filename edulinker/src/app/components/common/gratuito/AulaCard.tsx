@@ -28,19 +28,19 @@ export default function AulaCard({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-            <BookOpen className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300  flex items-center justify-center">
+            <BookOpen className="w-12 h-12 text-gray-400 " />
           </div>
         )}
 
         {nivel && (
-          <span className="absolute top-3 right-3 dark:bg-opacity-75 text-white px-3 py-1 rounded-full text-xs font-bold bg-pink-500">
+          <span className="absolute top-3 right-3 text-white px-3 py-1 rounded-full text-xs font-bold bg-pink-500">
             {nivel}
           </span>
         )}
 
         {duracao && (
-          <span className="absolute bottom-3 left-3 bg-white bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-75 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-xs flex items-center space-x-1">
+          <span className="absolute bottom-3 left-3 bg-white bg-opacity-75  text-gray-800  px-2 py-1 rounded text-xs flex items-center space-x-1">
             <Clock className="w-4 h-4" />
             <span>{duracao}</span>
           </span>

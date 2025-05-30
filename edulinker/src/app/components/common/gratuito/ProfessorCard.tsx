@@ -19,7 +19,7 @@ export default function ProfessorCard({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
             <User className="w-12 h-12 text-gray-400" />
           </div>
         )}

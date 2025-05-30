@@ -64,7 +64,7 @@ export default function LandingPage() {
             <div className="bg-white p-2 rounded-xl shadow-xl">
               <div className="bg-gray-200 rounded-lg w-full h-64 sm:h-80 md:h-96 flex items-center justify-center overflow-hidden">
                 <img
-                  src="/siteEdulinker/prévia-do-Dashboard.jpeg"
+                  src="/siteedulinker/previadodashboard.jpeg"
                   alt="Prévia do Dashboard"
                   className="object-cover w-full h-full rounded-lg"
                 />
