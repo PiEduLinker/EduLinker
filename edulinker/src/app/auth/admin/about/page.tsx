@@ -1,11 +1,20 @@
-'use client'
+"use client";
 
-import React, { useState, useCallback, useEffect } from 'react'
-import AdminLayout from '@/components/Layouts/AdminLayout'
-import { Upload, Plus, Trash2, Save, Loader2, Image as ImageIcon, Text, Award, } from 'lucide-react'
-import { useSite, useIsPremium } from '@/contexts/siteContext'
-import { CldUploadWidget } from 'next-cloudinary'
-import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
+import React, { useState, useCallback, useEffect } from "react";
+import AdminLayout from "@/components/Layouts/AdminLayout";
+import {
+  Upload,
+  Plus,
+  Trash2,
+  Save,
+  Loader2,
+  Image as ImageIcon,
+  Text,
+  Award,
+} from "lucide-react";
+import { useSite, useIsPremium } from "@/contexts/siteContext";
+import { CldUploadWidget } from "next-cloudinary";
+import type { CloudinaryUploadWidgetResults } from "next-cloudinary";
 
 
 type Destaque = { number: string; label: string }
@@ -15,10 +24,10 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
   const isPremium = useIsPremium()
 
   const {
-    descricao: initialDescricao = '',
-    fotoSobre: initialFoto = '',
+    descricao: initialDescricao = "",
+    fotoSobre: initialFoto = "",
     destaques: initialDestaques = [] as Destaque[],
-  } = configuracoes
+  } = configuracoes;
 
   const [description, setDescription] = useState(initial)
   const [descricao, setDescricao] = useState(initialDescricao)
@@ -30,40 +39,40 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
 
   // Adiciona destaque apenas se for premium
   const handleAdd = useCallback(() => {
-    if (!isPremium) return
+    if (!isPremium) return;
     if (destaques.length < 3) {
-      setDestaques(ds => [...ds, { number: '', label: '' }])
+      setDestaques((ds) => [...ds, { number: "", label: "" }]);
     }
-  }, [destaques.length, isPremium])
+  }, [destaques.length, isPremium]);
 
   const handleRemove = useCallback((idx: number) => {
-    setDestaques(ds => ds.filter((_, i) => i !== idx))
-  }, [])
+    setDestaques((ds) => ds.filter((_, i) => i !== idx));
+  }, []);
 
   const handleDestaqueChange = useCallback(
     (idx: number, field: keyof Destaque, value: string) => {
-      setDestaques(ds =>
+      setDestaques((ds) =>
         ds.map((d, i) => (i === idx ? { ...d, [field]: value } : d))
-      )
+      );
     },
     []
-  )
+  );
 
   const handleSave = useCallback(async () => {
-    setSaving(true)
-    setError('')
-    setSuccess('');
+    setSaving(true);
+    setError("");
+    setSuccess("");
     try {
       const res = await fetch(`/api/site/${siteId}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           configuracoes: { descricao, fotoSobre, destaques },
         }),
-      })
-      const body = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(body.erro || 'Falha ao salvar.')
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.erro || "Falha ao salvar.");
 
       // atualiza o contexto para refletir a mudança na UI sem reload
       setConfiguracoes({
@@ -71,23 +80,29 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
         descricao,
         fotoSobre,
         destaques,
-      })
+      });
 
-      setSuccess('Dados atualizados com sucesso!');
+      setSuccess("Dados atualizados com sucesso!");
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [siteId, descricao, fotoSobre, destaques, configuracoes, setConfiguracoes])
+  }, [
+    siteId,
+    descricao,
+    fotoSobre,
+    destaques,
+    configuracoes,
+    setConfiguracoes,
+  ]);
 
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => setSuccess(''), 3000);
+      const timer = setTimeout(() => setSuccess(""), 3000);
       return () => clearTimeout(timer);
     }
   }, [success]);
-
 
   return (
     <AdminLayout>
@@ -110,12 +125,11 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
               </div>
             </div>
           )}
-
         </div>
 
         {/* Upload da imagem */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
+        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+          <h2 className="text-lg font-semibold flex items-center gap-2 text-dark mb-4">
             <ImageIcon className="w-5 h-5" /> Imagem da Seção
           </h2>
 
@@ -129,7 +143,7 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
                 />
                 <button
                   type="button"
-                  onClick={() => setFotoSobre('')}
+                  onClick={() => setFotoSobre("")}
                   className="absolute -top-2 -right-2 p-1 bg-red-500 hover:bg-red-600 rounded-full text-white shadow-lg cursor-pointer"
                   aria-label="Remover imagem"
                 >
@@ -140,51 +154,45 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
 
             <CldUploadWidget
               uploadPreset="edulinker_unsigned"
-              options={{ folder: 'edulinker/about', maxFiles: 1 }}
+              options={{ folder: "edulinker/about", maxFiles: 1 }}
               onSuccess={(result: CloudinaryUploadWidgetResults) => {
-                if (result.event !== 'success') return
-                const info = result.info
-                if (typeof info === 'string' || !info) return
-                setFotoSobre(info.secure_url)
+                if (result.event !== "success") return;
+                const info = result.info;
+                if (typeof info === "string" || !info) return;
+                setFotoSobre(info.secure_url);
               }}
             >
               {({ open }) => (
                 <button
                   type="button"
                   onClick={() => open()}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-lg transition cursor-pointer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition cursor-pointer"
                 >
-                  <Upload />{' '}
-                  {fotoSobre ? 'Alterar imagem' : 'Selecionar imagem'}
+                  <Upload />
+                  {fotoSobre ? "Alterar imagem" : "Selecionar imagem"}
                 </button>
               )}
             </CldUploadWidget>
-
-            {!isPremium && (
-              <p className="text-sm text-gray-500">
-                Disponível somente para assinantes <strong>Premium</strong>.
-              </p>
-            )}
           </div>
         </div>
 
         {/* Texto descritivo */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
+        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+          <h2 className="text-lg font-semibold flex items-center gap-2 text-dark mb-4">
             <Text className="w-5 h-5" /> Texto Descritivo
           </h2>
           <textarea
             rows={6}
             value={descricao}
-            onChange={e => setDescricao(e.target.value)}
-            className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white"
+            onChange={(e) => setDescricao(e.target.value)}
+            className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#E60076] focus:border-[#E60076] transition-all text-gray-900"
             placeholder="Descreva sua escola, missão, valores e diferenciais..."
           />
         </div>
 
         {/* Destaques editáveis */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <h2 className="text-lg font-semibold flex items-center gap-2 text-white mb-4">
+        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+          <h2 className="text-lg font-semibold flex items-center gap-2 text-dark mb-4">
             <Award className="w-5 h-5" /> Destaques
           </h2>
           <div className="space-y-4">
@@ -196,8 +204,8 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
                 <input
                   type="text"
                   value={d.number}
-                  onChange={e =>
-                    handleDestaqueChange(idx, 'number', e.target.value)
+                  onChange={(e) =>
+                    handleDestaqueChange(idx, "number", e.target.value)
                   }
                   placeholder="Número"
                   className="sm:col-span-3 w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition text-gray-900 dark:text-white"
@@ -206,8 +214,8 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
                 <input
                   type="text"
                   value={d.label}
-                  onChange={e =>
-                    handleDestaqueChange(idx, 'label', e.target.value)
+                  onChange={(e) =>
+                    handleDestaqueChange(idx, "label", e.target.value)
                   }
                   placeholder="Descrição do destaque"
                   className="sm:col-span-8 w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition text-gray-900 dark:text-white"
@@ -246,13 +254,13 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 text-white py-3 px-8 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition disabled:opacity-50 cursor-pointer"
+            className="flex items-center gap-2 text-white py-3 px-8 rounded-lg bg-gradient-to-r from-pink-500 via-[#E60076] to-pink-700 hover:from-pink-600 hover:via-[#E60076] hover:to-pink-800 transition disabled:opacity-50 cursor-pointer"
           >
             {saving ? <Loader2 className="animate-spin" /> : <Save />}
-            {saving ? 'Salvando...' : 'Salvar Alterações'}
+            {saving ? "Salvando..." : "Salvar Alterações"}
           </button>
         </div>
       </div>
     </AdminLayout>
-  )
+  );
 }

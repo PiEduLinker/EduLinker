@@ -136,7 +136,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
       </header>
 
       {/* Hero / Banner */}
-      <section className="relative w-ful max-h-[800px] overflow-hidden">
+      <section className="relative w-full max-h-[800px] overflow-hidden">
         {isPremium ? (
           <CarouselPremium
             items={banners}
@@ -145,7 +145,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
             className="h-full"
           />
         ) : (
-          <div className="relative h-full w-full">
+          <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[800px] w-full">
             <Image
               src={banners[0].imagem || DEFAULT_HERO_IMAGE}
               alt="Banner principal"

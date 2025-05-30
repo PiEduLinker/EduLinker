@@ -16,11 +16,11 @@ export default function AdminGalleryPage() {
   const isPremium = useIsPremium();
   const [success, setSuccess] = useState("");
 
-  const maxSlots = isPremium ? 12 : 3
-  const initialGalerias = (configuracoes.galerias as GalleryItem[]) ?? []
-  const [galerias, setGalerias] = useState<GalleryItem[]>(initialGalerias)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const maxSlots = isPremium ? 12 : 3;
+  const initialGalerias = (configuracoes.galerias as GalleryItem[]) ?? [];
+  const [galerias, setGalerias] = useState<GalleryItem[]>(initialGalerias);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const handleAdd = useCallback(() => {
     if (galerias.length < maxSlots) {
@@ -196,10 +196,11 @@ export default function AdminGalleryPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition cursor-pointer ${saving
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-                  }`}
+                className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition cursor-pointer ${
+                  saving
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-pink-500 via-[#E60076] to-pink-700 hover:from-pink-600 hover:via-[#E60076] hover:to-pink-800"
+                }`}
               >
                 {saving ? (
                   <span className="flex items-center justify-center gap-2">

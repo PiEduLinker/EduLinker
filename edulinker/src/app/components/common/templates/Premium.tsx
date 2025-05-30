@@ -13,7 +13,6 @@ import { Clock, FacebookIcon, Instagram, Mail, Phone, Youtube } from 'lucide-rea
 // Imagens padrão (você pode importar de seus assets ou usar URLs externas)
 const DEFAULT_LOGO = '/logo/EduLinkerWhite.png'
 const DEFAULT_CAROUSEL_IMAGE = '/templates/free/banner1.jpg'
-const DEFAULT_PROFESSOR_IMAGE = '/default-professor.jpg'
 
 export default function Premium({ config }: { config: SiteConfig }) {
 
@@ -27,7 +26,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
       { imagem: DEFAULT_CAROUSEL_IMAGE },
       { imagem: DEFAULT_CAROUSEL_IMAGE }
     ]
-
 
   //fontes
   const fontClass = {
@@ -77,7 +75,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
                   <img
                     src={config.logo || DEFAULT_LOGO}
                     alt="Logo da Escola"
-                    className="transition-transform duration-300 group-hover:scale-105 max-w-[110px] h-auto"
+                    className="transition-transform duration-300 group-hover:scale-105 max-w-[60px] h-auto"
                   />
                 </a>
               </div>

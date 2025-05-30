@@ -1,99 +1,98 @@
-'use client'
+"use client";
 
-import React, { useState, useCallback, useEffect } from 'react'
-import AdminLayout from '@/components/Layouts/AdminLayout'
-import { Plus, Trash2, Loader2 } from 'lucide-react'
-import { useSite, useIsPremium } from '@/contexts/siteContext'
-import { CldUploadWidget } from 'next-cloudinary'
-import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
+import React, { useState, useCallback, useEffect } from "react";
+import AdminLayout from "@/components/Layouts/AdminLayout";
+import { Plus, Trash2, Loader2 } from "lucide-react";
+import { useSite, useIsPremium } from "@/contexts/siteContext";
+import { CldUploadWidget } from "next-cloudinary";
+import type { CloudinaryUploadWidgetResults } from "next-cloudinary";
 
 interface Aula {
-  foto: string
-  titulo: string
-  descricao: string
-  nivel: string
-  duracao: string
+  foto: string;
+  titulo: string;
+  descricao: string;
+  nivel: string;
+  duracao: string;
 }
 
 export default function AdminGradePage() {
-  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
-  const isPremium = useIsPremium()
-  const maxAulas = isPremium ? 12 : 4
-  const [success, setSuccess] = useState('');
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite();
+  const isPremium = useIsPremium();
+  const maxAulas = isPremium ? 12 : 4;
+  const [success, setSuccess] = useState("");
 
-  const initialAulas = (configuracoes.aulas as Aula[]) ?? []
-  const [aulas, setAulas] = useState<Aula[]>(initialAulas)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const initialAulas = (configuracoes.aulas as Aula[]) ?? [];
+  const [aulas, setAulas] = useState<Aula[]>(initialAulas);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const handleAdd = useCallback(() => {
-    if (aulas.length >= maxAulas) return
-    setAulas(a => [
+    if (aulas.length >= maxAulas) return;
+    setAulas((a) => [
       ...a,
-      { foto: '', titulo: '', descricao: '', nivel: '', duracao: '' }
-    ])
-  }, [aulas.length, maxAulas])
+      { foto: "", titulo: "", descricao: "", nivel: "", duracao: "" },
+    ]);
+  }, [aulas.length, maxAulas]);
 
   const handleRemove = useCallback((idx: number) => {
-    setAulas(a => a.filter((_, i) => i !== idx))
-  }, [])
+    setAulas((a) => a.filter((_, i) => i !== idx));
+  }, []);
 
   const handleRemoveImage = useCallback((idx: number) => {
-    setAulas(a => a.map((u, i) => i === idx ? { ...u, foto: '' } : u))
-  }, [])
+    setAulas((a) => a.map((u, i) => (i === idx ? { ...u, foto: "" } : u)));
+  }, []);
 
-  const handleChange = useCallback((idx: number, field: keyof Aula, v: string) => {
-    setAulas(a => a.map((u, i) => i === idx ? { ...u, [field]: v } : u))
-  }, [])
+  const handleChange = useCallback(
+    (idx: number, field: keyof Aula, v: string) => {
+      setAulas((a) => a.map((u, i) => (i === idx ? { ...u, [field]: v } : u)));
+    },
+    []
+  );
 
   const handleSave = useCallback(async () => {
-    if (!siteId) return
-    setSaving(true)
-    setError('')
-    setSuccess('');
+    if (!siteId) return;
+    setSaving(true);
+    setError("");
+    setSuccess("");
 
     try {
       const res = await fetch(`/api/site/${siteId}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ configuracoes: { aulas } })
-      })
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ configuracoes: { aulas } }),
+      });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro || 'Falha ao salvar')
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.erro || "Falha ao salvar");
       }
       setConfiguracoes({
         ...configuracoes,
         aulas,
-      })
-      setSuccess('Aulas atualizadas!');
+      });
+      setSuccess("Aulas atualizadas!");
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [
-    siteId,
-    aulas,
-    configuracoes,
-    setConfiguracoes,
-  ])
+  }, [siteId, aulas, configuracoes, setConfiguracoes]);
 
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => setSuccess(''), 3000);
+      const timer = setTimeout(() => setSuccess(""), 3000);
       return () => clearTimeout(timer);
     }
   }, [success]);
-
 
   return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="p-6 sm:p-8 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Gerenciamento de Aulas</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-6">
+              Gerenciamento de Aulas
+            </h1>
 
             {error && (
               <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
@@ -111,9 +110,14 @@ export default function AdminGradePage() {
 
             <div className="space-y-6">
               {aulas.map((u, idx) => (
-                <div key={idx} className="border border-gray-200 rounded-xl p-6 relative transition-all hover:shadow-sm">
+                <div
+                  key={idx}
+                  className="border border-gray-200 rounded-xl p-6 relative transition-all hover:shadow-sm"
+                >
                   <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg font-semibold text-gray-800">Aula #{idx + 1}</h3>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      Aula #{idx + 1}
+                    </h3>
                     <button
                       onClick={() => handleRemove(idx)}
                       disabled={saving}
@@ -126,7 +130,9 @@ export default function AdminGradePage() {
 
                   {/* Imagem */}
                   <div className="space-y-4">
-                    <label className="block text-sm font-medium text-gray-700">Imagem da Aula</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Imagem da Aula
+                    </label>
                     {u.foto && (
                       <div className="relative group mb-2">
                         <img
@@ -147,15 +153,17 @@ export default function AdminGradePage() {
 
                     <CldUploadWidget
                       uploadPreset="edulinker_unsigned"
-                      options={{ folder: 'edulinker/aulas', maxFiles: 1 }}
+                      options={{ folder: "edulinker/aulas", maxFiles: 1 }}
                       onSuccess={(result: CloudinaryUploadWidgetResults) => {
-                        if (result.event !== 'success') return
-                        const info = result.info
-                        if (typeof info === 'string' || !info) return
-                        const url = info.secure_url
-                        setAulas(a =>
-                          a.map((it, i) => (i === idx ? { ...it, foto: url } : it))
-                        )
+                        if (result.event !== "success") return;
+                        const info = result.info;
+                        if (typeof info === "string" || !info) return;
+                        const url = info.secure_url;
+                        setAulas((a) =>
+                          a.map((it, i) =>
+                            i === idx ? { ...it, foto: url } : it
+                          )
+                        );
                       }}
                     >
                       {({ open }) => (
@@ -166,7 +174,7 @@ export default function AdminGradePage() {
                           disabled={saving}
                         >
                           <Plus className="inline mr-1" />
-                          {u.foto ? 'Alterar imagem' : 'Selecione uma imagem'}
+                          {u.foto ? "Alterar imagem" : "Selecione uma imagem"}
                         </button>
                       )}
                     </CldUploadWidget>
@@ -175,7 +183,9 @@ export default function AdminGradePage() {
                   {/* Campos textuais */}
                   <div className="grid gap-6 sm:grid-cols-2 mt-6">
                     <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">Título</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Título
+                      </label>
                       <input
                         type="text"
                         value={u.titulo}
@@ -186,7 +196,9 @@ export default function AdminGradePage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">Nível</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Nível
+                      </label>
                       <input
                         type="text"
                         value={u.nivel}
@@ -197,7 +209,9 @@ export default function AdminGradePage() {
                     </div>
 
                     <div className="space-y-2 sm:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700">Descrição</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Descrição
+                      </label>
                       <textarea
                         rows={4}
                         value={u.descricao}
@@ -208,7 +222,9 @@ export default function AdminGradePage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">Duração</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Duração
+                      </label>
                       <input
                         type="text"
                         value={u.duracao}
@@ -236,7 +252,8 @@ export default function AdminGradePage() {
               ) : (
                 !isPremium && (
                   <p className="text-sm text-gray-500">
-                    Limite de 4 aulas no plano gratuito. Faça upgrade para até 12.
+                    Limite de 4 aulas no plano gratuito. Faça upgrade para até
+                    12.
                   </p>
                 )
               )}
@@ -244,10 +261,11 @@ export default function AdminGradePage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition cursor-pointer ${saving
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
-                  }`}
+                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition cursor-pointer ${
+                  saving
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-pink-500 via-[#E60076] to-pink-700 hover:from-pink-600 hover:via-[#E60076] hover:to-pink-800"
+                }`}
               >
                 {saving ? (
                   <span className="flex items-center gap-2">
@@ -255,7 +273,7 @@ export default function AdminGradePage() {
                     Salvando...
                   </span>
                 ) : (
-                  'Salvar Aulas'
+                  "Salvar Aulas"
                 )}
               </button>
             </div>
@@ -263,5 +281,5 @@ export default function AdminGradePage() {
         </div>
       </div>
     </AdminLayout>
-  )
+  );
 }

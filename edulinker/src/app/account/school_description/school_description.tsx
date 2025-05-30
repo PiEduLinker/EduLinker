@@ -113,14 +113,14 @@ export default function ClientSchoolDescription({ siteId }: Props) {
           value={schoolName}
           onChange={(e) => setSchoolName(e.target.value)}
           required
-          className="w-full px-4 py-2 border rounded"
+          className="w-full px-4 py-2 border rounded resize-none hover:border-[#E60076] focus:border-[#E60076] focus:outline-none"
         />
         <textarea
-          placeholder="Breve descrição"
+          placeholder="Breve descrição."
           rows={4}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full px-4 py-2 border rounded resize-none"
+          className="w-full px-4 py-2 border rounded resize-none hover:border-[#E60076] focus:border-[#E60076] focus:outline-none"
         />
 
         <div className="flex items-center gap-4">
@@ -142,7 +142,7 @@ export default function ClientSchoolDescription({ siteId }: Props) {
               <button
                 type="button"
                 onClick={() => open()}
-                className="w-14 h-14 border rounded-full flex items-center justify-center cursor-pointer hover:border-purple-500 transition"
+                className="w-14 h-14 border rounded-full flex items-center justify-center cursor-pointer hover:border-[#E60076] transition"
               >
                 {logoPreview ? (
                   <img
