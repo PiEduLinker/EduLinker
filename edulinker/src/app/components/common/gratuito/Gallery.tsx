@@ -21,10 +21,6 @@ export default function Gallery({ items = [] }: { items?: Array<{ imagem: string
                 />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <div className="text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex flex-col items-center">
-                  <ZoomIn className="w-8 h-8 mb-2" />
-                  <p className="text-sm font-medium">Visualizar</p>
-                </div>
               </div>
             </div>
           ))}
