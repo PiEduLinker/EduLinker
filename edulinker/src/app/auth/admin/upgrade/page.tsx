@@ -80,7 +80,7 @@ export default function UpgradePage() {
                             <Zap className="text-yellow-300" fill="currentColor" /> Plano Premium
                         </h2>
                         <div className="flex items-end gap-2 mt-2">
-                            <span className="text-3xl font-bold">R$29</span>
+                            <span className="text-3xl font-bold">R$29,99</span>
                             <span className="text-purple-200 mb-1">/mês</span>
                         </div>
                     </div>
@@ -89,27 +89,23 @@ export default function UpgradePage() {
                         <ul className="space-y-3 mb-8">
                             <li className="flex items-start gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                <span>Cadastro ilimitado de imóveis</span>
+                                <span>Diversos templates</span>
                             </li>
                             <li className="flex items-start gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                <span>Temas personalizados e exclusivos</span>
+                                <span>Relatório de acessos</span>
                             </li>
                             <li className="flex items-start gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                <span>Integração direta com WhatsApp Business</span>
+                                <span>Mais opções de personalização</span>
                             </li>
                             <li className="flex items-start gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                <span>Estatísticas avançadas e relatórios detalhados</span>
+                                <span>Integração do Google Maps</span>
                             </li>
                             <li className="flex items-start gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                <span>Suporte prioritário com resposta em até 1 hora</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                <span>Exclusividade regional nos anúncios</span>
+                                <span>Suporte prioritário</span>
                             </li>
                         </ul>
 

@@ -7,9 +7,10 @@ import { useSite, useIsPremium } from '@/contexts/siteContext'
 import { CldUploadWidget } from 'next-cloudinary'
 import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
 
+
 type Destaque = { number: string; label: string }
 
-export default function AdminAboutPage() {
+export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
   const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
   const isPremium = useIsPremium()
 
@@ -19,6 +20,7 @@ export default function AdminAboutPage() {
     destaques: initialDestaques = [] as Destaque[],
   } = configuracoes
 
+  const [description, setDescription] = useState(initial)
   const [descricao, setDescricao] = useState(initialDescricao)
   const [fotoSobre, setFotoSobre] = useState(initialFoto)
   const [destaques, setDestaques] = useState<Destaque[]>(initialDestaques)

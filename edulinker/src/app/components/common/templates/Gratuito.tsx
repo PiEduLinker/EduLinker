@@ -204,7 +204,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
 
               {/* Texto movido para baixo em mobile */}
               <div className="flex-1 relative pl-6 order-2 lg:order-1">
-                <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-indigo-200 to-purple-300 rounded-full"></div>
+                <div className="absolute left-0 top-0 h-full w-1 bg-black rounded-full"></div>
                 <p className="text-gray-600 leading-relaxed mt-8 lg:mt-0">
                   {sobreTexto}
                 </p>

@@ -31,7 +31,7 @@ export default function CreateAccountLayout({ children, status }: CreateAccountL
       <div className="absolute top-8 left-8">
         <a href="/">
           <Image
-            src="/logo/EduLinker.png"
+            src="/logo/edulinker.png"
             alt="Logo"
             width={120}
             height={120}

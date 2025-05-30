@@ -40,7 +40,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
 
   const contato = config.contato || {}
   const {
-    descricaoBreve,
     horarioSemana,
     horarioSabado,
     email,
@@ -51,6 +50,12 @@ export default function Premium({ config }: { config: SiteConfig }) {
     mapEmbedUrl,
     socialMedia = {}
   } = contato
+
+  const embedUrl = mapEmbedUrl
+    ? mapEmbedUrl
+    : endereco
+      ? `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(endereco)}`
+      : ''
 
   return (
     <div
@@ -251,12 +256,12 @@ export default function Premium({ config }: { config: SiteConfig }) {
                   ).map((item, i) => (
                     <div
                       key={i}
-                      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-pink-500"
+                      className="bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-pink-500"
                     >
-                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      <p className="text-2xl font-bold text-white">
                         {item.number}
                       </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                      <p className="text-sm text-gray-300">
                         {item.label}
                       </p>
                     </div>
@@ -268,7 +273,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
           </div>
         </section>
 
-        <section className="relative py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
+        <section className="relative py-20 bg-gradient-to-b from-gray-900 to-gray-800 overflow-hidden">
           {/* Elementos decorativos de fundo */}
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
             <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-20"></div>
@@ -281,13 +286,13 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
                 Momentos Especiais
               </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 <span className="relative inline-block pb-2">
                   Nossa Galeria
                   <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
                 </span>
               </h2>
-              <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+              <p className="max-w-2xl mx-auto text-gray-300">
                 Registros dos momentos que fazem da nossa escola um lugar especial
               </p>
             </div>
@@ -313,19 +318,19 @@ export default function Premium({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Aulas Premium */}
-        <section id="aulas" className="py-20 bg-white dark:bg-gray-900">
+        <section id="aulas" className="py-20 bg-gray-900">
           <div className="container mx-auto px-4 lg:px-8">
             <div className="text-center mb-16">
               <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
                 Experiências reais
               </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 <span className="relative inline-block pb-2">
                   Aulas
                   <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
                 </span>
               </h2>
-              <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+              <p className="max-w-2xl mx-auto text-gray-300">
                 Descubra como nossas aulas impactaram positivamente o aprendizado de alunos.
               </p>
             </div>
@@ -370,7 +375,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Professores */}
-        <section id="professores" className="relative py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
+        <section id="professores" className="relative py-20 bg-gradient-to-b from-gray-900 to-gray-800 overflow-hidden">
           {/* Elementos decorativos de fundo */}
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
             <div className="absolute top-20 left-1/4 w-64 h-64 rounded-full bg-pink-500 filter blur-3xl opacity-20"></div>
@@ -383,13 +388,13 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
                 Nossa Equipe
               </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 <span className="relative inline-block pb-2">
                   Professores
                   <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
                 </span>
               </h2>
-              <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+              <p className="max-w-2xl mx-auto text-gray-300">
                 Conheça nosso time de especialistas dedicados à sua evolução
               </p>
             </div>
@@ -415,13 +420,14 @@ export default function Premium({ config }: { config: SiteConfig }) {
                     texto: '“Apaixonado por ensinar e transformar vidas através da educação.”',
                   }
                 ];
+
               return (
-                <div className="flex flex-wrap justify-center gap-8">
+                <div className="flex flex-wrap justify-center gap-6 px-4">
                   {professoresItems.map((item: Professor, idx: number) => (
                     <div
                       key={idx}
-                      className="w-full sm:w-[calc(50%-16px)] md:w-[calc(33.333%-22px)] lg:w-[calc(25%-24px)]"
-                      style={{ minWidth: '250px', maxWidth: '280px' }} // Ajuste conforme necessário
+                      className="w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)]"
+                      style={{ minWidth: '250px', maxWidth: '280px', height: '100%' }}
                     >
                       <ProfessorCardPremium
                         foto={item.foto}
@@ -433,14 +439,13 @@ export default function Premium({ config }: { config: SiteConfig }) {
                 </div>
               );
             })()}
-
           </div>
         </section>
 
         {/* Depoimentos */}
         <section
           id="depoimentos"
-          className="relative py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden"
+          className="relative py-20 bg-gradient-to-b from-gray-900 to-gray-800 overflow-hidden"
         >
           {/* Elementos decorativos de fundo */}
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
@@ -454,13 +459,13 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
                 Vozes que inspiram
               </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 <span className="relative inline-block pb-2">
                   Depoimentos
                   <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
                 </span>
               </h2>
-              <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+              <p className="max-w-2xl mx-auto text-gray-300">
                 O que nossos alunos e parceiros dizem sobre a experiência transformadora
               </p>
             </div>
@@ -505,7 +510,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
         {/* Contato */}
         <section
           id="contato"
-          className="relative py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-hidden"
+          className="relative py-20 bg-gradient-to-b from-gray-900 to-gray-800 overflow-hidden"
         >
           {/* Elementos decorativos */}
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
@@ -519,7 +524,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
                 Conecte-se conosco
               </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 <span className="relative inline-block pb-2">
                   Contato
                   <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-pink-500 to-purple-600" />
@@ -527,24 +532,24 @@ export default function Premium({ config }: { config: SiteConfig }) {
               </h2>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-12 xl:gap-20 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex flex-col lg:flex-row gap-12 xl:gap-20 bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
               {/* Coluna de informações */}
               <div className="w-full lg:w-1/2 p-10 lg:p-12 xl:p-16 space-y-8">
                 {/* Horários */}
                 <div className="flex items-start gap-5">
                   <div className="flex-shrink-0 mt-1">
-                    <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-gray-700 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
                       <Clock className="w-5 h-5 text-pink-500" />
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
+                    <h3 className="text-lg font-semibold text-white mb-1">
                       Horário de Funcionamento
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
+                    <p className="text-gray-300">
                       {horarioSemana ?? 'Segunda à Sexta: 00h - 00h | 00h - 00h'}
                     </p>
-                    <p className="text-gray-600 dark:text-gray-300">
+                    <p className="text-gray-300">
                       {horarioSabado ?? 'Sábado: 00h - 00h'}
                     </p>
                   </div>
@@ -553,15 +558,15 @@ export default function Premium({ config }: { config: SiteConfig }) {
                 {/* E-mail */}
                 <div className="flex items-start gap-5">
                   <div className="flex-shrink-0 mt-1">
-                    <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-gray-700 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
                       <Mail className="w-5 h-5 text-pink-500" />
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
+                    <h3 className="text-lg font-semibold text-white mb-1">
                       E-mail
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-300 break-all">
+                    <p className="text-gray-300 break-all">
                       {email ?? 'contato@seudominio.com'}
                     </p>
                   </div>
@@ -570,15 +575,15 @@ export default function Premium({ config }: { config: SiteConfig }) {
                 {/* Telefone + WhatsApp */}
                 <div className="flex items-start gap-5">
                   <div className="flex-shrink-0 mt-1">
-                    <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-gray-700 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
                       <Phone className="w-5 h-5 text-pink-500" />
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
+                    <h3 className="text-lg font-semibold text-white mb-1">
                       Telefone
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
+                    <p className="text-gray-300">
                       {telefone ?? '(11) 99999-0000'}
                     </p>
                   </div>
@@ -609,25 +614,33 @@ export default function Premium({ config }: { config: SiteConfig }) {
               </div>
 
               {/* Coluna do mapa */}
-              <div className="w-full lg:w-1/2 bg-gray-100 dark:bg-gray-700 p-1">
+              <div className="w-full lg:w-1/2 bg-gray-700 p-1">
                 <div className="relative h-full min-h-[400px] lg:min-h-[500px]">
-                  <iframe
-                    src={mapEmbedUrl ?? 'https://maps.google.com/?q=Seu+Endereço'}
-                    width="100%"
-                    height="100%"
-                    className="absolute inset-0"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    title="Mapa de localização"
-                  />
+                  <div className="w-full lg:w-1/2 bg-gray-700 p-1">
+                    {embedUrl ? (
+                      <iframe
+                        src={embedUrl}
+                        width="100%"
+                        height="100%"
+                        className="absolute inset-0"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        title="Mapa de localização"
+                      />
+                    ) : (
+                      <p className="p-4 text-center text-gray-300">
+                        Endereço não definido
+                      </p>
+                    )}
+                  </div>
 
                   {/* Endereço flutuante */}
-                  <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 px-6 py-3 rounded-lg shadow-lg text-center">
-                    <p className="font-medium text-gray-800 dark:text-white">
+                  <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 px-6 py-3 rounded-lg shadow-lg text-center">
+                    <p className="font-medium text-white">
                       {endereco ?? 'Rua Exemplo, 123'}
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                    <p className="text-sm text-gray-300">
                       {cidade ?? 'São Paulo - SP, 01000-000'}
                     </p>
                   </div>
@@ -697,22 +710,22 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <address className="not-italic text-gray-400 space-y-2">
                 <p>
                   {config.contato?.endereco || (
-                    <span className="italic text-gray-500">ex: Rua Exemplo, 123</span>
+                    <span className="italic text-gray-200">ex: Rua Exemplo, 123</span>
                   )}
                 </p>
                 <p>
                   {config.contato?.cidade || (
-                    <span className="italic text-gray-500">ex: São Paulo - SP</span>
+                    <span className="italic text-gray-200">ex: São Paulo - SP</span>
                   )}
                 </p>
                 <p>
                   {config.contato?.email || (
-                    <span className="italic text-gray-500">ex: contato@seudominio.com</span>
+                    <span className="italic text-gray-200">ex: contato@seudominio.com</span>
                   )}
                 </p>
                 <p>
                   {config.contato?.telefone || (
-                    <span className="italic text-gray-500">ex: (11) 99999-0000</span>
+                    <span className="italic text-gray-200">ex: (11) 99999-0000</span>
                   )}
                 </p>
               </address>

@@ -76,7 +76,7 @@ export default function ClientLogin({ from }: Props) {
         {/* Logo */}
         <div className="absolute top-4 md:top-8 left-4 md:left-8">
           <Image
-            src="/Logo/EduLinker.png"
+            src="/logo/edulinker.png"
             alt="Logo"
             width={120}
             height={120}
@@ -107,7 +107,7 @@ export default function ClientLogin({ from }: Props) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email"
-                    className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+                    className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg focus:border-[#E60076] outline-none transition"
                     required
                   />
                 </div>
@@ -119,7 +119,7 @@ export default function ClientLogin({ from }: Props) {
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
                     placeholder="Senha"
-                    className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none transition pr-10"
+                    className="w-full px-4 py-2 md:py-3 border-2 border-gray-300 rounded-lg focus:border-[#E60076] outline-none transition"
                     required
                   />
                   <button
@@ -147,7 +147,7 @@ export default function ClientLogin({ from }: Props) {
 
               {/* Login Google */}
               <button
-                onClick={() => window.location.href = '/api/auth/google'}
+                onClick={() => (window.location.href = "/api/auth/google")}
                 className="flex items-center justify-center w-full max-w-sm px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition cursor-pointer"
               >
                 <svg
@@ -197,7 +197,7 @@ export default function ClientLogin({ from }: Props) {
                   Ainda não tem uma conta?{" "}
                   <Link
                     href={"./register/"}
-                    className="font-semibold text[#E60076] hover:text[#E60076]"
+                    className="font-semibold text-[#E60076] hover:text-[#E60076]"
                   >
                     Cadastre-se aqui!
                   </Link>

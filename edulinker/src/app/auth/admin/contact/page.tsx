@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useEffect, useCallback, JSX } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import {
   Edit2,
@@ -15,8 +15,10 @@ import {
   Youtube,
   Loader2,
 } from 'lucide-react'
-import { useSite } from '@/contexts/siteContext'
+import { useIsPremium, useSite } from '@/contexts/siteContext'
+import { useJsApiLoader, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api'
 
+// Tipagem para as configurações de contato
 type ContactConfig = {
   descricaoBreve?: string
   horarioSemana?: string
@@ -26,7 +28,6 @@ type ContactConfig = {
   whatsapp?: string
   endereco?: string
   cidade?: string
-  mapEmbedUrl?: string
   socialMedia?: {
     facebook?: string
     instagram?: string
@@ -34,19 +35,51 @@ type ContactConfig = {
   }
 }
 
-export default function AdminContactPage() {
-  // 1) Pegue siteId e contato do contexto
+export default function AdminContactPage(): JSX.Element {
   const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
-  const initialConfig = configuracoes.contato ?? {}
+  const isPremium = useIsPremium()
 
-  // 2) Estados locais
+  // Estado local com dados iniciais
+  const initialConfig = (configuracoes.contato as ContactConfig) ?? {}
   const [config, setConfig] = useState<ContactConfig>(initialConfig)
   const [isEditing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('');
+  const [success, setSuccess] = useState('')
 
-  // 3) Atualiza campos (incluindo socialMedia.*)
+  // Loader do Google Maps + Places
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    libraries: ['places'],
+  })
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null)
+  const [markerPos, setMarkerPos] = useState<google.maps.LatLngLiteral>()
+
+  // Quando Autocomplete carrega
+  const onLoadAuto = useCallback((auto: google.maps.places.Autocomplete) => {
+    setAutocomplete(auto)
+  }, [])
+
+  // Ao escolher lugar
+  const onPlaceChanged = useCallback(() => {
+    if (!autocomplete) return
+    const place = autocomplete.getPlace()
+    const endereco = place.formatted_address || ''
+    const cidade =
+      place.address_components?.find(c =>
+        c.types.includes('administrative_area_level_1') ||
+        c.types.includes('locality')
+      )?.long_name || ''
+    setConfig(c => ({ ...c, endereco, cidade }))
+    if (place.geometry?.location) {
+      setMarkerPos({
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      })
+    }
+  }, [autocomplete])
+
+  // Atualiza campos do form
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     if (name.startsWith('socialMedia.')) {
@@ -55,54 +88,45 @@ export default function AdminContactPage() {
         ...c,
         socialMedia: {
           ...c.socialMedia,
-          [key]: value
-        }
+          [key]: value,
+        },
       }))
     } else {
       setConfig(c => ({ ...c, [name]: value }))
     }
   }, [])
 
-  // 4) Salvar via PUT
+  // Submete ao back-end
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
     setError('')
-    setSuccess('');
+    setSuccess('')
     try {
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ configuracoes: { contato: config } })
+        body: JSON.stringify({ configuracoes: { ...configuracoes, contato: config } }),
       })
       const body = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(body.erro || 'Falha ao salvar')
-
-      setConfiguracoes({
-        ...configuracoes,
-        contato: config
-      })
-      setSuccess('Contato atualizado com sucesso!');
+      setConfiguracoes({ ...configuracoes, contato: config })
+      setSuccess('Contato atualizado com sucesso!')
       setEditing(false)
     } catch (err: any) {
       setError(err.message)
     } finally {
       setSaving(false)
     }
-  }, [
-    siteId,
-    config,
-    configuracoes,
-    setConfiguracoes
-  ])
+  }, [siteId, config, configuracoes, setConfiguracoes])
 
+  // Limpa mensagem de sucesso após 3s
   useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => setSuccess(''), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [success]);
+    if (!success) return
+    const t = setTimeout(() => setSuccess(''), 3000)
+    return () => clearTimeout(t)
+  }, [success])
 
   return (
     <AdminLayout>
@@ -268,86 +292,82 @@ export default function AdminContactPage() {
                 </div>
               </div>
 
-              {/* Endereço */}
-              <div className="space-y-6">
-                <h2 className="text-lg font-semibold text-gray-800 pb-2 border-b border-gray-200">Localização</h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Endereço */}
-                  <div className="flex items-start gap-4">
-                    <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
-                      <MapPin size={20} />
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
-                      {isEditing ? (
+              {/* Localização */}
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold">Localização</h2>
+                <div className="flex items-start gap-2">
+                  <MapPin className="text-purple-600 mt-2" />
+                  <div className="flex-1">
+                    <label className="text-sm font-medium">Endereço</label>
+                    {isEditing ? (
+                      isPremium ? (
+                        isLoaded && !loadError ? (
+                          <Autocomplete onLoad={onLoadAuto} onPlaceChanged={onPlaceChanged}>
+                            <input
+                              name="endereco"
+                              value={config.endereco || ''}
+                              onChange={handleChange}
+                              placeholder="Digite para buscar"
+                              className="w-full px-3 py-2 border rounded-lg"
+                            />
+                          </Autocomplete>
+                        ) : <p>Carregando mapa…</p>
+                      ) : (
                         <input
                           name="endereco"
-                          type="text"
                           value={config.endereco || ''}
                           onChange={handleChange}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                          placeholder="Rua, número"
+                          placeholder="Digite seu endereço"
+                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                        />
+                      )
+                    ) : <p>{config.endereco || '—'}</p>}
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <MapPin className="text-purple-600 mt-2" />
+                  <div className="flex-1">
+                    <label className="text-sm font-medium">Cidade/UF</label>
+
+                    {isEditing ? (
+                      isPremium ? (
+                        <input
+                          name="cidade"
+                          value={config.cidade || ''}
+                          readOnly
+                          className="w-full px-3 py-2 border bg-gray-50 rounded-lg cursor-not-allowed"
                         />
                       ) : (
-                        <p className="text-gray-700">{config.endereco || 'Rua Exemplo, 123'}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Cidade */}
-                  <div className="flex items-start gap-4">
-                    <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
-                      <MapPin size={20} />
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Cidade/UF</label>
-                      {isEditing ? (
+                        // Gratuito: pode digitar livremente
                         <input
                           name="cidade"
                           type="text"
                           value={config.cidade || ''}
                           onChange={handleChange}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                          placeholder="Cidade - UF, CEP"
+                          placeholder="Digite sua cidade e UF"
+                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                         />
-                      ) : (
-                        <p className="text-gray-700">{config.cidade || 'São Paulo - SP, 01000-000'}</p>
-                      )}
-                    </div>
-                  </div>
+                      )
+                    ) : (
+                      <p>{config.cidade || '—'}</p>
+                    )}
 
-                  {/* Mapa */}
-                  <div className="flex items-start gap-4 md:col-span-2">
-                    <div className="p-2 bg-gray-50 rounded-lg text-gray-600">
-                      <MapPin size={20} />
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Link do Mapa</label>
-                      {isEditing ? (
-                        <input
-                          name="mapEmbedUrl"
-                          type="url"
-                          value={config.mapEmbedUrl || ''}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                          placeholder="URL embed do Google Maps"
-                        />
-                      ) : config.mapEmbedUrl ? (
-                        <a
-                          href={config.mapEmbedUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-indigo-600 hover:underline break-all"
-                        >
-                          {config.mapEmbedUrl}
-                        </a>
-                      ) : (
-                        <p className="text-gray-500">—</p>
-                      )}
-                    </div>
                   </div>
                 </div>
+
+                {/* Mapa */}
+                {config.endereco && isLoaded && !loadError && markerPos && (
+                  <div className="w-full h-64 rounded overflow-hidden border">
+                    <GoogleMap
+                      mapContainerStyle={{ width: '100%', height: '100%' }}
+                      center={markerPos}
+                      zoom={15}
+                    >
+                      <Marker position={markerPos} />
+                    </GoogleMap>
+                  </div>
+                )}
+                {loadError && <p className="text-red-600">Não foi possível carregar o mapa.</p>}
               </div>
 
               {/* Redes Sociais */}

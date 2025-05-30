@@ -1,4 +1,3 @@
-// components/common/premium/DepoimentoCardPremium.tsx
 import React from 'react'
 import { Quote, User, Star } from 'lucide-react'
 
@@ -16,46 +15,74 @@ export default function DepoimentoCardPremium({
   estrelas?: number
 }) {
   return (
-    <div className="group relative h-full">
-      {/* Efeito de fundo */}
+    <div className="group relative h-full w-full">
+      {/* Efeito de fundo glow */}
       <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-20 blur-md transition-all duration-500" />
 
-      {/* Card */}
-      <div className="relative h-full bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 flex flex-col">
-        <Quote className="w-8 h-8 text-pink-500 opacity-20 mb-6" />
+      {/* Card principal */}
+      <div className="relative h-full bg-gray-800 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-700 flex flex-col">
+        {/* Ícone de citação */}
+        <Quote className="w-7 h-7 text-pink-500 opacity-20 mb-4" />
 
-        <p className="text-lg text-gray-700 dark:text-gray-300 italic mb-4 flex-grow">
+        {/* Texto do depoimento limitado a 4 linhas */}
+        <div 
+          className="text-gray-300 italic mb-4 flex-grow text-base"
+          style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 4,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            lineHeight: '1.5',
+            maxHeight: '6em' // 4 linhas × 1.5 line-height
+          }}
+        >
           {texto || '"A experiência foi transformadora e superou todas as minhas expectativas."'}
-        </p>
+        </div>
 
-        {/* Estrelas */}
+        {/* Avaliação por estrelas */}
         <div className="flex mb-4">
           {[1,2,3,4,5].map(n => (
             <Star
               key={n}
-              size={20}
-              className={n <= estrelas ? 'text-yellow-400' : 'text-gray-300'}
+              size={18}
+              className={n <= estrelas ? 'text-yellow-400' : 'text-gray-500'}
+              fill={n <= estrelas ? 'currentColor' : 'none'}
             />
           ))}
         </div>
 
-        {/* Rodapé */}
+        {/* Rodapé com informações do autor */}
         <div className="flex items-center mt-auto">
-          <div className="relative mr-4">
+          <div className="relative mr-3">
+            {/* Efeito de hover na foto */}
             <div className="absolute -inset-1 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white dark:border-gray-800 shadow-md">
+            
+            {/* Container da foto */}
+            <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gray-800 shadow-md">
               {foto ? (
-                <img src={foto} alt={nome || 'Depoente'} className="w-full h-full object-cover" loading="lazy" />
+                <img 
+                  src={foto} 
+                  alt={nome || 'Depoente'} 
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" 
+                  loading="lazy" 
+                />
               ) : (
-                <div className="w-full h-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                  <User className="w-6 h-6 text-gray-400" />
+                <div className="w-full h-full bg-gray-600 flex items-center justify-center">
+                  <User className="w-5 h-5 text-gray-400" />
                 </div>
               )}
             </div>
           </div>
-          <div>
-            <p className="font-semibold text-gray-900 dark:text-white">{nome || 'Aluno'}</p>
-            {role && <p className="text-sm text-gray-500 dark:text-gray-400">{role}</p>}
+          
+          {/* Nome e cargo */}
+          <div className="min-w-0">
+            <p className="font-semibold text-white truncate">{nome || 'Aluno'}</p>
+            {role && (
+              <p className="text-sm text-gray-400 truncate">
+                {role}
+              </p>
+            )}
           </div>
         </div>
       </div>

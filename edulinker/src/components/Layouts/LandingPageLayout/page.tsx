@@ -13,8 +13,8 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
             <nav className="px-4 sm:px-6 py-4 flex justify-between items-center">
                 <Link href="/" className="flex items-center space-x-2">
                     <Image
-                        src="/Logo/EduLinker.png"
-                        alt="Logo" 
+                        src="/logo/edulinker.png"
+                        alt="Logo"
                         width={120}
                         height={120}
                         className="object-contain"
@@ -40,7 +40,7 @@ export default function MainLayout({ children }: CreateAccountLayoutProps) {
                         <div className="mb-8 md:mb-0">
                             <div className="flex items-center space-x-2 mb-4">
                                 <Image
-                                    src="/logo/EduLinkerWhite.png"
+                                    src="/logo/edulinkerwhite.png"
                                     alt="Logo"
                                     width={120}
                                     height={120}

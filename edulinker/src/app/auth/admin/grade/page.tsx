@@ -179,6 +179,7 @@ export default function AdminGradePage() {
                       <input
                         type="text"
                         value={u.titulo}
+                        placeholder='Título da Aula'
                         onChange={e => handleChange(idx, 'titulo', e.target.value)}
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition"
                       />
@@ -189,6 +190,7 @@ export default function AdminGradePage() {
                       <input
                         type="text"
                         value={u.nivel}
+                        placeholder='Ex: Iniciante, Intermediário, Avançado'
                         onChange={e => handleChange(idx, 'nivel', e.target.value)}
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition"
                       />
@@ -199,6 +201,7 @@ export default function AdminGradePage() {
                       <textarea
                         rows={4}
                         value={u.descricao}
+                        placeholder='Descreva o conteúdo da aula...'
                         onChange={e => handleChange(idx, 'descricao', e.target.value)}
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition"
                       />
@@ -209,6 +212,7 @@ export default function AdminGradePage() {
                       <input
                         type="text"
                         value={u.duracao}
+                        placeholder='Ex: 1h 30min'
                         onChange={e => handleChange(idx, 'duracao', e.target.value)}
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition"
                       />
