@@ -147,7 +147,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         ) : (
           <div className="relative h-full w-full">
             <Image
-              src={banners[0].imagem}
+              src={banners[0].imagem || DEFAULT_HERO_IMAGE}
               alt="Banner principal"
               fill
               className="object-cover object-center"
@@ -164,7 +164,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
           <div className="container mx-auto px-6">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-800 mb-4">Sobre Nós</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-indigo-300 to-purple-400 mx-auto rounded-full"></div>
+              <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-10 items-start">
@@ -190,7 +190,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
                         className="group text-center p-4 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors min-w-[120px] shadow-inner relative"
                       >
                         <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                        <p className="text-2xl font-bold text-indigo-600 mb-2">
+                        <p className="text-2xl font-bold mb-2">
                           {item.number}
                         </p>
                         <p className="text-xs font-medium text-gray-600 uppercase tracking-tight px-1 break-words whitespace-normal">
@@ -219,14 +219,14 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
             {/* Cabeçalho no estilo consistente */}
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-800 mb-4">Nossa Galeria</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-indigo-300 to-purple-400 mx-auto rounded-full"></div>
+              <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
             {/* Container da galeria com tratamento visual similar */}
             <div className="flex justify-center">
               <div className="w-full max-w-6xl">
                 <div className="relative rounded-lg overflow-hidden border border-gray-100 shadow-inner p-4 bg-gray-50">
-                  <GalleryPremium
+                  <Gallery
                     items={
                       config.galerias && config.galerias.length > 0
                         ? config.galerias
@@ -255,7 +255,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
           <div className="container mx-auto px-6">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-800 mb-4">Nossas Aulas</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-indigo-300 to-purple-400 mx-auto rounded-full"></div>
+              <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
             {/* Container das aulas - versão ajustada */}
@@ -317,7 +317,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
             {/* Cabeçalho no estilo consistente */}
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-800 mb-4">Nossa Equipe</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-indigo-300 to-purple-400 mx-auto rounded-full"></div>
+              <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
             {/* Flexbox de professores */}
@@ -367,7 +367,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
           <div className="container mx-auto px-6">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-800 mb-4">Depoimentos</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-indigo-300 to-purple-400 mx-auto rounded-full"></div>
+              <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
             {displayedDepoimentos.length === 0 ? (
@@ -497,14 +497,14 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
           <div className="container mx-auto px-6">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-800 mb-4">Contato</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-indigo-300 to-purple-400 mx-auto rounded-full"></div>
+              <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
             <div className="flex flex-wrap justify-center items-stretch gap-6 lg:gap-8">
               {/* E-mail */}
               <div className="flex flex-col items-center text-center w-full sm:w-48 min-h-[180px] p-6 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors shadow-inner relative overflow-hidden">
                 <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                <Mail className="w-7 h-7 mb-4 text-indigo-600" />
+                <Mail className="w-7 h-7 mb-4" />
                 <h3 className="font-semibold text-gray-800 mb-2">E-mail</h3>
                 <p className="text-sm text-gray-600 leading-relaxed px-2 break-words w-full">
                   {email || "contato@seudominio.com"}
@@ -514,7 +514,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               {/* Telefone */}
               <div className="flex flex-col items-center text-center w-full sm:w-48 min-h-[180px] p-6 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors shadow-inner relative overflow-hidden">
                 <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                <Phone className="w-7 h-7 mb-4 text-indigo-600" />
+                <Phone className="w-7 h-7 mb-4 " />
                 <h3 className="font-semibold text-gray-800 mb-2">Telefone</h3>
                 <p className="text-sm text-gray-600 leading-relaxed px-2 break-words w-full">
                   {telefone || "(00) 00000-0000"}
@@ -524,7 +524,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               {/* WhatsApp */}
               <div className="flex flex-col items-center text-center w-full sm:w-48 min-h-[180px] p-6 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors shadow-inner relative overflow-hidden">
                 <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                <MessageCircle className="w-7 h-7 mb-4 text-indigo-600" />
+                <MessageCircle className="w-7 h-7 mb-4 " />
                 <h3 className="font-semibold text-gray-800 mb-2">WhatsApp</h3>
                 <p className="text-sm text-gray-600 leading-relaxed px-2 break-words w-full">
                   {whatsapp || "(00) 00000-0000"}
@@ -534,7 +534,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               {/* Horários */}
               <div className="flex flex-col items-center text-center w-full sm:w-48 min-h-[180px] p-6 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors shadow-inner relative overflow-hidden">
                 <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                <Clock className="w-7 h-7 mb-4 text-indigo-600" />
+                <Clock className="w-7 h-7 mb-4 " />
                 <h3 className="font-semibold text-gray-800 mb-2">Horário</h3>
                 <p className="text-sm text-gray-600 leading-relaxed px-2 break-words w-full">
                   {horarioSemana || "Seg-Sex: 00h-00h"}
@@ -546,7 +546,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               {/* Endereço */}
               <div className="flex flex-col items-center text-center w-full sm:w-48 min-h-[180px] p-6 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors shadow-inner relative overflow-hidden">
                 <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                <MapPin className="w-7 h-7 mb-4 text-indigo-600" />
+                <MapPin className="w-7 h-7 mb-4 " />
                 <h3 className="font-semibold text-gray-800 mb-2">Endereço</h3>
                 <p className="text-sm text-gray-600 leading-relaxed px-2 break-words w-full">
                   {endereco || "Rua Exemplo, 123"}

@@ -1,60 +1,45 @@
-import React from "react";
-import Image from "next/image";
+import React from 'react';
+import { ChevronRight, ZoomIn } from 'lucide-react';
 
-export default function Gallery({
-  items = [],
-}: {
-  items?: Array<{ imagem: string }>;
-}) {
-  // Se não houver itens, mostra 6 imagens padrão
-  const galleryItems = items.length
-    ? items
-    : Array(6).fill({ imagem: "/templates/free/gallery-placeholder.jpg" });
-
+export default function Gallery({ items = [] }: { items?: Array<{ imagem: string }> }) {
   return (
-    <section id="galeria" className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-12">
-          Galeria de Fotos
-        </h2>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {galleryItems.map((item, index) => (
+    <div className="relative">
+      {/* Grid da Galeria */}
+      <div className="flex justify-center px-4">
+        <div className="flex flex-wrap justify-center gap-4 md:gap-6 max-w-[1800px]">
+          {items.map((item, index) => (
             <div
               key={index}
-              className="relative aspect-square overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all"
+              className="relative group overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 aspect-square w-[300px]"
             >
-              <Image
-                src={item.imagem}
-                alt={`Foto da galeria ${index + 1}`}
-                fill
-                className="object-cover hover:scale-105 transition-transform"
-              />
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition">
-                <svg
-                  className="w-10 h-10 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                  />
-                </svg>
+              <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800">
+                <img
+                  src={item.imagem}
+                  alt={`Imagem da galeria ${index + 1}`}
+                  className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+                  loading="lazy"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <div className="text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex flex-col items-center">
+                  <ZoomIn className="w-8 h-8 mb-2" />
+                  <p className="text-sm font-medium">Visualizar</p>
+                </div>
               </div>
             </div>
           ))}
         </div>
+      </div>
 
+      {/* Botão Ver Mais (opcional) */}
+      {items.length > 8 && (
         <div className="text-center mt-12">
-          <button className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-full font-medium transition">
-            Ver mais fotos
+          <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-medium rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
+            Ver Mais Fotos
+            <ChevronRight className="w-4 h-4 ml-2" />
           </button>
         </div>
-      </div>
-    </section>
+      )}
+    </div>
   );
 }

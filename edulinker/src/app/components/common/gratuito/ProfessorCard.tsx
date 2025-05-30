@@ -41,13 +41,13 @@ export default function ProfessorCard({
         <div className="mb-2">
           <h3 className="text-xl font-bold text-gray-800 line-clamp-1">{nome}</h3>
           {especialidade && (
-            <p className="text-sm font-medium text-indigo-600">{especialidade}</p>
+            <p className="text-sm font-medium text-[#E60076]">{especialidade}</p>
           )}
         </div>
         <p className="text-gray-600 text-sm line-clamp-3">{texto}</p>
         
         {/* Efeito de borda inferior */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-300 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
     </div>
   );
