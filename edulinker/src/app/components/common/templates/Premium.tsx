@@ -40,7 +40,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
 
   const contato = config.contato || {}
   const {
-    descricaoBreve,
     horarioSemana,
     horarioSabado,
     email,
@@ -51,6 +50,12 @@ export default function Premium({ config }: { config: SiteConfig }) {
     mapEmbedUrl,
     socialMedia = {}
   } = contato
+
+  const embedUrl = mapEmbedUrl
+  ? mapEmbedUrl
+  : endereco
+    ? `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(endereco)}`
+    : ''
 
   return (
     <div
@@ -612,16 +617,24 @@ export default function Premium({ config }: { config: SiteConfig }) {
               {/* Coluna do mapa */}
               <div className="w-full lg:w-1/2 bg-gray-100 dark:bg-gray-700 p-1">
                 <div className="relative h-full min-h-[400px] lg:min-h-[500px]">
-                  <iframe
-                    src={mapEmbedUrl ?? 'https://maps.google.com/?q=Seu+Endereço'}
-                    width="100%"
-                    height="100%"
-                    className="absolute inset-0"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    title="Mapa de localização"
-                  />
+                  <div className="w-full lg:w-1/2 bg-gray-100 dark:bg-gray-700 p-1">
+                    {embedUrl ? (
+                      <iframe
+                        src={embedUrl}
+                        width="100%"
+                        height="100%"
+                        className="absolute inset-0"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        title="Mapa de localização"
+                      />
+                    ) : (
+                      <p className="p-4 text-center text-gray-600">
+                        Endereço não definido
+                      </p>
+                    )}
+                  </div>
 
                   {/* Endereço flutuante */}
                   <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 px-6 py-3 rounded-lg shadow-lg text-center">
