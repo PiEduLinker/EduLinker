@@ -9,6 +9,7 @@ interface ProfessorCardProps {
   fg?: string;
 }
 
+// ProfessorCard.tsx
 export default function ProfessorCard({
   foto,
   nome = "Professor",
