@@ -6,7 +6,7 @@ import { Upload, Plus, Trash2, Save, Loader2, Image as ImageIcon, Text, Award, }
 import { useSite, useIsPremium } from '@/contexts/siteContext'
 import { CldUploadWidget } from 'next-cloudinary'
 import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
-import GenerateDescriptionButton from '@/app/components/common/premium/GenerateDescriptionButton'
+
 
 type Destaque = { number: string; label: string }
 
@@ -97,7 +97,6 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
           <h1 className="text-2xl sm:text-3xl font-bold text-black">
             Sobre a Escola
           </h1>
-                <GenerateDescriptionButton onGenerated={setDescription} />
           {error && (
             <div className="mt-4 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300 rounded-lg inline-block">
               {error}
