@@ -17,18 +17,18 @@ export default function UpgradePage() {
         return (
             <AdminLayout>
                 <div className="max-w-2xl mx-auto p-6 text-center">
-                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl p-8 shadow-lg">
+                    <div className="bg-gradient-to-r from-[#E60076] to-[#B3006A] text-white rounded-xl p-8 shadow-lg">
                         <div className="flex justify-center mb-4">
                             <Crown className="h-12 w-12 text-yellow-300" fill="currentColor" />
                         </div>
                         <h1 className="text-3xl font-bold mb-3">Você é Premium! 🎉</h1>
                         <p className="text-purple-100 text-lg mb-6">Obrigado por fazer parte dos nossos usuários exclusivos.</p>
 
-                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-left max-w-md mx-auto">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-left max-w-md mx-auto">
                             <h2 className="font-semibold text-white mb-2 flex items-center gap-2">
                                 <BadgeCheck className="text-yellow-300" /> Seus benefícios:
                             </h2>
-                            <ul className="space-y-2 text-purple-50">
+                            <ul className="space-y-2">
                                 <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Diversos templates </li>
                                 <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Relatório de acessos </li>
                                 <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Mais opções de personalização </li>
@@ -66,7 +66,7 @@ export default function UpgradePage() {
         <AdminLayout>
             <div className="max-w-4xl mx-auto p-6 space-y-8">
                 <div className="text-center">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-[#E60076] to-[#B3006A] bg-clip-text text-transparent mb-2">
                         Upgrade para Premium
                     </h1>
                     <p className="text-gray-600 max-w-2xl mx-auto">
@@ -75,7 +75,7 @@ export default function UpgradePage() {
                 </div>
 
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 text-white">
+                    <div className="bg-gradient-to-r from-[#E60076] to-[#B3006A] p-4 text-white">
                         <h2 className="text-2xl font-semibold flex items-center gap-2">
                             <Zap className="text-yellow-300" fill="currentColor" /> Plano Premium
                         </h2>
@@ -126,7 +126,7 @@ export default function UpgradePage() {
                             <button
                                 onClick={handleUpgrade}
                                 disabled={loading}
-                                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-4 rounded-xl transition-all disabled:opacity-80 cursor-pointer flex items-center justify-center gap-2 shadow-lg hover:shadow-purple-200"
+                                className="w-full bg-gradient-to-r from-[#E60076] to-[#B3006A] hover:from-[#B3006A] hover:to-[#8B005B] text-white font-semibold py-4 rounded-xl transition-all disabled:opacity-80 cursor-pointer flex items-center justify-center gap-2 shadow-lg hover:shadow-purple-200"
                             >
                                 {loading ? (
                                     <>

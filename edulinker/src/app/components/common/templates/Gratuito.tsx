@@ -163,7 +163,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         <section id="sobre" className="w-full py-16 bg-white rounded-xl shadow-sm mt-10">
           <div className="container mx-auto px-6">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4">Sobre Nós</h2>
+              <h2 className="text-4xl font-bold mb-4" style={{color: fg }}>Sobre Nós</h2>
               <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
@@ -205,7 +205,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               {/* Texto movido para baixo em mobile */}
               <div className="flex-1 relative pl-6 order-2 lg:order-1">
                 <div className="absolute left-0 top-0 h-full w-1 bg-black rounded-full"></div>
-                <p className="text-gray-600 leading-relaxed mt-8 lg:mt-0">
+                <p className="leading-relaxed mt-8 lg:mt-0" style={{ color: fg }}>
                   {sobreTexto}
                 </p>
               </div>
@@ -218,7 +218,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
           <div className="container mx-auto px-6">
             {/* Cabeçalho no estilo consistente */}
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4">Nossa Galeria</h2>
+              <h2 className="text-4xl font-bold mb-4" style={{color: fg }}>Nossa Galeria</h2>
               <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
@@ -254,7 +254,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         <section id="aulas" className="w-full py-16 bg-white rounded-xl shadow-sm">
           <div className="container mx-auto px-6">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4">Nossas Aulas</h2>
+              <h2 className="text-4xl font-bold mb-4" style={{color: fg }}>Nossas Aulas</h2>
               <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
@@ -316,7 +316,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
           <div className="container mx-auto px-6">
             {/* Cabeçalho no estilo consistente */}
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4">Nossa Equipe</h2>
+              <h2 className="text-4xl font-bold mb-4" style={{color: fg }}>Nossa Equipe</h2>
               <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
@@ -366,7 +366,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         <section id="depoimentos" className="w-full py-16 bg-white rounded-xl shadow-sm mt-10">
           <div className="container mx-auto px-6">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4">Depoimentos</h2>
+              <h2 className="text-4xl font-bold mb-4" style={{color: fg }}>Depoimentos</h2>
               <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
@@ -391,14 +391,14 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
                           />
                         </svg>
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-800">Nome do Cliente</h3>
+                      <h3 className="text-lg font-semibold" style={{ color: fg }}>Nome do Cliente</h3>
                     </div>
 
                     <div className="relative mb-4">
                       <span className="absolute -top-2 -left-1 text-3xl text-gray-300">
                         "
                       </span>
-                      <p className="text-gray-600 leading-relaxed pl-4 pr-2">
+                      <p className="leading-relaxed pl-4 pr-2" style={{ color: fg }}>
                         Este é um depoimento fictício. Em breve clientes reais
                         compartilharão suas experiências!
                       </p>
@@ -454,14 +454,14 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
                             </svg>
                           </div>
                         )}
-                        <h3 className="text-lg font-semibold text-gray-800">{d.nome}</h3>
+                        <h3 className="text-lg font-semibold" style={{ color: fg }}>{d.nome}</h3>
                       </div>
 
                       <div className="relative mb-4">
                         <span className="absolute -top-2 -left-1 text-3xl text-gray-300">
                           "
                         </span>
-                        <p className="text-gray-600 leading-relaxed pl-4 pr-2">{d.texto}</p>
+                        <p className="leading-relaxed pl-4 pr-2" style={{ color: fg }}>{d.texto}</p>
                         <span className="absolute -bottom-3 -right-1 text-3xl text-gray-300">
                           "
                         </span>
@@ -496,7 +496,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         <section id="contato" className="w-full py-16 bg-white rounded-xl shadow-sm mt-10 mb-10">
           <div className="container mx-auto px-6">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-800 mb-4">Contato</h2>
+              <h2 className="text-4xl font-bold mb-4" style={{color: fg }}>Contato</h2>
               <div className="w-20 h-1 bg-black mx-auto rounded-full"></div>
             </div>
 
@@ -504,9 +504,9 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               {/* E-mail */}
               <div className="flex flex-col items-center text-center w-full sm:w-48 min-h-[180px] p-6 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors shadow-inner relative overflow-hidden">
                 <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                <Mail className="w-7 h-7 mb-4" />
-                <h3 className="font-semibold text-gray-800 mb-2">E-mail</h3>
-                <p className="text-sm text-gray-600 leading-relaxed px-2 break-words w-full">
+                <Mail className="w-7 h-7 mb-4 text-black" />
+                <h3 className="font-semibold mb-2" style={{ color: fg }}>E-mail</h3>
+                <p className="text-sm leading-relaxed px-2 break-words w-full" style={{ color: fg }}>
                   {email || "contato@seudominio.com"}
                 </p>
               </div>
@@ -514,9 +514,9 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               {/* Telefone */}
               <div className="flex flex-col items-center text-center w-full sm:w-48 min-h-[180px] p-6 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors shadow-inner relative overflow-hidden">
                 <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                <Phone className="w-7 h-7 mb-4 " />
-                <h3 className="font-semibold text-gray-800 mb-2">Telefone</h3>
-                <p className="text-sm text-gray-600 leading-relaxed px-2 break-words w-full">
+                <Phone className="w-7 h-7 mb-4 text-black" />
+                <h3 className="font-semibold mb-2" style={{ color: fg }}>Telefone</h3>
+                <p className="text-sm leading-relaxed px-2 break-words w-full" style={{ color: fg }}>
                   {telefone || "(00) 00000-0000"}
                 </p>
               </div>
@@ -524,9 +524,9 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               {/* WhatsApp */}
               <div className="flex flex-col items-center text-center w-full sm:w-48 min-h-[180px] p-6 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors shadow-inner relative overflow-hidden">
                 <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                <MessageCircle className="w-7 h-7 mb-4 " />
-                <h3 className="font-semibold text-gray-800 mb-2">WhatsApp</h3>
-                <p className="text-sm text-gray-600 leading-relaxed px-2 break-words w-full">
+                <MessageCircle className="w-7 h-7 mb-4 text-black" />
+                <h3 className="font-semibold mb-2" style={{ color: fg }}>WhatsApp</h3>
+                <p className="text-sm leading-relaxed px-2 break-words w-full" style={{ color: fg }}>
                   {whatsapp || "(00) 00000-0000"}
                 </p>
               </div>
@@ -534,9 +534,9 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               {/* Horários */}
               <div className="flex flex-col items-center text-center w-full sm:w-48 min-h-[180px] p-6 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors shadow-inner relative overflow-hidden">
                 <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                <Clock className="w-7 h-7 mb-4 " />
-                <h3 className="font-semibold text-gray-800 mb-2">Horário</h3>
-                <p className="text-sm text-gray-600 leading-relaxed px-2 break-words w-full">
+                <Clock className="w-7 h-7 mb-4 text-black" />
+                <h3 className="font-semibold mb-2" style={{ color: fg }}>Horário</h3>
+                <p className="text-sm leading-relaxed px-2 break-words w-full" style={{ color: fg }}>
                   {horarioSemana || "Seg-Sex: 00h-00h"}
                   <br />
                   {horarioSabado || "Sáb: 00h-00h"}
@@ -546,9 +546,9 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               {/* Endereço */}
               <div className="flex flex-col items-center text-center w-full sm:w-48 min-h-[180px] p-6 bg-white rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors shadow-inner relative overflow-hidden">
                 <div className="absolute inset-0 ring-1 ring-inset ring-gray-100/50 pointer-events-none rounded-lg"></div>
-                <MapPin className="w-7 h-7 mb-4 " />
-                <h3 className="font-semibold text-gray-800 mb-2">Endereço</h3>
-                <p className="text-sm text-gray-600 leading-relaxed px-2 break-words w-full">
+                <MapPin className="w-7 h-7 mb-4 text-black" />
+                <h3 className="font-semibold mb-2" style={{ color: fg }}>Endereço</h3>
+                <p className="text-sm leading-relaxed px-2 break-words w-full" style={{ color: fg }}>
                   {endereco || "Rua Exemplo, 123"}
                 </p>
               </div>

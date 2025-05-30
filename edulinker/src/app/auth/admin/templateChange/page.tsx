@@ -112,7 +112,7 @@ const TemplateCard = ({
           text-white
         `}
       >
-        <h3 className="font-medium text-lg truncate">{template.nome}</h3>
+        <h3 className="font-medium text-lg truncate capitalize">{template.nome}</h3>
         {template.categoria && (
           <span className="text-xs bg-white/20 px-2 py-1 rounded-full">
             {template.categoria}

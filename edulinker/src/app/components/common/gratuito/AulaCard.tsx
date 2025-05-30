@@ -51,17 +51,17 @@ export default function AulaCard({
 
       {/* Conteúdo do card */}
       <div className="p-4 flex-1 flex flex-col">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: fg }}>
+        <h3 className="text-lg font-semibold mb-2" style={{ color: fg }}>
           {titulo || "Título da Aula"}
         </h3>
         
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-1">
+        <p className="text-sm mb-4 line-clamp-3 flex-1" style={{ color: fg }}>
           {descricao || "Descrição da aula..."}
         </p>
         
         <a
           href={whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, "")}` : "#"}
-          className="text-gray-700 hover:text-gray-900 transition-colors inline-flex items-center text-sm mt-auto"
+          className="hover:text-gray-900 transition-colors inline-flex items-center text-sm mt-auto font-bold" style={{ color: fg }}
         >
           Saiba mais
           <ArrowRight className="w-3 h-3 ml-1" />

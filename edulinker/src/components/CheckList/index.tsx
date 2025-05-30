@@ -78,12 +78,7 @@ export default function CheckList() {
       isDone: (cfg) =>
         Array.isArray(cfg.depoimentos) && cfg.depoimentos.length > 0,
     },
-    {
-      title: "Informe o endereço e dados de contato da escola",
-      description: "Inclua telefone, WhatsApp, e localização no mapa.",
-      path: "/auth/admin/contact",
-      isDone: (cfg) => !!cfg.contato?.endereco,
-    },
+
   ];
 
   return (

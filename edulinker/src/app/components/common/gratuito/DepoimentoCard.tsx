@@ -3,11 +3,14 @@ import React from 'react'
 export default function DepoimentoCard({
   foto,
   nome,
-  texto
+  texto,
+  fg
 }: {
   foto?: string
   nome?: string
   texto?: string
+  fg?: string
+
 }) {
   return (
     <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 h-full">
@@ -21,13 +24,13 @@ export default function DepoimentoCard({
             </div>
           )}
         </div>
-        <h4 className="text-lg font-bold text-gray-800">
+        <h4 className="text-lg font-bold" style={{ color: fg }}>
           {nome || 'Cliente'}
         </h4>
       </div>
       
       <p className="text-gray-600 italic relative pl-6">
-        <span className="absolute left-0 top-0 text-3xl text-pink-300 leading-none">"</span>
+        <span className="absolute left-0 top-0 text-3xl leading-none" style={{ color: fg }}>"</span>
         {texto || 'Depoimento sobre o serviço...'}
       </p>
       

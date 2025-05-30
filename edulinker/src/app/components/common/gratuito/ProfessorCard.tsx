@@ -6,13 +6,15 @@ interface ProfessorCardProps {
   nome: string;
   texto: string;
   especialidade?: string;
+  fg?: string;
 }
 
 export default function ProfessorCard({
   foto,
   nome = "Professor",
   texto = "Descrição do professor",
-  especialidade = "Educação"
+  especialidade = "Educação",
+  fg,
 }: ProfessorCardProps) {
   return (
     <div className="group relative h-full rounded-xl overflow-hidden border border-gray-100 shadow-md hover:shadow-lg transition-all duration-300 bg-white">
@@ -29,7 +31,7 @@ export default function ProfessorCard({
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-            <User className="w-16 h-16 text-gray-400 group-hover:text-[#E60076] transition-colors duration-300" />
+            <User className="w-16 h-16 text-gray-400 group-hover:text-black transition-colors duration-300" />
           </div>
         )}
         {/* Overlay sutil */}
@@ -39,12 +41,12 @@ export default function ProfessorCard({
       {/* Informações do professor */}
       <div className="p-5">
         <div className="mb-2">
-          <h3 className="text-xl font-bold text-gray-800 line-clamp-1">{nome}</h3>
+          <h3 className="text-xl font-bold line-clamp-1" style={{ color: fg }}>{nome}</h3>
           {especialidade && (
-            <p className="text-sm font-medium text-[#E60076]">{especialidade}</p>
+            <p className="text-sm font-medium" style={{ color: fg }}>{especialidade}</p>
           )}
         </div>
-        <p className="text-gray-600 text-sm line-clamp-3">{texto}</p>
+        <p className="text-sm line-clamp-3" style={{ color: fg }}>{texto}</p>
         
         {/* Efeito de borda inferior */}
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-black opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
