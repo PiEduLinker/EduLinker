@@ -26,8 +26,6 @@ import {
 const DEFAULT_LOGO = "/logo/EduLinker.png";
 const DEFAULT_LOGO_BRANCA = "/logo/EduLinkerWhite.png";
 const DEFAULT_HERO_IMAGE = "/templates/free/banner1.jpg";
-const DEFAULT_PROFESSOR_IMAGE = "/teachers/teacher1.jpg";
-const DEFAULT_DEPOIMENTO_IMAGE = "/teachers/teacher2.jpg";
 
 export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
   const { plano } = useSite();
@@ -61,10 +59,10 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
     ? config.destaques?.length
       ? config.destaques
       : [
-          { number: "10+", label: "Anos de experiência" },
-          { number: "5.000+", label: "Alunos formados" },
-          { number: "98%", label: "Satisfação" },
-        ]
+        { number: "10+", label: "Anos de experiência" },
+        { number: "5.000+", label: "Alunos formados" },
+        { number: "98%", label: "Satisfação" },
+      ]
     : [];
 
   // Aulas (até 4 cards)
@@ -127,10 +125,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
             )}
           </nav>
           <a
-            href={`https://wa.me/${
-              whatsapp ? whatsapp.replace(/\D/g, "") : ""
-            }`}
-            target="_blank"
+            href={whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, '')}` : '#contato'}
             className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-full font-medium transition"
           >
             Contato
@@ -139,7 +134,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
       </header>
 
       {/* Hero / Banner */}
-      <section className="relative w-full h-[400px] overflow-hidden">
+      <section className="relative w-full h-[70vh] min-h-[400px] max-h-[800px] overflow-hidden">
         {isPremium ? (
           <CarouselPremium
             items={banners}
@@ -148,122 +143,125 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
             className="h-full"
           />
         ) : (
-          <Image
-            src={banners[0].imagem}
-            alt="Banner principal"
-            fill
-            className="object-cover"
-            priority
-          />
+          <div className="relative h-full w-full">
+            <Image
+              src={banners[0].imagem}
+              alt="Banner principal"
+              fill
+              className="object-cover object-center"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+          </div>
         )}
       </section>
 
-      <main className="flex-grow space-y-16 container mx-auto px-4 py-8">
+      <main className="flex justify-center flex-col p-10 space-y-15">
         {/* Sobre Nós */}
-        <section id="sobre" className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold text-center mb-16">Sobre Nós</h2>
+        <section id="sobre" className="py-16 bg-white rounded-lg">
+          <div className="container mx-auto px-5 max-w-4xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-semibold text-gray-800">Sobre Nós</h2>
+              <div className="w-16 h-0.5 bg-gray-300 mx-auto mt-4"></div>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch">
+            <div className="flex flex-col md:flex-row gap-10 items-center">
               {/* Texto */}
-              <div>
-                <p className="h-full text-lg leading-relaxed break-words">
+              <div className="flex-1">
+                <p className="text-gray-600 leading-relaxed">
                   {sobreTexto}
                 </p>
               </div>
 
               {/* Imagem */}
-              <div className="relative w-full h-64 sm:h-80 md:h-96 rounded-xl overflow-hidden shadow-lg">
+              <div className="flex-1 relative w-full h-64 rounded-lg overflow-hidden">
                 <Image
-                  src={
-                    config.fotoSobre ||
-                    "/templates/free/image_default_sobre2.png"
-                  }
+                  src={config.fotoSobre || "/templates/free/image_default_sobre2.png"}
                   alt="Sobre Nós"
                   fill
                   className="object-cover"
+                  style={{ filter: "brightness(0.98)" }}
                 />
               </div>
             </div>
 
-            {/* Destaques (premium apenas) */}
+            {/* Destaques (premium apenas) - versão minimalista */}
             {isPremium && (
-              <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="mt-14 grid grid-cols-2 md:grid-cols-3 gap-5">
                 {destaques.map((item, i) => (
                   <div
                     key={i}
-                    className="bg-white p-6 rounded-lg shadow-md border-l-4 border-black-500"
+                    className="p-4 border border-gray-100 rounded-lg bg-gray-50 text-center"
                   >
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-2xl font-light text-gray-800">
                       {item.number}
                     </p>
-                    <p className="text-sm text-gray-600">{item.label}</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">
+                      {item.label}
+                    </p>
                   </div>
                 ))}
               </div>
             )}
           </div>
         </section>
-
+        
         {/* Galeria */}
-        {displayedGalerias.length > 0 && (
-          <section id="galeria" className="py-20">
-            <div className="container mx-auto px-4">
-              <h2 className="text-4xl font-bold text-center mb-12">
-                Galeria de Fotos
-              </h2>
+        <section id="galeria" className="py-20 bg-white rounded-lg shadow-md">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-12">
+              Galeria de Fotos
+            </h2>
 
-              <div
-                className={`${
-                  displayedGalerias.length <= 2
-                    ? "flex justify-center gap-4 flex-wrap"
-                    : "grid gap-4 justify-items-center " +
-                      (displayedGalerias.length === 3
-                        ? "sm:grid-cols-3"
-                        : "grid-cols-1 sm:grid-cols-3")
+            <div
+              className={`${displayedGalerias.length <= 2
+                ? "flex justify-center gap-4 flex-wrap"
+                : "grid gap-4 justify-items-center " +
+                (displayedGalerias.length === 3
+                  ? "sm:grid-cols-3"
+                  : "grid-cols-1 sm:grid-cols-3")
                 }`}
-              >
-                {displayedGalerias.map((item, idx) => {
-                  const imagemValida =
-                    item.imagem && item.imagem.trim() !== ""
-                      ? item.imagem
-                      : "/images/fallback.jpg";
+            >
+              {displayedGalerias.map((item, idx) => {
+                const imagemValida =
+                  item.imagem && item.imagem.trim() !== ""
+                    ? item.imagem
+                    : "/images/fallback.jpg";
 
-                  return (
-                    <div
-                      key={idx}
-                      className="relative aspect-square overflow-hidden rounded-xl shadow-md hover:shadow-lg transition w-80"
-                    >
-                      <img
-                        src={imagemValida}
-                        alt={`Foto ${idx + 1}`}
-                        className="object-cover w-full h-full"
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* aviso upgrade */}
-              {!isPremium && allGalerias.length > 3 && (
-                <p className="mt-6 text-center text-sm text-gray-500">
-                  Você tem {allGalerias.length} fotos, mas conta gratuita exibe
-                  só 3.{" "}
-                  <a href="/upgrade" className="text-pink-600 underline">
-                    Faça upgrade para ver todas
-                  </a>
-                  .
-                </p>
-              )}
+                return (
+                  <div
+                    key={idx}
+                    className="relative aspect-square overflow-hidden rounded-xl shadow-md hover:shadow-lg transition w-80"
+                  >
+                    <img
+                      src={imagemValida}
+                      alt={`Foto ${idx + 1}`}
+                      className="object-cover w-full h-full"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
-          </section>
-        )}
+
+            {/* aviso upgrade */}
+            {!isPremium && allGalerias.length > 3 && (
+              <p className="mt-6 text-center text-sm text-gray-500">
+                Você tem {allGalerias.length} fotos, mas conta gratuita exibe
+                só 3.{" "}
+                <a href="/upgrade" className="text-pink-600 underline">
+                  Faça upgrade para ver todas
+                </a>
+                .
+              </p>
+            )}
+          </div>
+        </section>
 
         {/* Aulas*/}
-        <section id="aulas" className="py-16 bg-white">
+        <section id="aulas" className="py-16 bg-white rounded-lg shadow-md">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-10">
               Nossas Aulas
@@ -313,7 +311,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Professores - Versão Simplificada */}
-        <section id="professores" className="py-16">
+        <section id="professores" className="py-16 bg-white rounded-lg shadow-md">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-10">
               Nossa Equipe
@@ -373,7 +371,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Depoimentos */}
-        <section id="depoimentos" className="py-20 bg-white">
+        <section id="depoimentos" className="py-20 bg-white rounded-lg shadow-md">
           <div className="container mx-auto px-4">
             <h2 className="text-4xl font-bold text-center mb-12">
               Depoimentos
@@ -419,11 +417,10 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
                       {[1, 2, 3, 4, 5].map((star) => (
                         <svg
                           key={star}
-                          className={`w-5 h-5 ${
-                            star <= 4
-                              ? "text-yellow-400 fill-current"
-                              : "text-gray-300"
-                          }`}
+                          className={`w-5 h-5 ${star <= 4
+                            ? "text-yellow-400 fill-current"
+                            : "text-gray-300"
+                            }`}
                           viewBox="0 0 20 20"
                         >
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -481,11 +478,10 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
                           return (
                             <svg
                               key={star}
-                              className={`w-5 h-5 ${
-                                star <= rating
-                                  ? "text-yellow-400 fill-current"
-                                  : "text-gray-300"
-                              }`}
+                              className={`w-5 h-5 ${star <= rating
+                                ? "text-yellow-400 fill-current"
+                                : "text-gray-300"
+                                }`}
                               viewBox="0 0 20 20"
                             >
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -502,7 +498,7 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
         </section>
 
         {/* Contato */}
-        <section id="contato" className="py-20">
+        <section id="contato" className="py-20 bg-white rounded-lg shadow-md">
           <div className="container mx-auto px-4">
             {/* Título Centralizado */}
             <h2 className="text-4xl font-bold text-center mb-12">Contato</h2>

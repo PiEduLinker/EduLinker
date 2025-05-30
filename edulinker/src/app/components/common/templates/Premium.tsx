@@ -117,7 +117,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
           {/* CONTATO + MENU TOGGLE */}
           <div className="flex items-center gap-3">
             <a
-              href={whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, '')}` : '#'}
+              href={whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, '')}` : '#contato'}
               className="hidden lg:inline-block bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-full transition-all duration-300 shadow-lg hover:shadow-pink-500/30 transform hover:-translate-y-0.5"
             >
               CONTATO
@@ -201,7 +201,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
 
         {/* Sobre */}
         <section id='sobre-nos' className="relative py-20 overflow-hidden">
-
           <div className="container mx-auto px-4 lg:px-8">
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
               {/* Imagem com efeito e moldura */}
