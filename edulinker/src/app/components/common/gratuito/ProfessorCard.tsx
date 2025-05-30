@@ -13,7 +13,6 @@ export default function ProfessorCard({
   foto,
   nome = "Professor",
   texto = "Descrição do professor",
-  especialidade = "Educação",
   fg,
 }: ProfessorCardProps) {
   return (
@@ -41,10 +40,7 @@ export default function ProfessorCard({
       {/* Informações do professor */}
       <div className="p-5">
         <div className="mb-2">
-          <h3 className="text-xl font-bold line-clamp-1" style={{ color: fg }}>{nome}</h3>
-          {especialidade && (
-            <p className="text-sm font-medium" style={{ color: fg }}>{especialidade}</p>
-          )}
+          <h3 className="text-xl font-bold line-clamp-1" style={{ color: fg }}>{nome}</h3>          
         </div>
         <p className="text-sm line-clamp-3" style={{ color: fg }}>{texto}</p>
         

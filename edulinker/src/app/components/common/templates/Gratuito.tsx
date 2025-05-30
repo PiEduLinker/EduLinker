@@ -5,11 +5,8 @@ import Image from "next/image";
 import { SiteConfig } from "@/types/site";
 import AulaCard from "@/app/components/common/gratuito/AulaCard";
 import ProfessorCard from "@/app/components/common/gratuito/ProfessorCard";
-import DepoimentoCard from "@/app/components/common/gratuito/DepoimentoCard";
 import { useSite } from "@/contexts/siteContext";
 import CarouselPremium from "../premium/CarouselPremium";
-import ProfessorCardPremium from "../premium/ProfessorCardPremium";
-import DepoimentoCardPremium from "../premium/DepoimentoCardPremium";
 import Link from "next/link";
 import {
   Clock,
