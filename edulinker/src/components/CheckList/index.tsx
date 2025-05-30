@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation'
 import {
+  ArrowRight,
   CheckCircle,
   ChevronDown,
   ChevronUp,
@@ -93,10 +94,7 @@ export default function CheckList() {
                 ) : (
                   <CircleDashed className="text-gray-400 w-5 h-5" />
                 )}
-                <Link
-                  href={item.path || '#'}>
-                  <span className="font-medium">{item.title}</span>
-                </Link>
+                <span className="font-medium">{item.title}</span>
               </div>
 
               {isExpanded ? (
@@ -107,9 +105,20 @@ export default function CheckList() {
             </div>
 
             {isExpanded && (
-              <p className="text-sm text-gray-600 mt-2 ml-7">
-                {item.description}
-              </p>
+              <div className="mt-2 ml-7">
+                <p className="text-sm text-gray-600">
+                  {item.description}
+                </p>
+                {item.path && (
+                  <Link
+                    href={item.path}
+                    className="flex items-center gap-1 text-sm text-blue-500 mt-2 hover:text-blue-700"
+                    onClick={(e) => e.stopPropagation()} // Impede que o evento de clique propague para o botão pai
+                  >
+                    Acessar página <ArrowRight className="w-4 h-4" />
+                  </Link>
+                )}
+              </div>
             )}
           </button>
         );
