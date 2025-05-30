@@ -11,7 +11,7 @@ export default async function SchoolDescriptionPage({ searchParams }: Props) {
   const siteId = Array.isArray(raw) ? raw[0] : raw
 
   return (
-    <CreateAccountLayout status="TEMPLATE_SELECTION">
+    <CreateAccountLayout status="BASIC_INFO">
       <ClientSchoolDescription siteId={siteId} />
     </CreateAccountLayout>
   )

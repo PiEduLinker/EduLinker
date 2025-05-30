@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Clock, FacebookIcon, Instagram, Mail, Phone, Youtube } from 'lucide-react';
 
 // Imagens padrão (você pode importar de seus assets ou usar URLs externas)
-const DEFAULT_LOGO = '/default-logo.png'
+const DEFAULT_LOGO = '/logo/EduLinkerWhite.png'
 const DEFAULT_CAROUSEL_IMAGE = '/templates/free/banner1.jpg'
 const DEFAULT_PROFESSOR_IMAGE = '/default-professor.jpg'
 
@@ -29,19 +29,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
     ]
 
 
-  // Mapeia os professores (sem especialidade)
-  const professoresItems = config.professores?.length
-    ? config.professores.map(prof => ({
-      nome: prof.nome,
-      texto: prof.descricao,
-      foto: prof.imagem || DEFAULT_PROFESSOR_IMAGE,
-    }))
-    : Array(4).fill({
-      nome: 'Professor Experiente',
-      texto: 'Especialista com anos de experiência em transformar vidas.',
-      foto: DEFAULT_PROFESSOR_IMAGE,
-    })
-
   //fontes
   const fontClass = {
     montserrat: 'font-montserrat',
@@ -53,7 +40,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
 
   const contato = config.contato || {}
   const {
-    descricaoBreve,
     horarioSemana,
     horarioSabado,
     email,
@@ -64,6 +50,12 @@ export default function Premium({ config }: { config: SiteConfig }) {
     mapEmbedUrl,
     socialMedia = {}
   } = contato
+
+  const embedUrl = mapEmbedUrl
+  ? mapEmbedUrl
+  : endereco
+    ? `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(endereco)}`
+    : ''
 
   return (
     <div
@@ -85,7 +77,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
                   <img
                     src={config.logo || DEFAULT_LOGO}
                     alt="Logo da Escola"
-                    className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+                    className="transition-transform duration-300 group-hover:scale-105 max-w-[110px] h-auto"
                   />
                 </a>
               </div>
@@ -222,7 +214,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
                 <div className="absolute rounded-xl opacity-75 blur-lg group-hover:opacity-100 transition-all duration-500"></div>
                 <div className="relative overflow-hidden rounded-xl shadow-2xl">
                   <img
-                    src={config.fotoSobre || 'https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1172&q=80'}
+                    src={config.fotoSobre || '/templates/premium/aboutOurSchool.jpg'}
                     alt="Sobre nós"
                     className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -282,7 +274,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
           </div>
         </section>
 
-        {/* Galeria */}
         <section className="relative py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
           {/* Elementos decorativos de fundo */}
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
@@ -307,32 +298,80 @@ export default function Premium({ config }: { config: SiteConfig }) {
               </p>
             </div>
 
-            <GalleryPremium items={config.galerias ?? []} />
+            {/* Container flex para centralizar toda a galeria */}
+            <div className="flex justify-center">
+              <div className="w-full max-w-7xl"> {/* Ajuste max-w conforme necessário */}
+                {/* Lógica com placeholder */}
+                <GalleryPremium
+                  items={
+                    config.galerias && config.galerias.length > 0
+                      ? config.galerias
+                      : [
+                        { imagem: '/templates/premium/placeholderGallery.webp' },
+                        { imagem: '/templates/premium/placeholderGallery.webp' },
+                        { imagem: '/templates/premium/placeholderGallery.webp' }
+                      ]
+                  }
+                />
+              </div>
+            </div>
           </div>
         </section>
 
         {/* Aulas Premium */}
         <section id="aulas" className="py-20 bg-white dark:bg-gray-900">
           <div className="container mx-auto px-4 lg:px-8">
-            <h2 className="text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-              Aulas
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="text-center mb-16">
+              <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
+                Experiências reais
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                <span className="relative inline-block pb-2">
+                  Aulas
+                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-600"></span>
+                </span>
+              </h2>
+              <p className="max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+                Descubra como nossas aulas impactaram positivamente o aprendizado de alunos.
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-8">
               {(config.aulas?.length
                 ? config.aulas
-                : []
+                : [
+                  {
+                    foto: '',
+                    titulo: 'Título da Aula',
+                    descricao: 'Aqui vem a descrição da aula.',
+                    nivel: 'Iniciante',
+                    duracao: '2h 30min',
+                  },
+                  {
+                    foto: '',
+                    titulo: 'Título da Aula',
+                    descricao: 'Aqui vem a descrição da aula.',
+                    nivel: 'Avançado',
+                    duracao: '1h',
+                  },
+                ]
               ).map((item, idx) => (
-                <AulaCardPremium
+                <div
                   key={idx}
-                  foto={item.foto}
-                  titulo={item.titulo}
-                  descricao={item.descricao}
-                  nivel={item.nivel}
-                  duracao={item.duracao}
-                  contato={whatsapp}
-                />
+                  className="w-full sm:w-[calc(50%-16px)] lg:w-[calc(50%-16px)] xl:w-[calc(33.333%-24px)]"
+                  style={{ minWidth: '250px', maxWidth: '320px' }}
+                >
+                  <AulaCardPremium
+                    foto={item.foto}
+                    titulo={item.titulo}
+                    descricao={item.descricao}
+                    nivel={item.nivel}
+                    duracao={item.duracao}
+                    whatsapp={whatsapp}
+                  />
+                </div>
               ))}
             </div>
+
           </div>
         </section>
 
@@ -345,7 +384,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
           </div>
 
           <div className="container mx-auto px-4 lg:px-8 relative z-10">
-            {/* Cabeçalho elegante */}
+            {/* Cabeçalho elegante (mantido igual) */}
             <div className="text-center mb-16">
               <span className="inline-block text-sm font-semibold text-pink-500 mb-3 uppercase tracking-wider">
                 Nossa Equipe
@@ -361,17 +400,46 @@ export default function Premium({ config }: { config: SiteConfig }) {
               </p>
             </div>
 
-            {/* Grid de professores */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {professoresItems.map((item, idx) => (
-                <ProfessorCardPremium
-                  key={idx}
-                  foto={item.foto}
-                  nome={item.nome}
-                  texto={item.texto}
-                />
-              ))}
-            </div>
+            {/* Flexbox de professores */}
+            {(() => {
+              type Professor = { foto: string; nome: string; texto: string };
+              const professoresItems: Professor[] = config.professores && config.professores.length > 0
+                ? config.professores.map((prof: any) => ({
+                  foto: prof.foto ?? prof.imagem ?? '',
+                  nome: prof.nome,
+                  texto: prof.texto ?? prof.descricao ?? '',
+                }))
+                : [
+                  {
+                    foto: '',
+                    nome: 'Prof. Ana Martins',
+                    texto: '“Especialista em metodologias ativas e ensino moderno.”',
+                  },
+                  {
+                    foto: '',
+                    nome: 'Prof. Carlos Henrique',
+                    texto: '“Apaixonado por ensinar e transformar vidas através da educação.”',
+                  }
+                ];
+              return (
+                <div className="flex flex-wrap justify-center gap-8">
+                  {professoresItems.map((item: Professor, idx: number) => (
+                    <div
+                      key={idx}
+                      className="w-full sm:w-[calc(50%-16px)] md:w-[calc(33.333%-22px)] lg:w-[calc(25%-24px)]"
+                      style={{ minWidth: '250px', maxWidth: '280px' }} // Ajuste conforme necessário
+                    >
+                      <ProfessorCardPremium
+                        foto={item.foto}
+                        nome={item.nome}
+                        texto={item.texto}
+                      />
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
           </div>
         </section>
 
@@ -404,10 +472,10 @@ export default function Premium({ config }: { config: SiteConfig }) {
             </div>
 
             {/* Grid de depoimentos (até 4) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8">
+            <div className="flex flex-wrap justify-center gap-8">
               {(
                 config.depoimentos && config.depoimentos.length > 0
-                  ? config.depoimentos.slice(0, 4)
+                  ? config.depoimentos
                   : [
                     {
                       foto: '',
@@ -423,13 +491,18 @@ export default function Premium({ config }: { config: SiteConfig }) {
                     },
                   ]
               ).map((item, idx) => (
-                <DepoimentoCardPremium
+                <div
                   key={idx}
-                  foto={item.foto}
-                  nome={item.nome}
-                  texto={item.texto}
-                  estrelas={item.estrelas}
-                />
+                  className="w-full sm:w-[calc(50%-16px)] lg:w-[calc(50%-16px)] xl:w-[calc(25%-24px)]"
+                  style={{ minWidth: '250px', maxWidth: '320px' }} // Ajuste esses valores conforme necessário
+                >
+                  <DepoimentoCardPremium
+                    foto={item.foto}
+                    nome={item.nome}
+                    texto={item.texto}
+                    estrelas={item.estrelas}
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -475,10 +548,10 @@ export default function Premium({ config }: { config: SiteConfig }) {
                       Horário de Funcionamento
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300">
-                      {horarioSemana ?? 'Segunda à Sexta: 09h - 12h | 13h - 21h'}
+                      {horarioSemana ?? 'Segunda à Sexta: 00h - 00h | 00h - 00h'}
                     </p>
                     <p className="text-gray-600 dark:text-gray-300">
-                      {horarioSabado ?? 'Sábado: 09h - 14h'}
+                      {horarioSabado ?? 'Sábado: 00h - 00h'}
                     </p>
                   </div>
                 </div>
@@ -544,16 +617,24 @@ export default function Premium({ config }: { config: SiteConfig }) {
               {/* Coluna do mapa */}
               <div className="w-full lg:w-1/2 bg-gray-100 dark:bg-gray-700 p-1">
                 <div className="relative h-full min-h-[400px] lg:min-h-[500px]">
-                  <iframe
-                    src={mapEmbedUrl ?? 'https://maps.google.com/?q=Seu+Endereço'}
-                    width="100%"
-                    height="100%"
-                    className="absolute inset-0"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    title="Mapa de localização"
-                  />
+                  <div className="w-full lg:w-1/2 bg-gray-100 dark:bg-gray-700 p-1">
+                    {embedUrl ? (
+                      <iframe
+                        src={embedUrl}
+                        width="100%"
+                        height="100%"
+                        className="absolute inset-0"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        title="Mapa de localização"
+                      />
+                    ) : (
+                      <p className="p-4 text-center text-gray-600">
+                        Endereço não definido
+                      </p>
+                    )}
+                  </div>
 
                   {/* Endereço flutuante */}
                   <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 px-6 py-3 rounded-lg shadow-lg text-center">
@@ -709,6 +790,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
           </div>
         </div>
       </footer>
-    </div>
+    </div >
   )
 }

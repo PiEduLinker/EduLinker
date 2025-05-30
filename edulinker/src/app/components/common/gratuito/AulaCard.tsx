@@ -6,13 +6,15 @@ export default function AulaCard({
   titulo,
   descricao,
   nivel,
-  duracao
+  duracao,
+  whatsapp,
 }: {
   foto?: string
   titulo?: string
   descricao?: string
   nivel?: string
   duracao?: string
+  whatsapp?: string
 }) {
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all">
@@ -45,8 +47,6 @@ export default function AulaCard({
         )}
       </div>
 
-
-
       <div className="p-5">
         <h3 className="text-xl font-bold mb-2 text-gray-800">
           {titulo || 'Título da Aula'}
@@ -54,12 +54,14 @@ export default function AulaCard({
         <p className="text-gray-600 mb-4 line-clamp-2">
           {descricao || 'Descrição da aula...'}
         </p>
-        <button className="text-pink-500 font-semibold hover:underline flex items-center">
+        <a 
+        href={whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, '')}` : '#'}
+        className="text-pink-500 font-semibold hover:underline flex items-center">
           Saiba mais
           <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </button>
+        </a>
       </div>
     </div>
   )

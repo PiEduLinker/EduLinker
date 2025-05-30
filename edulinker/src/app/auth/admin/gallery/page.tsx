@@ -1,21 +1,20 @@
-'use client'
+"use client";
 
-import React, { useState, useCallback, useEffect } from 'react'
-import AdminLayout from '@/components/Layouts/AdminLayout'
-import { Plus, Trash2, Loader2 } from 'lucide-react'
-import { useSite, useIsPremium } from '@/contexts/siteContext'
-import { CldUploadWidget } from 'next-cloudinary'
-import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
+import React, { useState, useCallback, useEffect } from "react";
+import AdminLayout from "@/components/Layouts/AdminLayout";
+import { Plus, Trash2, Loader2 } from "lucide-react";
+import { useSite, useIsPremium } from "@/contexts/siteContext";
+import { CldUploadWidget } from "next-cloudinary";
+import type { CloudinaryUploadWidgetResults } from "next-cloudinary";
 
 interface GalleryItem {
-  imagem: string
+  imagem: string;
 }
 
 export default function AdminGalleryPage() {
-  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
-  const isPremium = useIsPremium()
-  const [success, setSuccess] = useState('');
-
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite();
+  const isPremium = useIsPremium();
+  const [success, setSuccess] = useState("");
 
   const maxSlots = isPremium ? 12 : 3
   const initialGalerias = (configuracoes.galerias as GalleryItem[]) ?? []
@@ -25,54 +24,49 @@ export default function AdminGalleryPage() {
 
   const handleAdd = useCallback(() => {
     if (galerias.length < maxSlots) {
-      setGalerias(g => [...g, { imagem: '' }])
+      setGalerias((g) => [...g, { imagem: "" }]);
     }
-  }, [galerias.length, maxSlots])
+  }, [galerias.length, maxSlots]);
 
   const handleRemove = useCallback((idx: number) => {
-    setGalerias(g => g.filter((_, i) => i !== idx))
-  }, [])
+    setGalerias((g) => g.filter((_, i) => i !== idx));
+  }, []);
 
   const handleRemoveImage = useCallback((idx: number) => {
-    setGalerias(g => g.map((it, i) => i === idx ? { imagem: '' } : it))
-  }, [])
+    setGalerias((g) => g.map((it, i) => (i === idx ? { imagem: "" } : it)));
+  }, []);
 
   const handleSave = useCallback(async () => {
-    setSaving(true)
-    setError('')
-    setSuccess('');
+    setSaving(true);
+    setError("");
+    setSuccess("");
     try {
       const res = await fetch(`/api/site/${siteId}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ configuracoes: { galerias } }),
-      })
+      });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro || 'Falha ao salvar')
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.erro || "Falha ao salvar");
       }
       setConfiguracoes({
         ...configuracoes,
         galerias,
-      })
+      });
 
-      setSuccess('Galeria atualizada com sucesso!');
+      setSuccess("Galeria atualizada com sucesso!");
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [
-    siteId,
-    galerias,
-    configuracoes,
-    setConfiguracoes,
-  ])
+  }, [siteId, galerias, configuracoes, setConfiguracoes]);
 
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => setSuccess(''), 3000);
+      const timer = setTimeout(() => setSuccess(""), 3000);
       return () => clearTimeout(timer);
     }
   }, [success]);
@@ -82,7 +76,9 @@ export default function AdminGalleryPage() {
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="p-6 sm:p-8 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Gerenciamento da Galeria</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-6">
+              Gerenciamento da Galeria
+            </h1>
 
             {error && (
               <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200 mb-6">
@@ -91,16 +87,23 @@ export default function AdminGalleryPage() {
             )}
 
             {success && (
-              <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm mb-6">
-                {success}
+              <div className="fixed top-20 z-50 left-1/2 xl:translate-x-[50%]">
+                <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center animate-fade-in-down">
+                  <span>{success}</span>
+                </div>
               </div>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {galerias.map((item, idx) => (
-                <div key={idx} className="border border-gray-200 rounded-xl p-4 relative hover:shadow-md transition">
+                <div
+                  key={idx}
+                  className="border border-gray-200 rounded-xl p-4 relative hover:shadow-md transition"
+                >
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-sm font-medium text-gray-500">Imagem #{idx + 1}</span>
+                    <span className="text-sm font-medium text-gray-500">
+                      Imagem #{idx + 1}
+                    </span>
                     <button
                       onClick={() => handleRemove(idx)}
                       disabled={saving}
@@ -122,15 +125,17 @@ export default function AdminGalleryPage() {
 
                   <CldUploadWidget
                     uploadPreset="edulinker_unsigned"
-                    options={{ folder: 'edulinker/gallery', maxFiles: 1 }}
+                    options={{ folder: "edulinker/gallery", maxFiles: 1 }}
                     onSuccess={(result: CloudinaryUploadWidgetResults) => {
-                      if (result.event !== 'success') return
-                      const info = result.info
-                      if (typeof info === 'string' || !info) return
-                      const url = info.secure_url
-                      setGalerias(g =>
-                        g.map((gItem, i) => i === idx ? { imagem: url } : gItem)
-                      )
+                      if (result.event !== "success") return;
+                      const info = result.info;
+                      if (typeof info === "string" || !info) return;
+                      const url = info.secure_url;
+                      setGalerias((g) =>
+                        g.map((gItem, i) =>
+                          i === idx ? { imagem: url } : gItem
+                        )
+                      );
                     }}
                   >
                     {({ open }) => (
@@ -140,8 +145,10 @@ export default function AdminGalleryPage() {
                         className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition cursor-pointer"
                         disabled={saving}
                       >
-                        <Plus className="inline mr-1" />{' '}
-                        {item.imagem ? 'Alterar imagem' : 'Selecione uma imagem'}
+                        <Plus className="inline mr-1" />{" "}
+                        {item.imagem
+                          ? "Alterar imagem"
+                          : "Selecione uma imagem"}
                       </button>
                     )}
                   </CldUploadWidget>
@@ -178,7 +185,8 @@ export default function AdminGalleryPage() {
               ) : (
                 !isPremium && (
                   <p className="col-span-full text-center text-sm text-gray-500 mt-4">
-                    Você atingiu o limite de 3 fotos. Faça upgrade para adicionar mais.
+                    Você atingiu o limite de 3 fotos. Faça upgrade para
+                    adicionar mais.
                   </p>
                 )
               )}
@@ -189,8 +197,8 @@ export default function AdminGalleryPage() {
                 onClick={handleSave}
                 disabled={saving}
                 className={`w-full py-3.5 px-6 rounded-xl text-white font-medium transition cursor-pointer ${saving
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
                   }`}
               >
                 {saving ? (
@@ -199,7 +207,7 @@ export default function AdminGalleryPage() {
                     <span>Salvando...</span>
                   </span>
                 ) : (
-                  'Salvar Galeria'
+                  "Salvar Galeria"
                 )}
               </button>
             </div>
@@ -207,5 +215,5 @@ export default function AdminGalleryPage() {
         </div>
       </div>
     </AdminLayout>
-  )
+  );
 }

@@ -22,6 +22,7 @@ export default function ClientThemeChoice({ siteId }: Props) {
   const [selected, setSelected]   = useState('')
   const [error, setError]         = useState('')
   const [loading, setLoading]     = useState(true)
+  const [submitting, setSubmitting] = useState(false) // Novo estado para o submit
 
   // Mapeamento estático das thumbnails
   const IMAGE_MAP: Record<string, string> = {
@@ -65,6 +66,8 @@ export default function ClientThemeChoice({ siteId }: Props) {
       setError('Selecione um tema para continuar.')
       return
     }
+    
+    setSubmitting(true) // Usando o novo estado para o submit
     try {
       const res = await fetch('/api/onboarding/template', {
         method: 'POST',
@@ -79,6 +82,8 @@ export default function ClientThemeChoice({ siteId }: Props) {
       router.push(`/account/congrats_page?siteId=${id}`)
     } catch (err: any) {
       setError(err.message)
+    } finally {
+      setSubmitting(false) // Desativa o loading do botão
     }
   }
 
@@ -134,9 +139,38 @@ export default function ClientThemeChoice({ siteId }: Props) {
       </div>
       <button
         type="submit"
-        className="w-full max-w-md bg-purple-700 text-white py-3 rounded-full hover:bg-purple-800 transition cursor-pointer"
+        disabled={submitting || !selected} // Desabilita se estiver submetendo ou nenhum tema selecionado
+        className={`w-full max-w-md bg-purple-700 text-white py-3 rounded-full hover:bg-purple-800 transition cursor-pointer
+          ${submitting ? "opacity-70 cursor-not-allowed hover:bg-purple-700" : ""}
+          ${!selected ? "opacity-50 cursor-not-allowed hover:bg-purple-700" : ""}`}
       >
-        Finalizar
+        {submitting ? (
+          <div className="flex items-center justify-center">
+            <svg
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Processando...
+          </div>
+        ) : (
+          "Finalizar"
+        )}
       </button>
     </form>
   )

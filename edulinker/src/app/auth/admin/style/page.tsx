@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, useEffect } from 'react'
-import { Palette, Type, Image as ImageIcon, Upload, Loader2, Save, Eye } from 'lucide-react'
+import { Palette, Type, Image as ImageIcon, Upload, Loader2, Save, Eye, Trash2, X } from 'lucide-react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import { useSite } from '@/contexts/siteContext'
 import { CldUploadWidget } from 'next-cloudinary'
@@ -93,8 +93,10 @@ export default function AdminStylePage() {
           )}
 
           {success && (
-            <div className="mt-3 p-2 sm:p-3 bg-green-50 text-green-700 rounded-lg inline-block mx-auto text-sm">
-              {success}
+            <div className="fixed top-20 z-50 left-1/2 xl:translate-x-[50%]">
+              <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center animate-fade-in-down">
+                <span>{success}</span>
+              </div>
             </div>
           )}
 
@@ -167,7 +169,7 @@ export default function AdminStylePage() {
                 <ImageIcon /> Logo
               </h2>
               {logo && (
-                <div className="mb-4">
+                <div className="mb-4 relative">
                   <img
                     src={logo}
                     alt="Logo atual"
@@ -175,32 +177,41 @@ export default function AdminStylePage() {
                   />
                 </div>
               )}
-              <CldUploadWidget
-                uploadPreset="edulinker_unsigned"
-                options={{ folder: 'edulinker/logo', maxFiles: 1 }}
-                onSuccess={(res: CloudinaryUploadWidgetResults) => {
-                  if (res.event !== 'success') return
-                  const info = res.info
-                  if (typeof info === 'string' || !info) return
-                  const url = info.secure_url
-                  {
+              <div className="flex gap-2">
+                <CldUploadWidget
+                  uploadPreset="edulinker_unsigned"
+                  options={{ folder: 'edulinker/logo', maxFiles: 1 }}
+                  onSuccess={(res: CloudinaryUploadWidgetResults) => {
+                    if (res.event !== 'success') return
+                    const info = res.info
+                    if (typeof info === 'string' || !info) return
+                    const url = info.secure_url
                     setLogo(url)
-                  }
-                }}
-              >
-                {({ open }) => (
+                  }}
+                >
+                  {({ open }) => (
+                    <button
+                      type="button"
+                      onClick={() => open()}
+                      disabled={saving}
+                      className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 transition cursor-pointer"
+                    >
+                      <Upload /> {logo ? 'Alterar logo' : 'Selecionar logo'}
+                    </button>
+                  )}
+                </CldUploadWidget>
+
+                {logo && (
                   <button
-                    type="button"
-                    onClick={() => open()}
+                    onClick={() => setLogo('')}
                     disabled={saving}
-                    className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 transition cursor-pointer"
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-red-100 text-red-600 rounded-lg hover:bg-red-50 transition cursor-pointer"
                   >
-                    <Upload /> {logo ? 'Alterar logo' : 'Selecionar logo'}
+                    <Trash2 className="h-4 w-4" /> Remover
                   </button>
                 )}
-              </CldUploadWidget>
+              </div>
             </div>
-
             {/* Botão Salvar */}
             <button
               onClick={handleSave}

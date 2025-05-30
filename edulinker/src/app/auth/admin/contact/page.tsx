@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback, JSX } from 'react'
 import AdminLayout from '@/components/Layouts/AdminLayout'
 import {
   Edit2,
@@ -15,8 +15,10 @@ import {
   Youtube,
   Loader2,
 } from 'lucide-react'
-import { useSite } from '@/contexts/siteContext'
+import { useIsPremium, useSite } from '@/contexts/siteContext'
+import { useJsApiLoader, Autocomplete, GoogleMap, Marker } from '@react-google-maps/api'
 
+// Tipagem para as configurações de contato
 type ContactConfig = {
   descricaoBreve?: string
   horarioSemana?: string
@@ -26,7 +28,6 @@ type ContactConfig = {
   whatsapp?: string
   endereco?: string
   cidade?: string
-  mapEmbedUrl?: string
   socialMedia?: {
     facebook?: string
     instagram?: string
@@ -34,18 +35,51 @@ type ContactConfig = {
   }
 }
 
-export default function AdminContactPage() {
-  // 1) Pegue siteId e contato do contexto
+export default function AdminContactPage(): JSX.Element {
   const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
-  const initialConfig = configuracoes.contato ?? {}
+  const isPremium = useIsPremium()
 
-  // 2) Estados locais
-  const [config, setConfig]       = useState<ContactConfig>(initialConfig)
-  const [isEditing, setEditing]   = useState(false)
-  const [saving, setSaving]       = useState(false)
-  const [error, setError]         = useState('')
+  // Estado local com dados iniciais
+  const initialConfig = (configuracoes.contato as ContactConfig) ?? {}
+  const [config, setConfig] = useState<ContactConfig>(initialConfig)
+  const [isEditing, setEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-  // 3) Atualiza campos (incluindo socialMedia.*)
+  // Loader do Google Maps + Places
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    libraries: ['places'],
+  })
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null)
+  const [markerPos, setMarkerPos] = useState<google.maps.LatLngLiteral>()
+
+  // Quando Autocomplete carrega
+  const onLoadAuto = useCallback((auto: google.maps.places.Autocomplete) => {
+    setAutocomplete(auto)
+  }, [])
+
+  // Ao escolher lugar
+  const onPlaceChanged = useCallback(() => {
+    if (!autocomplete) return
+    const place = autocomplete.getPlace()
+    const endereco = place.formatted_address || ''
+    const cidade =
+      place.address_components?.find(c =>
+        c.types.includes('administrative_area_level_1') ||
+        c.types.includes('locality')
+      )?.long_name || ''
+    setConfig(c => ({ ...c, endereco, cidade }))
+    if (place.geometry?.location) {
+      setMarkerPos({
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      })
+    }
+  }, [autocomplete])
+
+  // Atualiza campos do form
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     if (name.startsWith('socialMedia.')) {
@@ -54,49 +88,47 @@ export default function AdminContactPage() {
         ...c,
         socialMedia: {
           ...c.socialMedia,
-          [key]: value
-        }
+          [key]: value,
+        },
       }))
     } else {
       setConfig(c => ({ ...c, [name]: value }))
     }
   }, [])
 
-  // 4) Salvar via PUT
+  // Submete ao back-end
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
     setError('')
-
-   try {
+    setSuccess('')
+    try {
       const res = await fetch(`/api/site/${siteId}`, {
         method: 'PUT',
         credentials: 'include',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ configuracoes: { contato: config } })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ configuracoes: { ...configuracoes, contato: config } }),
       })
       const body = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(body.erro || 'Falha ao salvar')
-
-      setConfiguracoes({
-        ...configuracoes,
-        contato: config
-      })
-
+      setConfiguracoes({ ...configuracoes, contato: config })
+      setSuccess('Contato atualizado com sucesso!')
       setEditing(false)
     } catch (err: any) {
       setError(err.message)
     } finally {
       setSaving(false)
     }
-  }, [
-    siteId,
-    config,
-    configuracoes,
-    setConfiguracoes
-  ])
+  }, [siteId, config, configuracoes, setConfiguracoes])
 
-return (
+  // Limpa mensagem de sucesso após 3s
+  useEffect(() => {
+    if (!success) return
+    const t = setTimeout(() => setSuccess(''), 3000)
+    return () => clearTimeout(t)
+  }, [success])
+
+  return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -106,7 +138,7 @@ return (
               {!isEditing ? (
                 <button
                   onClick={() => setEditing(true)}
-                  className="flex items-center space-x-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg transition-colors cursor-pointer"
                 >
                   <Edit2 size={18} />
                   <span>Editar</span>
@@ -114,45 +146,32 @@ return (
               ) : (
                 <button
                   onClick={() => setEditing(false)}
-                  className="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
               )}
             </div>
+            <div className='text-center'>
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
+                  <p className="text-red-600 text-center font-medium">{error}</p>
+                </div>
+              )}
 
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
-                <p className="text-red-600 text-center font-medium">{error}</p>
-              </div>
-            )}
+              {success && (
+                <div className="fixed top-20 z-50 left-1/2 xl:translate-x-[50%]">
+                  <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center animate-fade-in-down">
+                    <span>{success}</span>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Informações Básicas */}
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-gray-800 pb-2 border-b border-gray-200">Informações Básicas</h2>
-                
-                {/* Descrição */}
-                <div className="flex items-start gap-4">
-                  <div className="p-2 bg-yellow-50 rounded-lg text-yellow-600">
-                    <Edit2 size={20} />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
-                    {isEditing ? (
-                      <input
-                        name="descricaoBreve"
-                        type="text"
-                        value={config.descricaoBreve || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                        placeholder="Texto introdutório da seção Contato"
-                      />
-                    ) : (
-                      <p className="text-gray-700">{config.descricaoBreve || 'Bem-vindo à nossa seção de contato. Fale conosco!'}</p>
-                    )}
-                  </div>
-                </div>
 
                 {/* Horários */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -203,7 +222,7 @@ return (
               {/* Contatos */}
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-gray-800 pb-2 border-b border-gray-200">Contatos</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* E-mail */}
                   <div className="flex items-start gap-4">
@@ -273,92 +292,70 @@ return (
                 </div>
               </div>
 
-              {/* Endereço */}
-              <div className="space-y-6">
-                <h2 className="text-lg font-semibold text-gray-800 pb-2 border-b border-gray-200">Localização</h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Endereço */}
-                  <div className="flex items-start gap-4">
-                    <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
-                      <MapPin size={20} />
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
-                      {isEditing ? (
-                        <input
-                          name="endereco"
-                          type="text"
-                          value={config.endereco || ''}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                          placeholder="Rua, número"
-                        />
-                      ) : (
-                        <p className="text-gray-700">{config.endereco || 'Rua Exemplo, 123'}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Cidade */}
-                  <div className="flex items-start gap-4">
-                    <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
-                      <MapPin size={20} />
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Cidade/UF</label>
-                      {isEditing ? (
-                        <input
-                          name="cidade"
-                          type="text"
-                          value={config.cidade || ''}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                          placeholder="Cidade - UF, CEP"
-                        />
-                      ) : (
-                        <p className="text-gray-700">{config.cidade || 'São Paulo - SP, 01000-000'}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Mapa */}
-                  <div className="flex items-start gap-4 md:col-span-2">
-                    <div className="p-2 bg-gray-50 rounded-lg text-gray-600">
-                      <MapPin size={20} />
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Link do Mapa</label>
-                      {isEditing ? (
-                        <input
-                          name="mapEmbedUrl"
-                          type="url"
-                          value={config.mapEmbedUrl || ''}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                          placeholder="URL embed do Google Maps"
-                        />
-                      ) : config.mapEmbedUrl ? (
-                        <a 
-                          href={config.mapEmbedUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-indigo-600 hover:underline break-all"
-                        >
-                          {config.mapEmbedUrl}
-                        </a>
-                      ) : (
-                        <p className="text-gray-500">—</p>
-                      )}
-                    </div>
-                  </div>
+              {/* Localização */}
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">Localização</h2>
+              <div className="flex items-start gap-2">
+                <MapPin className="text-purple-600 mt-2"/>
+                <div className="flex-1">
+                  <label className="text-sm font-medium">Endereço</label>
+                  {isEditing ? (
+                    isPremium ? (
+                      isLoaded && !loadError ? (
+                        <Autocomplete onLoad={onLoadAuto} onPlaceChanged={onPlaceChanged}>
+                          <input
+                            name="endereco"
+                            value={config.endereco||''}
+                            onChange={handleChange}
+                            placeholder="Digite para buscar"
+                            className="w-full px-3 py-2 border rounded-lg"
+                          />
+                        </Autocomplete>
+                      ) : <p>Carregando mapa…</p>
+                    ) : (
+                      <input
+                        disabled
+                        placeholder="Somente Premium"
+                        className="w-full px-3 py-2 border bg-gray-100 rounded-lg cursor-not-allowed"
+                      />
+                    )
+                  ) : <p>{config.endereco||'—'}</p>}
                 </div>
               </div>
+              <div className="flex items-start gap-2">
+                <MapPin className="text-purple-600 mt-2"/>
+                <div className="flex-1">
+                  <label className="text-sm font-medium">Cidade/UF</label>
+                  {isEditing ? (
+                    <input
+                      name="cidade"
+                      value={config.cidade||''}
+                      readOnly
+                      className="w-full px-3 py-2 border bg-gray-50 rounded-lg cursor-not-allowed"
+                    />
+                  ) : <p>{config.cidade||'—'}</p>}
+                </div>
+              </div>
+              
+              {/* Mapa */}
+              {config.endereco && isLoaded && !loadError && markerPos && (
+                <div className="w-full h-64 rounded overflow-hidden border">
+                  <GoogleMap
+                    mapContainerStyle={{ width: '100%', height: '100%' }}
+                    center={markerPos}
+                    zoom={15}
+                  >
+                    <Marker position={markerPos} />
+                  </GoogleMap>
+                </div>
+              )}
+              {loadError && <p className="text-red-600">Não foi possível carregar o mapa.</p>}
+            </div>
 
               {/* Redes Sociais */}
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-gray-800 pb-2 border-b border-gray-200">Redes Sociais</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Facebook */}
                   <div className="flex items-start gap-4">
@@ -377,9 +374,9 @@ return (
                           placeholder="https://facebook.com/usuario"
                         />
                       ) : config.socialMedia?.facebook ? (
-                        <a 
-                          href={config.socialMedia.facebook} 
-                          target="_blank" 
+                        <a
+                          href={config.socialMedia.facebook}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-indigo-600 hover:underline break-all"
                         >
@@ -408,9 +405,9 @@ return (
                           placeholder="https://instagram.com/usuario"
                         />
                       ) : config.socialMedia?.instagram ? (
-                        <a 
-                          href={config.socialMedia.instagram} 
-                          target="_blank" 
+                        <a
+                          href={config.socialMedia.instagram}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-indigo-600 hover:underline break-all"
                         >
@@ -439,9 +436,9 @@ return (
                           placeholder="https://youtube.com/c/usuario"
                         />
                       ) : config.socialMedia?.youtube ? (
-                        <a 
-                          href={config.socialMedia.youtube} 
-                          target="_blank" 
+                        <a
+                          href={config.socialMedia.youtube}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-indigo-600 hover:underline break-all"
                         >
@@ -461,11 +458,10 @@ return (
                   <button
                     type="submit"
                     disabled={saving}
-                    className={`px-6 py-3 rounded-xl text-white font-medium transition-all ${
-                      saving
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
-                    }`}
+                    className={`px-6 py-3 rounded-xl text-white font-medium transition-all cursor-pointer ${saving
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
+                      }`}
                   >
                     {saving ? (
                       <span className="flex items-center justify-center space-x-2">

@@ -7,14 +7,14 @@ export default function AulaCardPremium({
   descricao, 
   nivel,
   duracao,
-  contato
+  whatsapp
 }: { 
   foto?: string; 
   titulo?: string; 
   descricao?: string;
   nivel?: string;
   duracao?: string;
-  contato?: string;
+  whatsapp?: string;
 }) {
   return (
     <div className="group relative h-full">
@@ -68,7 +68,7 @@ export default function AulaCardPremium({
               </div>
             )}
             
-            <a href={contato ? `https://wa.me/${contato.replace(/\D/g, '')}` : '#'} className="flex items-center text-pink-500 hover:text-pink-600 dark:hover:text-pink-400 font-medium text-sm transition-colors duration-300">
+            <a href={whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, '')}` : '#'} className="flex items-center text-pink-500 hover:text-pink-600 dark:hover:text-pink-400 font-medium text-sm transition-colors duration-300">
               Saiba mais
               <ArrowRight className="w-4 h-4 ml-1" />
             </a>

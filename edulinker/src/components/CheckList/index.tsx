@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation'
 import {
   CheckCircle,
   ChevronDown,
   ChevronUp,
-  CircleDashed,
+  CircleDashed
 } from 'lucide-react';
 
 const checklist = [
@@ -18,21 +20,52 @@ const checklist = [
   {
     title: 'Personalize o estilo do seu site',
     description: 'Escolha cores, fontes e layout que combinam com sua escola.',
+    path: "/auth/admin/style",
+    done: true,
+  },
+  {
+    title: 'Adicione seus banners',
+    description:
+      'Defina imagens para os banners rotativos da sua página!',
+    path: "/auth/admin/banners",
+    done: true,
+  },
+  {
+    title: 'Descreva suas escola',
+    description:
+      'Escreva um texto que conte a história da sua escola e o que a torna especial.',
+    path: "/auth/admin/about",
+    done: true,
+  },
+  {
+    title: 'Crie sua galeria de fotos',
+    description:
+      'Adicione fotos da sua escola, professores e alunos para mostrar o ambiente.',
+    path: "/auth/admin/gallery",
+    done: true,
+  },
+  {
+    title: 'Informe quais as aulas estão disponíveis',
+    description: 'Crie sua grade de aulas com dias, horários e professores.',
+    path: "/auth/admin/grade",
     done: false,
   },
   {
     title: 'Adicione os professores da escola',
     description: 'Cadastre os professores para que os alunos possam conhecê-los.',
+    path: "/auth/admin/teachers",
     done: false,
   },
   {
-    title: 'Informe quais as aulas estão disponíveis',
-    description: 'Crie sua grade de aulas com dias, horários e professores.',
+    title: 'Adicione os depoimentos da sua escola',
+    description: 'Exiba depoimentos de alunos e pais para aumentar a credibilidade.',
+    path: "/auth/admin/testimonials",
     done: false,
   },
   {
     title: 'Informe o endereço e dados de contato da escola',
     description: 'Inclua telefone, WhatsApp, e localização no mapa.',
+    path: "/auth/admin/contact",
     done: false,
   },
 ];
@@ -60,7 +93,10 @@ export default function CheckList() {
                 ) : (
                   <CircleDashed className="text-gray-400 w-5 h-5" />
                 )}
-                <span className="font-medium">{item.title}</span>
+                <Link
+                  href={item.path || '#'}>
+                  <span className="font-medium">{item.title}</span>
+                </Link>
               </div>
 
               {isExpanded ? (

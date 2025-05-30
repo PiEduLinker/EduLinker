@@ -1,7 +1,7 @@
 import ClientLogin from './ClientLogin'
 
 interface Props {
-  searchParams: { from?: string | string[] }
+  searchParams: { from?: string | string[] } 
 }
 
 export default async function LoginPage({ searchParams }: Props) {
