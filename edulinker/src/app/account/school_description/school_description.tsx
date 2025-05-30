@@ -1,56 +1,59 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Plus } from 'lucide-react'
-import { CldUploadWidget } from 'next-cloudinary'
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
+import { CldUploadWidget } from "next-cloudinary";
 import type {
   CloudinaryUploadWidgetError,
-  CloudinaryUploadWidgetResults
-} from 'next-cloudinary'
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
 
 interface Props {
-  siteId?: string
+  siteId?: string;
 }
 
 export default function ClientSchoolDescription({ siteId }: Props) {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [schoolName, setSchoolName] = useState('')
-  const [description, setDescription] = useState('')
-  const [logoPreview, setLogoPreview] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true) // Loading inicial
-  const [isSubmitting, setIsSubmitting] = useState(false) // Loading do submit
+  const [schoolName, setSchoolName] = useState("");
+  const [description, setDescription] = useState("");
+  const [logoPreview, setLogoPreview] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true); // Loading inicial
+  const [isSubmitting, setIsSubmitting] = useState(false); // Loading do submit
 
   useEffect(() => {
     if (!siteId) {
-      setError('ID do site não encontrado.')
-      setIsLoading(false)
-      return
+      setError("ID do site não encontrado.");
+      setIsLoading(false);
+      return;
     }
-    ; (async () => {
+    (async () => {
       try {
-        const res = await fetch(`/api/site/${siteId}`, { credentials: 'include' })
-        if (!res.ok) throw new Error('Falha ao carregar dados do site')
-        const data = await res.json()
-        if (data.configuracoes?.nomeEscola) setSchoolName(data.configuracoes.nomeEscola)
-        if (data.descricao) setDescription(data.descricao)
-        if (data.logo) setLogoPreview(data.logo)
+        const res = await fetch(`/api/site/${siteId}`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Falha ao carregar dados do site");
+        const data = await res.json();
+        if (data.configuracoes?.nomeEscola)
+          setSchoolName(data.configuracoes.nomeEscola);
+        if (data.descricao) setDescription(data.descricao);
+        if (data.logo) setLogoPreview(data.logo);
       } catch (err: any) {
-        setError(err.message)
+        setError(err.message);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    })()
-  }, [siteId])
+    })();
+  }, [siteId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    if (!siteId) return
+    e.preventDefault();
+    setError(null);
+    if (!siteId) return;
 
-    setIsSubmitting(true) // Ativa o loading do submit
+    setIsSubmitting(true); // Ativa o loading do submit
 
     try {
       const payload = {
@@ -58,34 +61,35 @@ export default function ClientSchoolDescription({ siteId }: Props) {
         siteNome: schoolName,
         descricao: description,
         logo: logoPreview,
-        status: 'PLAN_SELECTION',
-      }
+        status: "PLAN_SELECTION",
+      };
 
-      const res = await fetch('/api/onboarding/basic', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/onboarding/basic", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
       if (!res.ok) {
-        setError(data.erro || 'Falha ao salvar dados básicos.')
-        return
+        setError(data.erro || "Falha ao salvar dados básicos.");
+        return;
       }
 
-      router.push(`/account/plan_selection?siteId=${siteId}`)
+      router.push(`/account/plan_selection?siteId=${siteId}`);
     } catch (err: any) {
-      setError(err.message || 'Erro inesperado. Tente novamente.')
+      setError(err.message || "Erro inesperado. Tente novamente.");
     } finally {
-      setIsSubmitting(false) // Desativa o loading do submit
+      setIsSubmitting(false); // Desativa o loading do submit
     }
-  }
+  };
 
   // Verifica se os campos obrigatórios estão preenchidos
-  const isFormValid = schoolName.trim() !== ''
+  const isFormValid = schoolName.trim() !== "";
 
-  if (isLoading && !schoolName) return <p className="text-center p-6">Carregando dados da escola...</p>
+  if (isLoading && !schoolName)
+    return <p className="text-center p-6">Carregando dados da escola...</p>;
 
   return (
     <form
@@ -122,15 +126,15 @@ export default function ClientSchoolDescription({ siteId }: Props) {
         <div className="flex items-center gap-4">
           <CldUploadWidget
             uploadPreset="edulinker_unsigned"
-            options={{ folder: 'edulinker/logos', maxFiles: 1 }}
+            options={{ folder: "edulinker/logos", maxFiles: 1 }}
             onError={(err: CloudinaryUploadWidgetError) => {
-              console.error(err)
-              setError('Falha ao enviar logo.')
+              console.error(err);
+              setError("Falha ao enviar logo.");
             }}
             onSuccess={(result: CloudinaryUploadWidgetResults) => {
-              const info = result.info
-              if (typeof info !== 'string' && info) {
-                setLogoPreview(info.secure_url)
+              const info = result.info;
+              if (typeof info !== "string" && info) {
+                setLogoPreview(info.secure_url);
               }
             }}
           >
@@ -140,25 +144,31 @@ export default function ClientSchoolDescription({ siteId }: Props) {
                 onClick={() => open()}
                 className="w-14 h-14 border rounded-full flex items-center justify-center cursor-pointer hover:border-purple-500 transition"
               >
-                {logoPreview
-                  ? <img src={logoPreview} alt="Logo atual" className="w-full h-full rounded-full object-cover" />
-                  : <Plus size={24} />}
+                {logoPreview ? (
+                  <img
+                    src={logoPreview}
+                    alt="Logo atual"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <Plus size={24} />
+                )}
               </button>
             )}
           </CldUploadWidget>
 
-          <p className="text-sm text-gray-700">
-            Adicione um logo (opcional)
-          </p>
+          <p className="text-sm text-gray-700">Adicione um logo (opcional)</p>
         </div>
       </div>
-
       <button
         type="submit"
         disabled={isSubmitting || !isFormValid}
-        className={`w-full mt-6 bg-purple-700 text-white font-semibold py-3 rounded-full hover:bg-purple-800 transition cursor-pointer
-          ${isSubmitting ? "opacity-70 cursor-not-allowed hover:bg-purple-700" : ""}
-          ${!isFormValid ? "opacity-50 cursor-not-allowed hover:bg-purple-700" : ""}`}
+        className={`w-full mt-6 text-white font-semibold py-3 rounded-full transition
+    ${
+      isSubmitting || !isFormValid
+        ? "bg-[#E60076] cursor-not-allowed"
+        : "bg-[#E60076] hover:bg-[#cc0063] cursor-pointer"
+    }`}
       >
         {isSubmitting ? (
           <div className="flex items-center justify-center">
@@ -189,5 +199,5 @@ export default function ClientSchoolDescription({ siteId }: Props) {
         )}
       </button>
     </form>
-  )
+  );
 }
