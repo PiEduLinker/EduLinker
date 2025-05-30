@@ -23,15 +23,16 @@ export default function UpgradePage() {
                         </div>
                         <h1 className="text-3xl font-bold mb-3">Você é Premium! 🎉</h1>
                         <p className="text-purple-100 text-lg mb-6">Obrigado por fazer parte dos nossos usuários exclusivos.</p>
-                        
+
                         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-left max-w-md mx-auto">
                             <h2 className="font-semibold text-white mb-2 flex items-center gap-2">
                                 <BadgeCheck className="text-yellow-300" /> Seus benefícios:
                             </h2>
                             <ul className="space-y-2 text-purple-50">
-                                <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Acesso ilimitado a todos os recursos</li>
-                                <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Suporte prioritário 24/7</li>
-                                <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Atualizações exclusivas</li>
+                                <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Diversos templates </li>
+                                <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Relatório de acessos </li>
+                                <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Mais opções de personalização </li>
+                                <li className="flex items-start gap-2"><CheckCircle2 className="h-5 w-5 mt-0.5 text-green-300" /> Integração do Google Maps </li>
                             </ul>
                         </div>
                     </div>
@@ -83,7 +84,7 @@ export default function UpgradePage() {
                             <span className="text-purple-200 mb-1">/mês</span>
                         </div>
                     </div>
-                    
+
                     <div className="p-6">
                         <ul className="space-y-3 mb-8">
                             <li className="flex items-start gap-3">

@@ -54,7 +54,7 @@ export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
       setError('Selecione um plano para continuar.')
       return
     }
-    
+
     setIsSubmitting(true) // Ativa o loading do submit
     try {
       const res = await fetch('/api/onboarding/plan', {
@@ -90,8 +90,8 @@ export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Gratuito */}
         <label className={`border rounded-lg p-6 cursor-pointer transition-all bg-white ${selectedPlan === 'gratuito'
-            ? 'border-purple-500 ring-2 ring-purple-200'
-            : 'border-gray-200 hover:border-purple-300'
+          ? 'border-purple-500 ring-2 ring-purple-200'
+          : 'border-gray-200 hover:border-purple-300'
           }`}>
           <input
             type="radio"
@@ -107,12 +107,10 @@ export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
           </div>
           <p className="text-gray-600 text-sm mb-4">Para começar sem custos</p>
           <ul className="text-sm text-gray-700 space-y-2 mb-2">
-            <li className="flex items-start gap-2">✔ <span>Até 5 imóveis</span></li>
-            <li className="flex items-start gap-2">✔ <span>Tema básico</span></li>
+            <li className="flex items-start gap-2">✔ <span>Site Próprio</span></li>
+            <li className="flex items-start gap-2">✔ <span>Tema Personalizável</span></li>
             <li className="flex items-start gap-2">✔ <span>Suporte por email</span></li>
-            <li className="flex items-start gap-2 text-gray-400">✘ <span>WhatsApp</span></li>
-            <li className="flex items-start gap-2 text-gray-400">✘ <span>Exclusividade</span></li>
-            <li className="flex items-start gap-2 text-gray-400">✘ <span>Estatísticas</span></li>
+            <li className="flex items-start gap-2">✔ <span>0 Custos</span></li>
           </ul>
           <div className="mt-4 pt-3 border-t border-gray-100">
             <span className="text-gray-700 font-medium">Grátis</span>
@@ -121,8 +119,8 @@ export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
 
         {/* Premium */}
         <label className={`border rounded-lg p-6 cursor-pointer transition-all bg-white relative ${selectedPlan === 'premium'
-            ? 'border-purple-600 ring-2 ring-purple-200'
-            : 'border-gray-200 hover:border-purple-500'
+          ? 'border-purple-600 ring-2 ring-purple-200'
+          : 'border-gray-200 hover:border-purple-500'
           }`}>
           <div className="absolute top-0 right-0 -mt-3 -mr-1">
             <div className="bg-purple-600 text-white text-xs font-medium px-3 py-1 rounded-full flex items-center">
@@ -148,11 +146,10 @@ export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
           <p className="text-gray-700 text-sm mb-4">Recursos completos para melhores resultados</p>
 
           <ul className="text-sm text-gray-800 space-y-2 mb-2">
-            <li className="flex items-start gap-2">✔ <span>Imóveis ilimitados</span></li>
-            <li className="flex items-start gap-2">✔ <span>Temas personalizados</span></li>
-            <li className="flex items-start gap-2">✔ <span>Integração WhatsApp</span></li>
-            <li className="flex items-start gap-2">✔ <span>Estatísticas detalhadas</span></li>
-            <li className="flex items-start gap-2">✔ <span>Destaque nas buscas</span></li>
+            <li className="flex items-start gap-2">✔ <span>Diversos templates</span></li>
+            <li className="flex items-start gap-2">✔ <span>Relatório de acessos</span></li>
+            <li className="flex items-start gap-2">✔ <span>Mais opções de personalização </span></li>
+            <li className="flex items-start gap-2">✔ <span>Integração do Google Maps </span></li>
             <li className="flex items-start gap-2">✔ <span>Suporte prioritário</span></li>
           </ul>
 
