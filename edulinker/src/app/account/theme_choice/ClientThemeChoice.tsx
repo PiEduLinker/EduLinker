@@ -26,9 +26,8 @@ export default function ClientThemeChoice({ siteId }: Props) {
   const [selected, setSelected] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false); // Novo estado para o submit
+  const [submitting, setSubmitting] = useState(false);
 
-  // Mapeamento estático das thumbnails
   const IMAGE_MAP: Record<string, string> = {
     "682953cfeacbea36d53508b9": "/ThemeImages/Facilita Sites.jpg",
     "682a30fc7e6132facb3e70cc": "/ThemeImages/Advocacia.jpg",
@@ -72,7 +71,7 @@ export default function ClientThemeChoice({ siteId }: Props) {
       return;
     }
 
-    setSubmitting(true); // Usando o novo estado para o submit
+    setSubmitting(true);
     try {
       const res = await fetch("/api/onboarding/template", {
         method: "POST",
@@ -92,7 +91,7 @@ export default function ClientThemeChoice({ siteId }: Props) {
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setSubmitting(false); // Desativa o loading do botão
+      setSubmitting(false);
     }
   };
 
@@ -114,17 +113,23 @@ export default function ClientThemeChoice({ siteId }: Props) {
       {error && (
         <p className="text-red-600 text-sm mb-4 text-center">{error}</p>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full">
+      <div
+        className={`grid gap-10 w-full ${
+          filtered.length === 1
+            ? "grid-cols-1 max-w-md"
+            : "grid-cols-1 md:grid-cols-2"
+        }`}
+      >
         {filtered.map((tpl) => (
           <label
             key={tpl.id}
             className={`relative flex flex-col items-center rounded-xl overflow-hidden cursor-pointer
-                        border-2 transition-shadow duration-300 shadow-md hover:shadow-xl
-                        ${
-                          selected === tpl.id
-                            ? "border-purple-600 ring-4 ring-purple-200"
-                            : "border-transparent"
-                        }`}
+              border-2 transition-shadow duration-300 shadow-md hover:shadow-xl
+              ${
+                selected === tpl.id
+                  ? "border-[#E60076] ring-4 ring-[#E60076]/30"
+                  : "border-transparent"
+              }`}
           >
             <input
               type="radio"
@@ -137,7 +142,7 @@ export default function ClientThemeChoice({ siteId }: Props) {
             <div className="w-full text-center bg-gray-100 py-3 px-2 font-semibold text-lg relative">
               {tpl.nome}
               {tpl.pro && (
-                <span className="absolute top-1 right-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <span className="absolute top-1 right-3 bg-gradient-to-r from-[#E60076] to-[#B8005D] text-white text-xs font-bold px-2 py-1 rounded-full">
                   PRO
                 </span>
               )}
@@ -154,46 +159,18 @@ export default function ClientThemeChoice({ siteId }: Props) {
           </label>
         ))}
       </div>
+
+      {/* Botão Finalizar direto aqui no mesmo arquivo */}
       <button
         type="submit"
-        disabled={submitting || !selected} // Desabilita se estiver submetendo ou nenhum tema selecionado
-        className={`w-full max-w-md bg-purple-700 text-white py-3 rounded-full hover:bg-purple-800 transition cursor-pointer
-          ${
-            submitting
-              ? "opacity-70 cursor-not-allowed hover:bg-purple-700"
-              : ""
-          }
-          ${
-            !selected ? "opacity-50 cursor-not-allowed hover:bg-purple-700" : ""
-          }`}
+        disabled={!selected || submitting}
+        className={`w-[328px] h-[48px] rounded-[8px] text-white text-[16px] font-bold leading-[24px] tracking-wide flex items-center justify-center transition-colors duration-200 ${
+          !selected || submitting
+            ? "bg-[#E60076] cursor-not-allowed"
+            : "bg-[#E60076] hover:bg-[#cc005f] active:bg-[#b30055] cursor-pointer"
+        }`}
       >
-        {submitting ? (
-          <div className="flex items-center justify-center">
-            <svg
-              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            Processando...
-          </div>
-        ) : (
-          "Finalizar"
-        )}
+        {submitting ? "Processando..." : "Finalizar"}
       </button>
     </form>
   );

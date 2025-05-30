@@ -1,74 +1,77 @@
-'use client'
+"use client";
 
-import React, { useState, useCallback, useEffect } from 'react'
-import { Plus, Trash2, X, Loader2, Save, Upload } from 'lucide-react'
-import AdminLayout from '@/components/Layouts/AdminLayout'
-import { useSite, useIsPremium } from '@/contexts/siteContext'
-import { CldUploadWidget } from 'next-cloudinary'
-import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
+import React, { useState, useCallback, useEffect } from "react";
+import { Plus, Trash2, X, Loader2, Save, Upload } from "lucide-react";
+import AdminLayout from "@/components/Layouts/AdminLayout";
+import { useSite, useIsPremium } from "@/contexts/siteContext";
+import { CldUploadWidget } from "next-cloudinary";
+import type { CloudinaryUploadWidgetResults } from "next-cloudinary";
 
 interface Professor {
-  nome: string
-  descricao: string
-  imagem?: string
+  nome: string;
+  descricao: string;
+  imagem?: string;
 }
 
 export default function AdminTeachersPage() {
-  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
-  const isPremium = useIsPremium()
-  const maxProfessores = isPremium ? 12 : 4
-  const [success, setSuccess] = useState('');
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite();
+  const isPremium = useIsPremium();
+  const maxProfessores = isPremium ? 12 : 4;
+  const [success, setSuccess] = useState("");
 
-  const initial = (configuracoes.professores as Professor[]) ?? []
-  const [professores, setProfessores] = useState<Professor[]>(initial)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string>('')
+  const initial = (configuracoes.professores as Professor[]) ?? [];
+  const [professores, setProfessores] = useState<Professor[]>(initial);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string>("");
 
   const addProfessor = useCallback(() => {
-    if (professores.length >= maxProfessores) return
-    setProfessores(p => [...p, { nome: '', descricao: '', imagem: '' }])
-  }, [professores.length, maxProfessores])
+    if (professores.length >= maxProfessores) return;
+    setProfessores((p) => [...p, { nome: "", descricao: "", imagem: "" }]);
+  }, [professores.length, maxProfessores]);
 
   const removeProfessor = useCallback((idx: number) => {
-    setProfessores(p => p.filter((_, i) => i !== idx))
-  }, [])
+    setProfessores((p) => p.filter((_, i) => i !== idx));
+  }, []);
 
-  const updateField = useCallback((idx: number, field: keyof Professor, value: string) => {
-    setProfessores(p =>
-      p.map((x, i) => (i === idx ? { ...x, [field]: value } : x))
-    )
-  }, [])
+  const updateField = useCallback(
+    (idx: number, field: keyof Professor, value: string) => {
+      setProfessores((p) =>
+        p.map((x, i) => (i === idx ? { ...x, [field]: value } : x))
+      );
+    },
+    []
+  );
 
   const handleSave = useCallback(async () => {
-    setSaving(true)
-    setError('')
-    setSuccess('');
+    setSaving(true);
+    setError("");
+    setSuccess("");
     try {
       const res = await fetch(`/api/site/${siteId}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ configuracoes: { professores } }),
-      })
+      });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro || 'Falha ao salvar professores.')
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.erro || "Falha ao salvar professores.");
       }
       setConfiguracoes({
         ...configuracoes,
         professores,
-      })
-      setSuccess('Professores atualizados com sucesso!');
+      });
+      setSuccess("Professores atualizados com sucesso!");
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [siteId, professores, configuracoes, setConfiguracoes])
+  }, [siteId, professores, configuracoes, setConfiguracoes]);
 
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => setSuccess(''), 3000);
+      const timer = setTimeout(() => setSuccess(""), 3000);
       return () => clearTimeout(timer);
     }
   }, [success]);
@@ -94,7 +97,6 @@ export default function AdminTeachersPage() {
               </div>
             </div>
           )}
-
         </div>
 
         {/* Lista de Professores */}
@@ -102,13 +104,13 @@ export default function AdminTeachersPage() {
           {professores.map((prof, idx) => (
             <div
               key={idx}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 relative transition-all hover:shadow-lg"
+              className="bg-white rounded-xl shadow-md border border-gray-200 p-6 relative transition-all hover:shadow-lg"
             >
               {/* Remover */}
               <button
                 onClick={() => removeProfessor(idx)}
                 disabled={saving}
-                className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-gray-100 cursor-pointer"
                 aria-label="Remover professor"
               >
                 <Trash2 size={18} />
@@ -122,8 +124,8 @@ export default function AdminTeachersPage() {
                 <input
                   type="text"
                   value={prof.nome}
-                  onChange={e => updateField(idx, 'nome', e.target.value)}
-                  className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition-all"
+                  onChange={(e) => updateField(idx, "nome", e.target.value)}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#E60076] focus:border-[#E60076] transition-all"
                   placeholder="Nome do professor"
                 />
               </div>
@@ -135,8 +137,10 @@ export default function AdminTeachersPage() {
                 </label>
                 <textarea
                   value={prof.descricao}
-                  onChange={e => updateField(idx, 'descricao', e.target.value)}
-                  className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 transition-all min-h-[100px]"
+                  onChange={(e) =>
+                    updateField(idx, "descricao", e.target.value)
+                  }
+                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#E60076] focus:border-[#E60076] transition-all min-h-[100px]"
                   placeholder="Descrição sobre o professor"
                 />
               </div>
@@ -154,7 +158,7 @@ export default function AdminTeachersPage() {
                       className="w-24 h-24 object-cover rounded-full border-2 border-gray-200"
                     />
                     <button
-                      onClick={() => updateField(idx, 'imagem', '')}
+                      onClick={() => updateField(idx, "imagem", "")}
                       disabled={saving}
                       className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                       aria-label="Remover imagem"
@@ -165,16 +169,16 @@ export default function AdminTeachersPage() {
                 )}
                 <CldUploadWidget
                   uploadPreset="edulinker_unsigned"
-                  options={{ folder: 'edulinker/professores', maxFiles: 1 }}
+                  options={{ folder: "edulinker/professores", maxFiles: 1 }}
                   onSuccess={(res: CloudinaryUploadWidgetResults) => {
-                    if (res.event !== 'success') return
-                    const info = res.info
-                    if (typeof info !== 'object' || !info.secure_url) return
-                    setProfessores(p =>
+                    if (res.event !== "success") return;
+                    const info = res.info;
+                    if (typeof info !== "object" || !info.secure_url) return;
+                    setProfessores((p) =>
                       p.map((x, i) =>
                         i === idx ? { ...x, imagem: info.secure_url } : x
                       )
-                    )
+                    );
                   }}
                 >
                   {({ open }) => (
@@ -185,14 +189,13 @@ export default function AdminTeachersPage() {
                       className="inline-flex items-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition-colors cursor-pointer disabled:opacity-70"
                     >
                       <Upload size={16} className="mr-2" />
-                      {prof.imagem ? 'Alterar imagem' : 'Selecionar imagem'}
+                      {prof.imagem ? "Alterar imagem" : "Selecionar imagem"}
                     </button>
                   )}
                 </CldUploadWidget>
               </div>
             </div>
           ))}
-
           {/* Botão Adicionar */}
           {professores.length < maxProfessores ? (
             <button
@@ -206,7 +209,8 @@ export default function AdminTeachersPage() {
           ) : (
             !isPremium && (
               <p className="text-center text-sm text-gray-500">
-                Limite de 4 professores no plano gratuito. Faça upgrade para até 12.
+                Limite de 4 professores no plano gratuito. Faça upgrade para até
+                12.
               </p>
             )
           )}
@@ -216,18 +220,18 @@ export default function AdminTeachersPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 text-white py-2.5 px-6 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-70 cursor-pointer"
+              className="flex items-center gap-2 text-white py-2.5 px-6 rounded-lg bg-gradient-to-r from-pink-500 via-[#E60076] to-pink-700 hover:from-pink-600 hover:via-[#E60076] hover:to-pink-800 transition-all disabled:opacity-70 cursor-pointer"
             >
               {saving ? (
                 <Loader2 size={18} className="animate-spin" />
               ) : (
                 <Save size={18} />
               )}
-              {saving ? 'Salvando...' : 'Salvar professores'}
+              {saving ? "Salvando..." : "Salvar professores"}
             </button>
           </div>
         </div>
       </div>
     </AdminLayout>
-  )
+  );
 }

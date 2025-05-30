@@ -1,78 +1,78 @@
-'use client'
+"use client";
 
-import React, { useState, useCallback, useEffect } from 'react'
-import AdminLayout from '@/components/Layouts/AdminLayout'
-import { Plus, Trash2, Star, Loader2, Save } from 'lucide-react'
-import { useSite, useIsPremium } from '@/contexts/siteContext'
-import { CldUploadWidget } from 'next-cloudinary'
-import type { CloudinaryUploadWidgetResults } from 'next-cloudinary'
+import React, { useState, useCallback, useEffect } from "react";
+import AdminLayout from "@/components/Layouts/AdminLayout";
+import { Plus, Trash2, Star, Loader2, Save } from "lucide-react";
+import { useSite, useIsPremium } from "@/contexts/siteContext";
+import { CldUploadWidget } from "next-cloudinary";
+import type { CloudinaryUploadWidgetResults } from "next-cloudinary";
 
 type Testimonial = {
-  foto: string
-  nome: string
-  texto: string
-  estrelas: number
-}
+  foto: string;
+  nome: string;
+  texto: string;
+  estrelas: number;
+};
 
 export default function AdminTestimonialsPage() {
-  const { slug: siteId, configuracoes, setConfiguracoes } = useSite()
-  const isPremium = useIsPremium()
-  const maxItems = isPremium ? 8 : 2
-  const [success, setSuccess] = useState('');
+  const { slug: siteId, configuracoes, setConfiguracoes } = useSite();
+  const isPremium = useIsPremium();
+  const maxItems = isPremium ? 8 : 2;
+  const [success, setSuccess] = useState("");
 
-  const initial = (configuracoes.depoimentos as Testimonial[]) ?? []
-  const [items, setItems] = useState<Testimonial[]>(initial)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const initial = (configuracoes.depoimentos as Testimonial[]) ?? [];
+  const [items, setItems] = useState<Testimonial[]>(initial);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const handleAdd = useCallback(() => {
-    if (items.length >= maxItems) return
-    setItems(i => [...i, { foto: '', nome: '', texto: '', estrelas: 5 }])
-  }, [items.length, maxItems])
+    if (items.length >= maxItems) return;
+    setItems((i) => [...i, { foto: "", nome: "", texto: "", estrelas: 5 }]);
+  }, [items.length, maxItems]);
 
   const handleRemove = useCallback((idx: number) => {
-    setItems(i => i.filter((_, j) => j !== idx))
-  }, [])
+    setItems((i) => i.filter((_, j) => j !== idx));
+  }, []);
 
   const handleChange = useCallback(
     (idx: number, field: keyof Testimonial, value: string | number) => {
-      setItems(i =>
+      setItems((i) =>
         i.map((it, j) => (j === idx ? { ...it, [field]: value } : it))
-      )
+      );
     },
     []
-  )
+  );
 
   const handleSave = useCallback(async () => {
-    setSaving(true)
-    setError('')
-    setSuccess('');
+    setSaving(true);
+    setError("");
+    setSuccess("");
     try {
       const res = await fetch(`/api/site/${siteId}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ configuracoes: { depoimentos: items } })
-      })
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ configuracoes: { depoimentos: items } }),
+      });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.erro || 'Falha ao salvar depoimentos')
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.erro || "Falha ao salvar depoimentos");
       }
       setConfiguracoes({
         ...configuracoes,
         depoimentos: items,
-      })
-      setSuccess('Depoimento atualizado com sucesso!');
+      });
+      setSuccess("Depoimento atualizado com sucesso!");
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }, [siteId, items, configuracoes, setConfiguracoes])
+  }, [siteId, items, configuracoes, setConfiguracoes]);
 
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => setSuccess(''), 3000);
+      const timer = setTimeout(() => setSuccess(""), 3000);
       return () => clearTimeout(timer);
     }
   }, [success]);
@@ -91,7 +91,7 @@ export default function AdminTestimonialsPage() {
                 <p className="text-red-600 text-center font-medium">{error}</p>
               </div>
             )}
-            
+
             {success && (
               <div className="fixed top-20 z-50 left-1/2 xl:translate-x-[50%]">
                 <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center animate-fade-in-down">
@@ -134,7 +134,7 @@ export default function AdminTestimonialsPage() {
                               className="w-24 h-24 object-cover rounded-full border-2 border-gray-200"
                             />
                             <button
-                              onClick={() => handleChange(idx, 'foto', '')}
+                              onClick={() => handleChange(idx, "foto", "")}
                               disabled={saving}
                               className="absolute top-0 right-0 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-opacity"
                               aria-label="Remover foto"
@@ -146,12 +146,15 @@ export default function AdminTestimonialsPage() {
 
                         <CldUploadWidget
                           uploadPreset="edulinker_unsigned"
-                          options={{ folder: 'edulinker/testimonials', maxFiles: 1 }}
+                          options={{
+                            folder: "edulinker/testimonials",
+                            maxFiles: 1,
+                          }}
                           onSuccess={(res: CloudinaryUploadWidgetResults) => {
-                            if (res.event !== 'success') return
-                            const info = res.info
-                            if (typeof info === 'object' && info.secure_url) {
-                              handleChange(idx, 'foto', info.secure_url)
+                            if (res.event !== "success") return;
+                            const info = res.info;
+                            if (typeof info === "object" && info.secure_url) {
+                              handleChange(idx, "foto", info.secure_url);
                             }
                           }}
                         >
@@ -162,7 +165,7 @@ export default function AdminTestimonialsPage() {
                               disabled={saving}
                               className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 transition-colors cursor-pointer"
                             >
-                              {item.foto ? 'Alterar foto' : 'Selecionar foto'}
+                              {item.foto ? "Alterar foto" : "Selecionar foto"}
                             </button>
                           )}
                         </CldUploadWidget>
@@ -177,7 +180,9 @@ export default function AdminTestimonialsPage() {
                       <input
                         type="text"
                         value={item.nome}
-                        onChange={e => handleChange(idx, 'nome', e.target.value)}
+                        onChange={(e) =>
+                          handleChange(idx, "nome", e.target.value)
+                        }
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
                         placeholder="Nome completo"
                       />
@@ -191,7 +196,9 @@ export default function AdminTestimonialsPage() {
                       <textarea
                         rows={4}
                         value={item.texto}
-                        onChange={e => handleChange(idx, 'texto', e.target.value)}
+                        onChange={(e) =>
+                          handleChange(idx, "texto", e.target.value)
+                        }
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
                         placeholder="Texto do depoimento"
                       />
@@ -203,24 +210,26 @@ export default function AdminTestimonialsPage() {
                         Avaliação
                       </label>
                       <div className="flex items-center space-x-1">
-                        {[1, 2, 3, 4, 5].map(n => (
+                        {[1, 2, 3, 4, 5].map((n) => (
                           <button
                             key={n}
                             type="button"
-                            onClick={() => handleChange(idx, 'estrelas', n)}
+                            onClick={() => handleChange(idx, "estrelas", n)}
                             className="focus:outline-none"
                           >
                             <Star
                               size={24}
-                              className={`${n <= item.estrelas
-                                ? 'text-yellow-400 fill-yellow-400'
-                                : 'text-gray-300'
-                                } transition-colors cursor-pointer`}
+                              className={`${
+                                n <= item.estrelas
+                                  ? "text-yellow-400 fill-yellow-400"
+                                  : "text-gray-300"
+                              } transition-colors cursor-pointer`}
                             />
                           </button>
                         ))}
                         <span className="ml-2 text-sm text-gray-500">
-                          {item.estrelas} {item.estrelas === 1 ? 'estrela' : 'estrelas'}
+                          {item.estrelas}{" "}
+                          {item.estrelas === 1 ? "estrela" : "estrelas"}
                         </span>
                       </div>
                     </div>
@@ -243,7 +252,8 @@ export default function AdminTestimonialsPage() {
               ) : (
                 !isPremium && (
                   <p className="text-sm text-gray-500 col-span-full">
-                    Limite de 2 depoimentos no plano gratuito. Faça upgrade para até 8.
+                    Limite de 2 depoimentos no plano gratuito. Faça upgrade para
+                    até 8.
                   </p>
                 )
               )}
@@ -252,10 +262,11 @@ export default function AdminTestimonialsPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition-all cursor-pointer ${saving
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg'
-                  }`}
+                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-white font-medium transition-all cursor-pointer ${
+                  saving
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-pink-500 via-[#E60076] to-pink-700 hover:from-pink-600 hover:via-[#E60076] hover:to-pink-800 shadow-md hover:shadow-lg"
+                }`}
               >
                 {saving ? (
                   <span className="flex items-center justify-center space-x-2">
@@ -263,7 +274,7 @@ export default function AdminTestimonialsPage() {
                     <span>Salvando...</span>
                   </span>
                 ) : (
-                  'Salvar Depoimentos'
+                  "Salvar Depoimentos"
                 )}
               </button>
             </div>
@@ -271,5 +282,5 @@ export default function AdminTestimonialsPage() {
         </div>
       </div>
     </AdminLayout>
-  )
+  );
 }
