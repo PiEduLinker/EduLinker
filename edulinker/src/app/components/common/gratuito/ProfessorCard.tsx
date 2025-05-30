@@ -29,7 +29,7 @@ export default function ProfessorCard({
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-            <User className="w-16 h-16 text-gray-400 group-hover:text-indigo-400 transition-colors duration-300" />
+            <User className="w-16 h-16 text-gray-400 group-hover:text-[#E60076] transition-colors duration-300" />
           </div>
         )}
         {/* Overlay sutil */}
