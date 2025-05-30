@@ -1,5 +1,4 @@
-import { Clock, BookOpen } from "lucide-react";
-import React from "react";
+import { Clock, BookOpen, ArrowRight } from "lucide-react";
 
 export default function AulaCard({
   foto,
@@ -19,63 +18,53 @@ export default function AulaCard({
   fg?: string;
 }) {
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all">
-      <div className="relative h-60 w-full">
+    <div className="bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-all h-full flex flex-col">
+      {/* Imagem */}
+      <div className="relative h-40 w-full">
         {foto && foto.trim() !== "" ? (
           <img
             src={foto}
             alt={titulo || "Aula"}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-t-lg"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-            <BookOpen className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+          <div className="w-full h-full bg-gray-50 flex items-center justify-center rounded-t-lg">
+            <BookOpen className="w-10 h-10 text-gray-400" />
           </div>
         )}
-
+        
+        {/* Badge de nível */}
         {nivel && (
-          <span className="absolute top-3 right-3 dark:bg-opacity-75 text-white px-3 py-1 rounded-full text-xs font-bold bg-pink-500">
+          <span className="absolute top-2 right-2 bg-gray-800 text-white px-2 py-1 rounded text-xs">
             {nivel}
           </span>
         )}
-
+        
+        {/* Duração */}
         {duracao && (
-          <span className="absolute bottom-3 left-3 bg-white bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-75 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-xs flex items-center space-x-1">
-            <Clock className="w-4 h-4" />
+          <span className="absolute bottom-2 left-2 bg-white text-gray-700 px-2 py-1 rounded text-xs flex items-center gap-1 border border-gray-200">
+            <Clock className="w-3 h-3" />
             <span>{duracao}</span>
           </span>
         )}
       </div>
 
-      <div className="p-5">
-        <h3
-          className="text-xl font-bold mb-2 text-gray-800"
-          style={{ color: fg }}
-        >
+      {/* Conteúdo do card */}
+      <div className="p-4 flex-1 flex flex-col">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: fg }}>
           {titulo || "Título da Aula"}
         </h3>
-        <p className="text-gray-600 mb-4 line-clamp-2">
+        
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-1">
           {descricao || "Descrição da aula..."}
         </p>
+        
         <a
           href={whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, "")}` : "#"}
-          className="text-pink-500 font-semibold hover:underline flex items-center"
-          style={{ color: fg }}
+          className="text-gray-700 hover:text-gray-900 transition-colors inline-flex items-center text-sm mt-auto"
         >
           Saiba mais
-          <svg
-            className="w-4 h-4 ml-1"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
+          <ArrowRight className="w-3 h-3 ml-1" />
         </a>
       </div>
     </div>
