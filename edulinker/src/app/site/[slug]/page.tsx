@@ -1,6 +1,3 @@
-export const dynamic = 'force-static'
-export const revalidate = 60
-
 import { IAssinatura } from '@/models/Assinatura'
 import Assinatura from '@/models/Assinatura'
 import Site from '@/models/Site'
@@ -21,29 +18,20 @@ interface LeanSite {
   templateOriginalId: string
 }
 
-// Gera, em build time, a lista de slugs para cada site cadastrado
-export async function generateStaticParams() {
-  await connectToDB()
-  const sites = await Site.find({}, 'slug').lean()
-  return sites.map((site) => ({ slug: site.slug! }))
-}
-
-export default async function SiteSlugPage({
-  params,
-}: {
-  params: { slug: string }
-}) {
-  const { slug } = params
+export default async function SiteSlugPage(
+  { params }: { params: Promise<{ slug?: string }> }
+) {
+  const { slug } = await params
   if (!slug) return notFound()
 
   await connectToDB()
 
-  // 1) Busca o site pelo slug
+  // 1) Busca o site
   const rawSite = await Site.findOne({ slug }).lean()
   const site = rawSite as LeanSite | null
   if (!site) return notFound()
 
-  // 2) Busca assinatura do usuário
+  // 2) Busca a assinatura mais recente e ativa
   const rawAssinatura = await Assinatura
     .findOne({ usuarioId: site.usuarioId, status: 'ativa' })
     .sort({ dataInicio: -1 })
@@ -51,43 +39,39 @@ export default async function SiteSlugPage({
   const assinatura = rawAssinatura as IAssinatura | null
   const isPremiumUser = assinatura?.plano === 'premium'
 
-  // 3) Carrega o template selecionado
+  // 3) Carrega o template escolhido
   const rawTpl = await TemplateModel.findById(site.templateOriginalId).lean()
   const tpl = rawTpl as ITemplate | null
   if (!tpl) return notFound()
 
-  // 4) Verifica se o plano do usuário permite esse template
-  const planoAtual = (isPremiumUser ? 'premium' : 'gratuito') as Plan
+  // 4) Verifica se o plano do usuário permite este template
+  const planoAtual = isPremiumUser ? 'premium' : 'gratuito'
   if (!tpl.disponívelPara.includes(planoAtual)) {
-    return notFound()
+    return notFound() // ou redirecionar para upgrade
   }
 
-  // 5) Escolhe componente de template (Premium ou Gratuito)
+  // 5) Escolhe o componente pelo nome do template armazenado
   const TemplateComponent =
     tpl.nome.toLowerCase().includes('premium')
       ? PremiumTemplate
       : GratuitoTemplate
 
-  // 6) Prepara o contexto com valores do site
+  // 6) Prepara o contexto com o plano real do usuário
   const contextValue = {
     slug: site.slug,
     descricao: site.descricao ?? '',
     configuracoes: site.configuracoes,
     status: site.status,
-    plano: planoAtual,
+    plano: planoAtual as Plan,
   }
 
   return (
     <SiteProvider site={contextValue}>
       <PageTracker slug={slug} />
-      <div
-        style={
-          {
-            '--bg': site.configuracoes.corFundo,
-            '--fg': site.configuracoes.corTexto,
-          } as React.CSSProperties
-        }
-      >
+      <div style={{
+          '--bg': site.configuracoes.corFundo,
+          '--fg': site.configuracoes.corTexto,
+        } as React.CSSProperties}>
         <TemplateComponent config={site.configuracoes} />
       </div>
     </SiteProvider>

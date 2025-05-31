@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
 
   images: {
     // permite qualquer URL vindo de res.cloudinary.com
-    domains: ['res.cloudinary.com'],
+    domains: ['res.cloudinary.com',],
   },
 }
 

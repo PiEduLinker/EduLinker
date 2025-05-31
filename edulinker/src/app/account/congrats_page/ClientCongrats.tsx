@@ -50,7 +50,7 @@ export default function ClientCongrats({ siteId }: Props) {
       {/* imagem, botões, mensagem de erro e publicLink */}
       <div className="w-64 aspect-[4/5] relative">
         <Image
-          src="/backgrounds/happysmartphone.png"
+          src="https://res.cloudinary.com/dt4xi9ayl/image/upload/v1748731659/edulinker/logos/jiuophhdeuhmazkpnodi.png" 
           alt="Celular comemorando"
           fill
           className="object-contain"
