@@ -1,3 +1,8 @@
+export const dynamic = 'force-static'
+
+export const revalidate = 60
+
+
 import { IAssinatura } from '@/models/Assinatura'
 import Assinatura from '@/models/Assinatura'
 import Site from '@/models/Site'
@@ -25,16 +30,12 @@ export async function generateStaticParams() {
   await connectToDB()
   // Busca todos os slugs de sites no banco
   const sites = await Site.find({}, 'slug').lean()
+    console.log('> generateStaticParams: slugs encontrados:', sites.map(s => s.slug))
+
   return sites.map((site) => ({
     slug: site.slug!,
   }))
 }
-
-// ========================
-// 2) ISR (REVALIDATE)
-// ========================
-// A cada 60 segundos, o Next.js irá revalidar esta página em background.
-export const revalidate = 60
 
 // ========================
 // 3) COMPONENTE DA PÁGINA
