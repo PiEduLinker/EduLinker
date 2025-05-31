@@ -343,47 +343,56 @@ export default function AdminContactPage(): JSX.Element {
                     {isEditing ? (
                       isPremium ? (
                         isLoaded && !loadError ? (
-                          <Autocomplete
-                            onLoad={onLoadAuto}
-                            onPlaceChanged={onPlaceChanged}
-                          >
+                          <Autocomplete onLoad={onLoadAuto} onPlaceChanged={onPlaceChanged}>
                             <input
                               name="endereco"
-                              value={config.endereco || ""}
+                              value={config.endereco || ''}
                               onChange={handleChange}
                               placeholder="Digite para buscar"
                               className="w-full px-3 py-2 border rounded-lg"
                             />
                           </Autocomplete>
-                        ) : (
-                          <p>Carregando mapa…</p>
-                        )
+                        ) : <p>Carregando mapa…</p>
                       ) : (
                         <input
-                          disabled
-                          placeholder="Somente Premium"
-                          className="w-full px-3 py-2 border bg-gray-100 rounded-lg cursor-not-allowed"
+                          name="endereco"
+                          value={config.endereco || ''}
+                          onChange={handleChange}
+                          placeholder="Digite seu endereço"
+                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                         />
                       )
-                    ) : (
-                      <p>{config.endereco || "—"}</p>
-                    )}
+                    ) : <p>{config.endereco || '—'}</p>}
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <MapPin className="text-purple-600 mt-2" />
                   <div className="flex-1">
                     <label className="text-sm font-medium">Cidade/UF</label>
+
                     {isEditing ? (
-                      <input
-                        name="cidade"
-                        value={config.cidade || ""}
-                        readOnly
-                        className="w-full px-3 py-2 border bg-gray-50 rounded-lg cursor-not-allowed"
-                      />
+                      isPremium ? (
+                        <input
+                          name="cidade"
+                          value={config.cidade || ''}
+                          readOnly
+                          className="w-full px-3 py-2 border bg-gray-50 rounded-lg cursor-not-allowed"
+                        />
+                      ) : (
+                        // Gratuito: pode digitar livremente
+                        <input
+                          name="cidade"
+                          type="text"
+                          value={config.cidade || ''}
+                          onChange={handleChange}
+                          placeholder="Digite sua cidade e UF"
+                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                        />
+                      )
                     ) : (
-                      <p>{config.cidade || "—"}</p>
+                      <p>{config.cidade || '—'}</p>
                     )}
+
                   </div>
                 </div>
 
