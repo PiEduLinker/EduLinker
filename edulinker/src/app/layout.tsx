@@ -26,6 +26,11 @@ const poppins = Poppins({ variable: '--font-poppins', subsets: ['latin'], weight
 export const metadata: Metadata = {
   title: "EduLinker",
   description: "Gerador de sites",
+  icons: {
+    icon: "/icon/favicon.ico",        
+    shortcut: "/icon/favicon.ico",    
+    apple: "/logo/edulinker.png"    
+  },
 };
 
 export default function RootLayout({
