@@ -29,13 +29,13 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
     destaques: initialDestaques = [] as Destaque[],
   } = configuracoes;
 
-  const [description, setDescription] = useState(initial)
   const [descricao, setDescricao] = useState(initialDescricao)
   const [fotoSobre, setFotoSobre] = useState(initialFoto)
   const [destaques, setDestaques] = useState<Destaque[]>(initialDestaques)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState<boolean>(false)
 
   // Adiciona destaque apenas se for premium
   const handleAdd = useCallback(() => {
@@ -96,6 +96,29 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
     configuracoes,
     setConfiguracoes,
   ]);
+
+
+  // GOOGLE IA
+  async function handleGerar() {
+    setError('')
+    setDescricao('')
+
+    setLoading(true)
+    try {
+      const res = await fetch('/api/about-ia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.erro || 'Falha ao gerar descrição.')
+      setDescricao(data.descricaoGerada)
+    } catch (err: any) {
+      console.error('Erro ao chamar a API de IA:', err)
+      setError(err.message || 'Erro inesperado.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (success) {
@@ -178,16 +201,46 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
 
         {/* Texto descritivo */}
         <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <h2 className="text-lg font-semibold flex items-center gap-2 text-dark mb-4">
-            <Text className="w-5 h-5" /> Texto Descritivo
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold flex items-center gap-2 text-dark mb-4">
+              <Text className="w-5 h-5" /> Texto Descritivo
+            </h2>
+
+            {/* //BOTAO IA */}
+            {!isPremium ? (
+              <button
+                disabled
+                className="w-1/4 ml-auto flex items-center justify-center space-x-2 py-3 bg-gray-200 text-gray-500 rounded-xl cursor-not-allowed"
+              >
+                Gerar com I.a (Pro)
+              </button>
+            ) : (
+              <button
+                onClick={handleGerar}
+                disabled={loading}
+                className={`w-1/4 ml-auto flex items-center justify-center space-x-2 py-2 rounded-lg text-white font-medium transition ${loading
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-indigo-600 hover:bg-indigo-700'
+                  }`}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    <span>Gerando...</span>
+                  </>
+                ) : (
+                  'Gerar Descrição'
+                )}
+              </button>
+            )}
+          </div>
+
           <textarea
             rows={6}
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
             className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#E60076] focus:border-[#E60076] transition-all text-gray-900"
-            placeholder="Descreva sua escola, missão, valores e diferenciais..."
-          />
+            placeholder="Descreva sua escola, missão, valores e diferenciais..." />
         </div>
 
         {/* Destaques editáveis */}
