@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Clock, FacebookIcon, Instagram, Mail, Phone, Youtube } from 'lucide-react';
 
 // Imagens padrão (você pode importar de seus assets ou usar URLs externas)
-const DEFAULT_LOGO = '/logo/EduLinkerWhite.png'
+const DEFAULT_LOGO = 'https://res.cloudinary.com/dt4xi9ayl/image/upload/v1749680669/edulinker/logo/n2dz6xzb9bqf9g9pavfm.png'
 const DEFAULT_CAROUSEL_IMAGE = '/templates/free/banner1.jpg'
 
 export default function Premium({ config }: { config: SiteConfig }) {

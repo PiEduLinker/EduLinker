@@ -22,7 +22,7 @@ import Gallery from "../gratuito/Gallery";
 import GalleryPremium from "../premium/GalleryPremium";
 
 // Imagens padrão
-const DEFAULT_LOGO = "/logo/EduLinker.png";
+const DEFAULT_LOGO = "https://res.cloudinary.com/dt4xi9ayl/image/upload/v1749680669/edulinker/logo/n2dz6xzb9bqf9g9pavfm.png";
 const DEFAULT_LOGO_BRANCA = "/logo/EduLinkerWhite.png";
 const DEFAULT_HERO_IMAGE = "/templates/free/banner1.jpg";
 
