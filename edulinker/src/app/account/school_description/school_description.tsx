@@ -116,7 +116,7 @@ export default function ClientSchoolDescription({ siteId }: Props) {
           className="w-full px-4 py-2 border rounded resize-none hover:border-[#E60076] focus:border-[#E60076] focus:outline-none"
         />
         <textarea
-          placeholder="Breve descrição."
+          placeholder="Breve descrição (opcional)"
           rows={4}
           value={description}
           onChange={(e) => setDescription(e.target.value)}

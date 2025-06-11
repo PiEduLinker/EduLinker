@@ -17,7 +17,7 @@ export default function LandingPage() {
       <section className="container mx-auto px-4 sm:px-6 py-12 md:py-20 lg:py-24 flex flex-col lg:flex-row items-center gap-8">
         <div className="lg:w-1/2 mb-10 lg:mb-0 text-center lg:text-left">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4 sm:mb-6">
-            Crie seu site o site da sua escola em{" "}
+            Crie o site da sua escola em{" "}
             <span className="text-pink-600">minutos</span>, sem complicação
           </h1>
           <p className="text-base sm:text-lg text-gray-700 mb-6 sm:mb-8 max-w-lg mx-auto lg:mx-0">
@@ -176,7 +176,7 @@ export default function LandingPage() {
                 <iframe
                   width="100%"
                   height="100%"
-                  src="https://www.youtube.com/embed/ERlzCUWDVRc"
+                  src="https://www.youtube.com/embed/i_qhQaZxxJI"
                   title="YouTube video player"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

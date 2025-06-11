@@ -201,7 +201,7 @@ export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
           </ul>
 
           <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
-            <span className="text-[#E60076] font-bold">R$ 29,99/mês</span>
+            <span className="text-[#E60076] font-bold">R$ 24,90/mês</span>
             <span className="text-xs text-[#E60076] bg-pink-50 px-2 py-1 rounded">
               Mais escolhido
             </span>

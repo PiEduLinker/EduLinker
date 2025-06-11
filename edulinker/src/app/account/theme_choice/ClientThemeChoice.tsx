@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 
 type Plan = "gratuito" | "premium";
+
 interface Template {
   id: string;
   nome: string;
+  imgPreview: string;
   pro: boolean;
 }
 
@@ -28,16 +29,12 @@ export default function ClientThemeChoice({ siteId }: Props) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const IMAGE_MAP: Record<string, string> = {
-    "682953cfeacbea36d53508b9": "/ThemeImages/Facilita Sites.jpg",
-    "682a30fc7e6132facb3e70cc": "/ThemeImages/Advocacia.jpg",
-  };
-
   useEffect(() => {
     if (!id) {
       setLoading(false);
       return;
     }
+
     (async () => {
       try {
         const stRes = await fetch("/api/onboarding/status", {
@@ -83,10 +80,12 @@ export default function ClientThemeChoice({ siteId }: Props) {
           configuracoes: {},
         }),
       });
+
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.erro || "Falha ao salvar template.");
       }
+
       router.push(`/account/congrats_page?siteId=${id}`);
     } catch (err: any) {
       setError(err.message);
@@ -98,6 +97,7 @@ export default function ClientThemeChoice({ siteId }: Props) {
   if (!id) {
     return <p className="text-center text-red-500">Site ID não encontrado.</p>;
   }
+
   if (loading) {
     return <p className="p-6 text-center">Carregando templates…</p>;
   }
@@ -113,7 +113,13 @@ export default function ClientThemeChoice({ siteId }: Props) {
       {error && (
         <p className="text-red-600 text-sm mb-4 text-center">{error}</p>
       )}
-      <div className={`grid ${filtered.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : 'grid-cols-1 md:grid-cols-2'} gap-10 w-full`}>
+      <div
+        className={`grid ${
+          filtered.length === 1
+            ? "grid-cols-1 max-w-md mx-auto"
+            : "grid-cols-1 md:grid-cols-2"
+        } gap-10 w-full`}
+      >
         {filtered.map((tpl) => (
           <label
             key={tpl.id}
@@ -142,19 +148,16 @@ export default function ClientThemeChoice({ siteId }: Props) {
               )}
             </div>
             <div className="aspect-[4/3] w-full relative">
-              <Image
-                src={IMAGE_MAP[tpl.id] ?? "/default.jpg"}
+              <img
+                src={tpl.imgPreview || "/default.jpg"}
                 alt={tpl.nome}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover w-full h-full"
               />
             </div>
           </label>
         ))}
       </div>
 
-      {/* Botão Finalizar direto aqui no mesmo arquivo */}
       <button
         type="submit"
         disabled={!selected || submitting}
