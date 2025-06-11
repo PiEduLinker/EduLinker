@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     }
     const ai = new GoogleGenAI({ apiKey })
 
-    const prompt = `Escreva **somente** uma descrição curta e atrativa para o site de uma escola chamada "${siteNome}". SEM numerar opções. faça uma apresentação e Destaque qualidade, confiança e ambiente acolhedor.`
+    const prompt = `Escreva **somente** uma descrição em 5 linhas e atrativa para o site de uma escola chamada "${siteNome}". SEM numerar opções. faça uma apresentação e Destaque qualidade, confiança e ambiente acolhedor.`
 
     // 7) Gera o conteúdo com o modelo Gemini
     const response = await ai.models.generateContent({
