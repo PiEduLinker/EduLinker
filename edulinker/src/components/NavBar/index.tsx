@@ -16,7 +16,7 @@ export default function NavBar({ onMenuClick, isMenuOpen }: Props) {
         {/* Logo (sempre alinhada à esquerda) */}
         <a href="#" className="mr-4">
           <Image
-            src="https://res.cloudinary.com/dt4xi9ayl/image/upload/v1749680669/edulinker/logo/n2dz6xzb9bqf9g9pavfm.png"
+            src="/logo/edulinkerwhite.png"
             alt="Logo"
             width={140}
             height={140}
