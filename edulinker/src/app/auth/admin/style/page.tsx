@@ -95,7 +95,7 @@ export default function AdminStylePage() {
         {/* Cabeçalho */}
         <div className="text-center space-y-2 my-10">
           <h1 className="text-2xl sm:text-3xl font-bold text-black">
-            Designer de Identidade Visual
+            Estilize seu site
           </h1>
           {error && (
             <div className="mt-3 p-2 sm:p-3 bg-red-50 text-red-600 rounded-lg inline-block mx-auto text-sm">

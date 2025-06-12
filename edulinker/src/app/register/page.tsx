@@ -189,65 +189,65 @@ export default function RegisterPage() {
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
-            {formData.senha && (
-              <div className="mt-2 text-xs text-gray-600">
-                <p
-                  className={`font-medium ${
-                    passwordStrength.isValid ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {passwordStrength.message}
-                </p>
-                <ul className="mt-1 space-y-1">
-                  <li
-                    className={
-                      passwordStrength.requirements.length
-                        ? "text-green-600"
-                        : "text-gray-400"
-                    }
-                  >
-                    • Mínimo 8 caracteres
-                  </li>
-                  <li
-                    className={
-                      passwordStrength.requirements.uppercase
-                        ? "text-green-600"
-                        : "text-gray-400"
-                    }
-                  >
-                    • Pelo menos uma letra maiúscula
-                  </li>
-                  <li
-                    className={
-                      passwordStrength.requirements.lowercase
-                        ? "text-green-600"
-                        : "text-gray-400"
-                    }
-                  >
-                    • Pelo menos uma letra minúscula
-                  </li>
-                  <li
-                    className={
-                      passwordStrength.requirements.number
-                        ? "text-green-600"
-                        : "text-gray-400"
-                    }
-                  >
-                    • Pelo menos um número
-                  </li>
-                  <li
-                    className={
-                      passwordStrength.requirements.specialChar
-                        ? "text-green-600"
-                        : "text-gray-400"
-                    }
-                  >
-                    • Pelo menos um caractere especial
-                  </li>
-                </ul>
-              </div>
-            )}
           </div>
+
+          {formData.senha && (
+            <div className="mt-2 text-xs text-gray-600">
+              <p
+                className={`font-medium ${passwordStrength.isValid ? "text-green-600" : "text-red-600"
+                  }`}
+              >
+                {passwordStrength.message}
+              </p>
+              <ul className="mt-1 space-y-1">
+                <li
+                  className={
+                    passwordStrength.requirements.length
+                      ? "text-green-600"
+                      : "text-gray-400"
+                  }
+                >
+                  • Mínimo 8 caracteres
+                </li>
+                <li
+                  className={
+                    passwordStrength.requirements.uppercase
+                      ? "text-green-600"
+                      : "text-gray-400"
+                  }
+                >
+                  • Pelo menos uma letra maiúscula
+                </li>
+                <li
+                  className={
+                    passwordStrength.requirements.lowercase
+                      ? "text-green-600"
+                      : "text-gray-400"
+                  }
+                >
+                  • Pelo menos uma letra minúscula
+                </li>
+                <li
+                  className={
+                    passwordStrength.requirements.number
+                      ? "text-green-600"
+                      : "text-gray-400"
+                  }
+                >
+                  • Pelo menos um número
+                </li>
+                <li
+                  className={
+                    passwordStrength.requirements.specialChar
+                      ? "text-green-600"
+                      : "text-gray-400"
+                  }
+                >
+                  • Pelo menos um caractere especial
+                </li>
+              </ul>
+            </div>
+          )}
 
           <div className="relative">
             <input
