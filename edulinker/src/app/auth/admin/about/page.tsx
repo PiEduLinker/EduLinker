@@ -133,7 +133,7 @@ export default function AdminAboutPage({ initial = '' }: { initial?: string }) {
         {/* Cabeçalho */}
         <div className="text-center">
           <h1 className="text-2xl sm:text-3xl font-bold text-black">
-            Sobre a Escola
+            Sobre Nós
           </h1>
           {error && (
             <div className="mt-4 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300 rounded-lg inline-block">

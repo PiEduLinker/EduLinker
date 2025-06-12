@@ -296,15 +296,6 @@ export default function GratuitoTemplate({ config }: { config: SiteConfig }) {
               )}
             </div>
 
-            {/* Mensagem de upgrade */}
-            {!isPremium && allAulas.length > 1 && (
-              <p className="mt-8 text-center text-gray-600">
-                Você tem {allAulas.length} aulas disponíveis.{" "}
-                <a href="/auth/admin/upgrade" className="text-indigo-600 font-medium hover:underline">
-                  Faça upgrade para acessar todas
-                </a>
-              </p>
-            )}
           </div>
         </section>
 

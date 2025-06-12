@@ -27,7 +27,7 @@ export default function SideBarMenu({ onClose }: { onClose?: () => void }) {
     { label: "Painel inicial", path: "/auth/admin" },
     { label: "Estilo do site", path: "/auth/admin/style" },
     { label: "Banners rotativos", path: "/auth/admin/banners" },
-    { label: "Sobre a escola", path: "/auth/admin/about" },
+    { label: "Sobre Nós", path: "/auth/admin/about" },
     { label: "Galeria de Fotos", path: "/auth/admin/gallery" },
     { label: "Grade de aulas", path: "/auth/admin/grade" },
     { label: "Professores", path: "/auth/admin/teachers" },
