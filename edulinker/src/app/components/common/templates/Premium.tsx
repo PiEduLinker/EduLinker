@@ -78,7 +78,7 @@ export default function Premium({ config }: { config: SiteConfig }) {
                   <img
                     src={config.logo || DEFAULT_LOGO}
                     alt="Logo da Escola"
-                    className="transition-transform duration-300 group-hover:scale-105 max-w-[60px] h-auto"
+                    className="transition-transform duration-300 group-hover:scale-105 max-w-[90px] h-auto"
                   />
                 </a>
               </div>
@@ -226,9 +226,6 @@ export default function Premium({ config }: { config: SiteConfig }) {
               <div className="w-full lg:w-1/2">
                 {/* Título com efeito */}
                 <div className="mb-2">
-                  <span className="inline-block text-lg font-semibold mb-3 uppercase tracking-wider">
-                    Quem somos
-                  </span>
                   <h2 className="text-4xl md:text-5xl font-bold mb-6 relative">
                     <span className="relative inline-block">
                       Sobre Nós
