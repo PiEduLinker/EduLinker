@@ -187,6 +187,9 @@ export default function ClientPlanSelection({ siteId, initialStatus }: Props) {
               ✔ <span>Diversos templates</span>
             </li>
             <li className="flex items-start gap-2">
+              ✔ <span>Descrição gerada com IA</span>
+            </li>
+            <li className="flex items-start gap-2">
               ✔ <span>Relatório de acessos</span>
             </li>
             <li className="flex items-start gap-2">
