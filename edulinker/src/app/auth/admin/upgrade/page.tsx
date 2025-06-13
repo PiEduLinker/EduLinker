@@ -119,6 +119,10 @@ export default function UpgradePage() {
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <span>Descrição gerada com IA</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                 <span>Relatório de acessos</span>
               </li>
               <li className="flex items-start gap-3">
